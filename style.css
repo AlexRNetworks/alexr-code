@@ -1,5 +1,329 @@
-/* ... (all your existing styles from the previous full CSS) ... */
-/* KEEP EVERYTHING FROM THE PREVIOUS style.css UP TO THIS POINT */
+/* Import Google Fonts: 'Inter' for UI, 'Fira Code' for editor (CodeMirror will use its own font settings from its theme by default) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+/* --- CSS Variables for Theming (Enhanced Default) --- */
+:root {
+    --font-primary: 'Inter', sans-serif;
+    /* --font-code: 'Fira Code', monospace; /* CodeMirror will use its theme's font */
+
+    --color-background-main: #f4f7f9;
+    --color-background-header: #ffffff;
+    --color-background-editor: #ffffff; /* Background for the .editor div */
+    --color-background-preview: #ffffff;
+    --color-background-footer: #2c3e50;
+    --color-background-button: #007aff;
+    --color-background-button-hover: #005bb5;
+    --color-background-section-header: #eef1f4;
+
+    --color-text-main: #333333;
+    --color-text-header: #2c3e50;
+    --color-text-editor-label: #555555;
+    --color-text-button: #ffffff;
+    --color-text-footer: #e0e0e0;
+    --color-text-link: #007aff;
+    --color-text-placeholder: #999999;
+
+    --border-color-light: #dce1e6;
+    --border-color-dark: #c0c5cb;
+    --border-radius-main: 8px;
+    --border-radius-small: 5px;
+    --box-shadow-main: 0 4px 12px rgba(0,0,0,0.06);
+    --box-shadow-light: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+/* General Reset and Body */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+    font-family: var(--font-primary);
+    margin: 0;
+    background-color: var(--color-background-main);
+    color: var(--color-text-main);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header */
+header { /* ... (keep your existing header styles) ... */
+    background-color: var(--color-background-header);
+    color: var(--color-text-header);
+    padding: 0.8rem 1.5rem;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color-light);
+    box-shadow: var(--box-shadow-light);
+}
+header h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+.theme-selector-button { /* ... (keep existing theme button styles) ... */
+    background-color: transparent; color: var(--color-text-link); border: 1px solid var(--border-color-light);
+    padding: 0.5rem 1rem; border-radius: var(--border-radius-small); cursor: pointer; text-decoration: none;
+    font-size: 0.85rem; font-weight: 500; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.theme-selector-button:hover, .theme-selector-button:focus {
+    background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button); outline: none;
+}
+
+/* Editor Container */
+.editor-container { display: flex; flex-direction: column; flex-grow: 1; padding: 20px; gap: 20px; }
+.code-section { display: flex; flex-direction: column; gap: 20px; }
+
+@media (min-width: 992px) {
+    .code-section { flex-direction: row; justify-content: space-between; }
+    .editor { flex-basis: calc(33.333% - 14px); }
+}
+
+.editor {
+    display: flex;
+    flex-direction: column; /* Important for h2 and CodeMirror to stack */
+    background-color: var(--color-background-editor); /* BG for the whole editor box */
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-main);
+    box-shadow: var(--box-shadow-main);
+    overflow: hidden; /* To contain CodeMirror's rounded corners if its theme doesn't do it */
+    min-height: 350px; /* Minimum height for each editor panel */
+}
+
+.editor h2 { /* ... (keep existing editor h2 styles) ... */
+    background-color: var(--color-background-section-header); color: var(--color-text-editor-label); margin: 0;
+    padding: 12px 18px; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color-light);
+    text-align: left;
+}
+
+/* CodeMirror Styling Adjustments */
+.CodeMirror {
+    font-family: 'Fira Code', monospace; /* Fallback if theme doesn't set one, or override */
+    font-size: 14px; /* Adjust as needed */
+    line-height: 1.5;
+    height: 100%; /* Makes CodeMirror fill the .editor div's remaining space */
+    flex-grow: 1; /* Allow CodeMirror to grow */
+    border: none; /* Remove CodeMirror default borders if any */
+}
+
+/* Hide original textareas if CodeMirror is successfully initialized (JS will handle this ideally) */
+/* textarea { display: none; } /* You might not need this if CodeMirror handles it well */
+
+
+/* EDITOR MAIN Controls Styling */
+.editor-main-controls { /* ... (keep existing editor-main-controls styles) ... */
+    margin-bottom: 15px; text-align: center; padding: 10px 0; display: flex;
+    justify-content: center; flex-wrap: wrap; gap: 12px;
+}
+.editor-main-controls button { /* ... (keep existing editor-main-controls button styles) ... */
+    background-color: var(--color-background-button); color: var(--color-text-button); border: none;
+    padding: 10px 22px; border-radius: var(--border-radius-small); cursor: pointer;
+    font-size: 0.9rem; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.editor-main-controls button:hover { background-color: var(--color-background-button-hover); transform: translateY(-1px); }
+.editor-main-controls button:active { transform: translateY(0px); }
+
+
+/* Preview Section */
+.preview-section { /* ... (keep existing preview-section styles) ... */
+    flex-grow: 1; display: flex; flex-direction: column; background-color: var(--color-background-preview);
+    border: 1px solid var(--border-color-light); border-radius: var(--border-radius-main); box-shadow: var(--box-shadow-main);
+    overflow: hidden; min-height: 350px;
+}
+.preview-section h2 { /* ... (keep existing preview-section h2 styles) ... */
+    background-color: var(--color-background-section-header); color: var(--color-text-editor-label); margin: 0;
+    padding: 12px 18px; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color-light);
+    text-align: left;
+}
+#preview-frame { flex-grow: 1; width: 100%; border: none; background-color: var(--color-background-preview); }
+
+/* Footer */
+footer { /* ... (keep existing footer styles) ... */
+    background-color: var(--color-background-footer); color: var(--color-text-footer); text-align: center;
+    padding: 1.25rem 1.5rem; margin-top: auto; font-size: 0.85rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity (dimmed background) */
+    backdrop-filter: blur(5px); /* Optional: blur background */
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: var(--color-background-editor); /* Use theme variable */
+    color: var(--color-text-main); /* Use theme variable */
+    margin: 10% auto; /* 10% from the top and centered */
+    padding: 25px 30px;
+    border: 1px solid var(--border-color-light); /* Use theme variable */
+    border-radius: var(--border-radius-main); /* Use theme variable */
+    width: 80%;
+    max-width: 500px; /* Max width for the modal */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-button {
+    color: var(--color-text-editor-label); /* Use theme variable */
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--color-text-main); /* Darker on hover */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--color-text-header); /* Use theme variable for heading */
+    font-weight: 600;
+}
+
+.modal label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--color-text-editor-label);
+}
+
+.modal input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color-dark); /* Use theme variable */
+    border-radius: var(--border-radius-small);
+    font-family: var(--font-primary);
+    font-size: 1em;
+    background-color: var(--color-background-main); /* Lighter background for input */
+    color: var(--color-text-main);
+}
+.modal input[type="text"]:focus {
+    outline: none;
+    border-color: var(--color-text-link); /* Use theme variable */
+    box-shadow: 0 0 0 2px rgba(var(--color-text-link-rgb, 0, 123, 255), 0.25); /* Needs --color-text-link-rgb if you have it */
+}
+
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border-radius: var(--border-radius-small);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.modal-actions button#confirm-save-button,
+.modal-actions button.load-button { /* Primary action */
+    background-color: var(--color-background-button);
+    color: var(--color-text-button);
+    border-color: var(--color-background-button);
+}
+.modal-actions button#confirm-save-button:hover,
+.modal-actions button.load-button:hover {
+    background-color: var(--color-background-button-hover);
+    border-color: var(--color-background-button-hover);
+}
+
+.modal-actions button.button-alt,
+.modal-actions button.delete-button { /* Secondary/destructive action */
+    background-color: transparent;
+    color: var(--color-text-editor-label);
+    border-color: var(--border-color-dark);
+}
+.modal-actions button.button-alt:hover {
+    background-color: var(--color-background-section-header); /* Light hover */
+    color: var(--color-text-main);
+}
+.modal-actions button.delete-button {
+    color: #dc3545; /* Red for delete */
+    border-color: #dc3545;
+}
+.modal-actions button.delete-button:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+
+/* Project List Styling */
+#projects-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-small);
+    padding: 10px;
+    background-color: var(--color-background-main); /* Slightly different BG for list area */
+}
+
+.project-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color-light);
+    transition: background-color 0.2s ease;
+}
+.project-item:last-child {
+    border-bottom: none;
+}
+.project-item:hover {
+    background-color: var(--color-background-section-header); /* Hover effect for list item */
+}
+
+.project-item-name {
+    font-weight: 500;
+    color: var(--color-text-main);
+    flex-grow: 1;
+}
+
+.project-item-actions button {
+    margin-left: 8px;
+    padding: 6px 10px; /* Smaller buttons for list items */
+    font-size: 0.85em;
+}
+/* Add this if you don't have --color-text-link-rgb for the focus shadow */
+:root {
+    /* Assuming your --color-text-link is #007aff */
+    --color-text-link-rgb: 0, 123, 255; 
+}
+
+/* Ensure CodeMirror theme variables don't clash badly if a page theme is very different.
+   The CodeMirror theme itself (e.g., material-darker) will mostly dictate editor appearance. */
+.CodeMirror {
+    /* ... existing CodeMirror styles ... */
+    border: 1px solid var(--border-color-dark); /* Add a subtle border to CM instances */
+}
 
 /* Modal Styles - These are generic and should mostly apply to the new modal too */
 /* ... (ensure your .modal, .modal-content, .close-button, .modal h2, .modal-actions styles are present) ... */
@@ -34,6 +358,3 @@
     border-color: var(--color-text-link);
     box-shadow: 0 0 0 2px rgba(var(--color-text-link-rgb, 0, 123, 255), 0.25);
 }
-
-/* Ensure the settings button fits well if you added it within editor-main-controls */
-/* No specific style needed for #settings-button if it should look like other .editor-main-controls button */
