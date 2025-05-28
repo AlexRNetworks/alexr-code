@@ -1,0 +1,26 @@
+/* Dark Mode Theme */
+:root {
+    --color-background-main: #1a1a1a;
+    --color-background-header: #0d0d0d;
+    --color-background-editor: #2c2c2c;
+    --color-background-preview: #2c2c2c;
+    --color-background-footer: #0d0d0d;
+    --color-background-button: #007bff; /* Or a brighter color on dark bg */
+    --color-background-button-hover: #0056b3;
+    --color-background-section-header: #383838;
+
+    --color-text-main: #e0e0e0;
+    --color-text-header: #ffffff;
+    --color-text-editor-label: #cccccc;
+    --color-text-button: #ffffff;
+    --color-text-footer: #ffffff;
+    --color-text-link: #3399ff;
+
+    --border-color-light: #444444;
+    --border-color-dark: #555555;
+    --box-shadow-main: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+textarea {
+    caret-color: #e0e0e0; /* Make cursor visible on dark background */
+}
