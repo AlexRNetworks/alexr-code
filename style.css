@@ -1,42 +1,38 @@
-/* Import Google Fonts: 'Inter' for UI, 'Fira Code' for editor */
+/* Import Google Fonts: 'Inter' for UI, 'Fira Code' for editor (CodeMirror will use its own font settings from its theme by default) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
 /* --- CSS Variables for Theming (Enhanced Default) --- */
 :root {
     --font-primary: 'Inter', sans-serif;
-    --font-code: 'Fira Code', monospace;
+    /* --font-code: 'Fira Code', monospace; /* CodeMirror will use its theme's font */
 
-    --color-background-main: #f4f7f9; /* Lighter, cleaner background */
+    --color-background-main: #f4f7f9;
     --color-background-header: #ffffff;
-    --color-background-editor: #ffffff;
+    --color-background-editor: #ffffff; /* Background for the .editor div */
     --color-background-preview: #ffffff;
-    --color-background-footer: #2c3e50; /* Darker footer */
-    --color-background-button: #007aff; /* iOS-like Blue */
+    --color-background-footer: #2c3e50;
+    --color-background-button: #007aff;
     --color-background-button-hover: #005bb5;
-    --color-background-section-header: #eef1f4; /* Softer section header */
+    --color-background-section-header: #eef1f4;
 
-    --color-text-main: #333333; /* Softer black */
-    --color-text-header: #2c3e50; /* Header text same as footer bg */
+    --color-text-main: #333333;
+    --color-text-header: #2c3e50;
     --color-text-editor-label: #555555;
     --color-text-button: #ffffff;
-    --color-text-footer: #e0e0e0; /* Lighter footer text */
+    --color-text-footer: #e0e0e0;
     --color-text-link: #007aff;
     --color-text-placeholder: #999999;
 
-    --border-color-light: #dce1e6; /* Softer border */
+    --border-color-light: #dce1e6;
     --border-color-dark: #c0c5cb;
-    --border-radius-main: 8px; /* Slightly larger radius */
+    --border-radius-main: 8px;
     --border-radius-small: 5px;
-    --box-shadow-main: 0 4px 12px rgba(0,0,0,0.06); /* Softer shadow */
+    --box-shadow-main: 0 4px 12px rgba(0,0,0,0.06);
     --box-shadow-light: 0 2px 6px rgba(0,0,0,0.04);
 }
-/* --- End CSS Variables --- */
 
 /* General Reset and Body */
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
+*, *::before, *::after { box-sizing: border-box; }
 body {
     font-family: var(--font-primary);
     margin: 0;
@@ -45,16 +41,16 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    line-height: 1.65; /* Improved line height */
-    -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit */
-    -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Header */
-header {
+header { /* ... (keep your existing header styles) ... */
     background-color: var(--color-background-header);
     color: var(--color-text-header);
-    padding: 0.8rem 1.5rem; /* Adjusted padding */
+    padding: 0.8rem 1.5rem;
     text-align: center;
     display: flex;
     justify-content: space-between;
@@ -62,169 +58,85 @@ header {
     border-bottom: 1px solid var(--border-color-light);
     box-shadow: var(--box-shadow-light);
 }
-
-header h1 {
-    margin: 0;
-    font-size: 1.5rem; /* Slightly smaller for balance */
-    font-weight: 600;
+header h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+.theme-selector-button { /* ... (keep existing theme button styles) ... */
+    background-color: transparent; color: var(--color-text-link); border: 1px solid var(--border-color-light);
+    padding: 0.5rem 1rem; border-radius: var(--border-radius-small); cursor: pointer; text-decoration: none;
+    font-size: 0.85rem; font-weight: 500; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
-
-/* Themes Button Styling */
-.theme-selector-button {
-    background-color: transparent;
-    color: var(--color-text-link);
-    border: 1px solid var(--border-color-light);
-    padding: 0.5rem 1rem; /* Adjusted padding */
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 0.85rem; /* Adjusted font size */
-    font-weight: 500;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.theme-selector-button:hover,
-.theme-selector-button:focus {
-    background-color: var(--color-background-button);
-    color: var(--color-text-button);
-    border-color: var(--color-background-button);
-    outline: none;
+.theme-selector-button:hover, .theme-selector-button:focus {
+    background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button); outline: none;
 }
 
 /* Editor Container */
-.editor-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    padding: 20px; /* Increased padding */
-    gap: 20px; /* Increased gap */
-}
+.editor-container { display: flex; flex-direction: column; flex-grow: 1; padding: 20px; gap: 20px; }
+.code-section { display: flex; flex-direction: column; gap: 20px; }
 
-.code-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-@media (min-width: 992px) { /* Adjust breakpoint for 3 columns */
-    .code-section {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    .editor {
-        flex-basis: calc(33.333% - 14px); /* More precise basis with gap */
-    }
+@media (min-width: 992px) {
+    .code-section { flex-direction: row; justify-content: space-between; }
+    .editor { flex-basis: calc(33.333% - 14px); }
 }
 
 .editor {
     display: flex;
-    flex-direction: column;
-    background-color: var(--color-background-editor);
+    flex-direction: column; /* Important for h2 and CodeMirror to stack */
+    background-color: var(--color-background-editor); /* BG for the whole editor box */
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden;
+    overflow: hidden; /* To contain CodeMirror's rounded corners if its theme doesn't do it */
+    min-height: 350px; /* Minimum height for each editor panel */
 }
 
-.editor h2 {
-    background-color: var(--color-background-section-header);
-    color: var(--color-text-editor-label);
-    margin: 0;
-    padding: 12px 18px; /* Increased padding */
-    font-size: 0.9rem; /* Adjusted font size */
-    font-weight: 600; /* Bolder */
-    border-bottom: 1px solid var(--border-color-light);
+.editor h2 { /* ... (keep existing editor h2 styles) ... */
+    background-color: var(--color-background-section-header); color: var(--color-text-editor-label); margin: 0;
+    padding: 12px 18px; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color-light);
     text-align: left;
 }
 
-textarea {
-    flex-grow: 1;
-    border: none;
-    padding: 15px; /* Increased padding */
-    font-family: var(--font-code);
-    font-size: 0.9rem; /* Consistent font size */
-    line-height: 1.6;
-    resize: vertical;
-    min-height: 300px; /* Increased min-height */
-    outline: none;
-    background-color: var(--color-background-editor);
-    color: var(--color-text-main);
-    caret-color: var(--color-text-link); /* Make cursor more visible */
+/* CodeMirror Styling Adjustments */
+.CodeMirror {
+    font-family: 'Fira Code', monospace; /* Fallback if theme doesn't set one, or override */
+    font-size: 14px; /* Adjust as needed */
+    line-height: 1.5;
+    height: 100%; /* Makes CodeMirror fill the .editor div's remaining space */
+    flex-grow: 1; /* Allow CodeMirror to grow */
+    border: none; /* Remove CodeMirror default borders if any */
 }
 
-textarea::placeholder {
-    color: var(--color-text-placeholder);
-    font-style: italic;
-}
+/* Hide original textareas if CodeMirror is successfully initialized (JS will handle this ideally) */
+/* textarea { display: none; } /* You might not need this if CodeMirror handles it well */
 
-/* EDITOR MAIN Controls Styling (Run, ZIP, Fullscreen buttons) */
-.editor-main-controls {
-    margin-bottom: 15px;
-    text-align: center;
-    padding: 10px 0;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-    gap: 12px;
-}
 
-.editor-main-controls button {
-    background-color: var(--color-background-button);
-    color: var(--color-text-button);
-    border: none;
-    padding: 10px 22px; /* Adjusted padding for better shape */
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+/* EDITOR MAIN Controls Styling */
+.editor-main-controls { /* ... (keep existing editor-main-controls styles) ... */
+    margin-bottom: 15px; text-align: center; padding: 10px 0; display: flex;
+    justify-content: center; flex-wrap: wrap; gap: 12px;
 }
+.editor-main-controls button { /* ... (keep existing editor-main-controls button styles) ... */
+    background-color: var(--color-background-button); color: var(--color-text-button); border: none;
+    padding: 10px 22px; border-radius: var(--border-radius-small); cursor: pointer;
+    font-size: 0.9rem; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.editor-main-controls button:hover { background-color: var(--color-background-button-hover); transform: translateY(-1px); }
+.editor-main-controls button:active { transform: translateY(0px); }
 
-.editor-main-controls button:hover {
-    background-color: var(--color-background-button-hover);
-    transform: translateY(-1px); /* Subtle hover effect */
-}
-.editor-main-controls button:active {
-    transform: translateY(0px);
-}
 
 /* Preview Section */
-.preview-section {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--color-background-preview);
-    border: 1px solid var(--border-color-light);
-    border-radius: var(--border-radius-main);
-    box-shadow: var(--box-shadow-main);
-    overflow: hidden;
-    min-height: 350px;
+.preview-section { /* ... (keep existing preview-section styles) ... */
+    flex-grow: 1; display: flex; flex-direction: column; background-color: var(--color-background-preview);
+    border: 1px solid var(--border-color-light); border-radius: var(--border-radius-main); box-shadow: var(--box-shadow-main);
+    overflow: hidden; min-height: 350px;
 }
-
-.preview-section h2 {
-    background-color: var(--color-background-section-header);
-    color: var(--color-text-editor-label);
-    margin: 0;
-    padding: 12px 18px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border-color-light);
+.preview-section h2 { /* ... (keep existing preview-section h2 styles) ... */
+    background-color: var(--color-background-section-header); color: var(--color-text-editor-label); margin: 0;
+    padding: 12px 18px; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color-light);
     text-align: left;
 }
-
-#preview-frame {
-    flex-grow: 1;
-    width: 100%;
-    border: none;
-    background-color: var(--color-background-preview);
-}
+#preview-frame { flex-grow: 1; width: 100%; border: none; background-color: var(--color-background-preview); }
 
 /* Footer */
-footer {
-    background-color: var(--color-background-footer);
-    color: var(--color-text-footer);
-    text-align: center;
-    padding: 1.25rem 1.5rem; /* Adjusted padding */
-    margin-top: auto;
-    font-size: 0.85rem; /* Adjusted font size */
+footer { /* ... (keep existing footer styles) ... */
+    background-color: var(--color-background-footer); color: var(--color-text-footer); text-align: center;
+    padding: 1.25rem 1.5rem; margin-top: auto; font-size: 0.85rem;
 }
