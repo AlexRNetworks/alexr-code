@@ -12,14 +12,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/monokai.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/eclipse.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
-    </head>
+</head>
 <body>
     <header>
         <div class="header-left">
             <h1>Alexr Code</h1>
         </div>
         <div class="header-center">
-            </div>
+        </div>
         <div class="header-right">
             <a href="themes.html" class="theme-selector-button">Themes</a>
         </div>
@@ -47,7 +47,7 @@
             <div class="editor-main-controls">
                 <button id="run-button">Run Code</button>
                 <button id="save-project-button">Save Project</button>
-                <button id="load-projects-button">Load Projects</button>
+                <button id="save-as-project-button">Save As...</button> <button id="load-projects-button">Load Projects</button>
                 <button id="settings-button">Settings</button>
                 <button id="download-zip-button">Download ZIP</button>
                 <button id="fullscreen-button">Fullscreen Preview</button>
@@ -74,14 +74,31 @@
         <p>&copy; 2025 Alexr Code</p>
     </footer>
 
-    <div id="save-project-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="save-project-modal">&times;</span> <h2>Save Project</h2> <label for="project-name-input">Project Name:</label> <input type="text" id="project-name-input" placeholder="Enter project name..."> <div class="modal-actions"> <button id="confirm-save-button" class="primary-action">Save</button> <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button> </div> </div> </div>
-    <div id="load-projects-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="load-projects-modal">&times;</span> <h2>Load Project</h2> <div id="projects-list-container"><p>No projects saved yet.</p></div> <div class="modal-actions"> <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button> </div> </div> </div>
-    
+    <div id="save-project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="save-project-modal">&times;</span>
+            <h2 id="save-modal-title">Save Project</h2> <label for="project-name-input">Project Name:</label>
+            <input type="text" id="project-name-input" placeholder="Enter project name...">
+            <div class="modal-actions">
+                <button id="confirm-save-button" class="primary-action">Save</button>
+                <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="load-projects-modal" class="modal"> 
+        <div class="modal-content"> 
+            <span class="close-button" data-modal-id="load-projects-modal">&times;</span> 
+            <h2>Load Project</h2> 
+            <div id="projects-list-container"><p>No projects saved yet.</p></div> 
+            <div class="modal-actions"> 
+                <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button> 
+            </div> 
+        </div> 
+    </div>
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <span class="close-button" data-modal-id="settings-modal">&times;</span>
             <h2>Settings</h2>
-            
             <div class="setting-group">
                 <h3>Editor Appearance</h3>
                 <div class="setting-section">
@@ -100,7 +117,6 @@
                     <input type="number" id="editor-font-size-input" min="8" max="30" step="1">
                 </div>
             </div>
-
             <div class="setting-group">
                 <h3>External Resources</h3>
                 <div class="setting-section">
@@ -112,7 +128,6 @@
                     <textarea id="external-js-urls" rows="3" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
                 </div>
             </div>
-            
             <div class="modal-actions">
                 <button id="apply-settings-button" class="primary-action">Apply & Close</button>
                 <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button>
