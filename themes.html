@@ -118,7 +118,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('.theme-button');
             const messageDiv = document.getElementById('selection-message');
-            let currentThemePathFromStorage = localStorage.getItem('selectedTheme'); // Path like "themes/dark-mode.css" or null
+            let currentThemePathFromStorage = localStorage.getItem('selectedTheme'); 
 
             function applyPageTheme(themePath) {
                 console.log("[themes.html] Attempting to apply page theme:", themePath);
@@ -127,11 +127,11 @@
                     console.error("[themes.html] CRITICAL: page-theme-stylesheet link not found!");
                     return;
                 }
-                if (themePath && themePath !== 'default') { // 'default' is not a file path
-                    pageThemeLink.setAttribute('href', themePath); // themePath is already "themes/theme-name.css"
+                if (themePath && themePath !== 'default') { 
+                    pageThemeLink.setAttribute('href', themePath); 
                     console.log("[themes.html] Applied page theme stylesheet:", themePath);
                 } else {
-                    pageThemeLink.setAttribute('href', ''); // Remove theme to use its own default styles
+                    pageThemeLink.setAttribute('href', ''); 
                     console.log("[themes.html] Using its own default styles (no theme selected or default chosen).");
                 }
             }
@@ -139,7 +139,7 @@
 
             function setActiveButton() {
                 buttons.forEach(btn => {
-                    const themeFileAttribute = btn.getAttribute('data-theme'); // "default" or "themes/theme-name.css"
+                    const themeFileAttribute = btn.getAttribute('data-theme'); 
                     if (themeFileAttribute === currentThemePathFromStorage || (themeFileAttribute === 'default' && !currentThemePathFromStorage)) {
                         btn.classList.add('active-theme');
                     } else {
@@ -151,20 +151,19 @@
 
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const themeFileAttribute = this.getAttribute('data-theme'); // "default" or "themes/theme-name.css"
+                    const themeFileAttribute = this.getAttribute('data-theme'); 
                     
                     if (themeFileAttribute === 'default') {
                         localStorage.removeItem('selectedTheme');
                         currentThemePathFromStorage = null; 
                     } else {
-                        // Value from data-theme is already the correct path like "themes/dark-mode.css"
                         localStorage.setItem('selectedTheme', themeFileAttribute);
                         currentThemePathFromStorage = themeFileAttribute; 
                     }
                     console.log("[themes.html] Selected theme for localStorage:", currentThemePathFromStorage);
                     
                     applyPageTheme(currentThemePathFromStorage); 
-                    setActiveButton(); // Update active button styling immediately
+                    setActiveButton(); 
                     
                     messageDiv.textContent = `Theme "${this.textContent}" selected!`;
                     messageDiv.style.display = 'block';
