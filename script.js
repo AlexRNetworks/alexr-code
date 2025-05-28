@@ -13,80 +13,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Modals & their content
     const saveProjectModal = document.getElementById('save-project-modal');
-    const closeSaveModalButton = saveProjectModal.querySelector('.close-button[data-modal-id="save-project-modal"]');
+    // const closeSaveModalButton = saveProjectModal.querySelector('.close-button[data-modal-id="save-project-modal"]'); // Covered by generic
     const projectNameInput = document.getElementById('project-name-input');
     const confirmSaveButton = document.getElementById('confirm-save-button');
-    // const cancelSaveButton = saveProjectModal.querySelector('.close-modal-action[data-modal-id="save-project-modal"]'); // Covered by generic close
+    // const cancelSaveButton = saveProjectModal.querySelector('.close-modal-action[data-modal-id="save-project-modal"]'); // Covered by generic
 
     const loadProjectsModal = document.getElementById('load-projects-modal');
-    const closeLoadModalButton = loadProjectsModal.querySelector('.close-button[data-modal-id="load-projects-modal"]');
+    // const closeLoadModalButton = loadProjectsModal.querySelector('.close-button[data-modal-id="load-projects-modal"]'); // Covered by generic
     const projectsListContainer = document.getElementById('projects-list-container');
-    // const cancelLoadButton = loadProjectsModal.querySelector('.close-modal-action[data-modal-id="load-projects-modal"]'); // Covered by generic close
+    // const cancelLoadButton = loadProjectsModal.querySelector('.close-modal-action[data-modal-id="load-projects-modal"]'); // Covered by generic
 
     const settingsModal = document.getElementById('settings-modal');
-    const closeSettingsModalButton = settingsModal.querySelector('.close-button[data-modal-id="settings-modal"]');
+    // const closeSettingsModalButton = settingsModal.querySelector('.close-button[data-modal-id="settings-modal"]'); // Covered by generic
     const externalCssUrlsTextarea = document.getElementById('external-css-urls');
     const externalJsUrlsTextarea = document.getElementById('external-js-urls');
     const applySettingsButton = document.getElementById('apply-settings-button');
-    // const cancelSettingsButton = settingsModal.querySelector('.close-modal-action[data-modal-id="settings-modal"]'); // Covered by generic close
+    // const cancelSettingsButton = settingsModal.querySelector('.close-modal-action[data-modal-id="settings-modal"]'); // Covered by generic
     
     const consoleOutputDiv = document.getElementById('console-output');
     const clearConsoleButton = document.getElementById('clear-console-button');
     
-    let externalCSS = []; // Stores current session's/project's external CSS URLs
-    let externalJS = [];  // Stores current session's/project's external JS URLs
-    let currentProjectId = null; // To track if we are editing an existing project
+    let externalCSS = []; 
+    let externalJS = [];  
+    let currentProjectId = null; 
 
     console.log("Alexr Code script.js: DOMContentLoaded");
 
     // --- Initialize CodeMirror ---
     const codeMirrorOptions = {
         lineNumbers: true,
-        theme: "material-darker", // Default CodeMirror theme
+        theme: "material-darker", 
         autoCloseTags: true,
         autoCloseBrackets: true,
         lineWrapping: true,
     };
-    htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {...codeMirrorOptions, mode: 'htmlmixed'});
-    cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {...codeMirrorOptions, mode: 'css'});
-    jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {...codeMirrorOptions, mode: 'javascript'});
+    try {
+        htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {...codeMirrorOptions, mode: 'htmlmixed'});
+        cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {...codeMirrorOptions, mode: 'css'});
+        jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {...codeMirrorOptions, mode: 'javascript'});
+        console.log("CodeMirror instances initialized.");
+    } catch (e) {
+        console.error("Error initializing CodeMirror:", e);
+        alert("Could not initialize code editors. Please ensure CodeMirror scripts are loaded correctly.");
+    }
+
 
     // --- CodeMirror Refresh Function ---
     function refreshAllCodeMirrors() {
         if (htmlEditor) htmlEditor.refresh();
         if (cssEditor) cssEditor.refresh();
         if (jsEditor) jsEditor.refresh();
-        console.log("CodeMirror instances refreshed.");
     }
 
     // --- Initialize Split.js Panes ---
     try {
-        const editorSplit = Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
-            sizes: [33.3, 33.3, 33.4], minSize: 80, gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
+        Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
+            sizes: [33.3, 33.3, 33.4], minSize: 60, gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
             onDragEnd: refreshAllCodeMirrors
         });
 
-        const outputSplit = Split(['#preview-wrapper', '#console-wrapper'], {
-            sizes: [70, 30], minSize: [80, 50], gutterSize: 8, direction: 'vertical', cursor: 'row-resize',
+        Split(['#preview-wrapper', '#console-wrapper'], {
+            sizes: [70, 30], minSize: [50, 40], gutterSize: 8, direction: 'vertical', cursor: 'row-resize',
             elementStyle: (dim, size, gutterSize) => ({ 'flex-basis': `calc(${size}% - ${gutterSize}px)` }),
             gutterStyle: (dim, gutterSize) => ({ 'flex-basis': `${gutterSize}px` })
         });
         
-        const mainSplit = Split(['#code-editors-pane', '#output-pane'], {
-            sizes: [60, 40], minSize: [200, 200], gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
+        Split(['#code-editors-pane', '#output-pane'], {
+            sizes: [60, 40], minSize: [150, 150], gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
             onDragEnd: function() {
                 refreshAllCodeMirrors();
-                // outputSplit and editorSplit might also need a nudge if their container changes significantly,
-                // but usually flex-basis recalculation handles it. Forcing it can be done if needed.
-                // For example: outputSplit.setSizes(outputSplit.getSizes());
             }
         });
         console.log("Split.js panes initialized.");
     } catch (e) {
         console.error("Error initializing Split.js:", e);
-        alert("Error setting up resizable panes. Some layout features might not work.");
+        // alert("Error setting up resizable panes. Some layout features might not work.");
     }
-
 
     // --- Theme Application for index.html ---
     function applyAppTheme() {
@@ -112,7 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageContent = document.createElement('span');
         messageContent.textContent = argsArray.map(arg => {
             if (typeof arg === 'object' && arg !== null) {
-                try { return JSON.stringify(arg, (key, value) => typeof value === 'function' ? 'Function' : value, 2); }
+                if (arg instanceof Error) return arg.stack || arg.message; // Display stack for errors
+                try { return JSON.stringify(arg, (key, value) => typeof value === 'function' ? '[Function]' : value, 2); }
                 catch (e) { return String(arg); }
             }
             return String(arg);
@@ -124,6 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Preview Update ---
     function updatePreview() {
+        if (!htmlEditor || !cssEditor || !jsEditor || !previewFrame) {
+            console.error("Editor or previewFrame not initialized. Cannot update preview.");
+            return;
+        }
         const htmlCode = htmlEditor.getValue();
         const cssCode = cssEditor.getValue();
         const jsCode = jsEditor.getValue();
@@ -140,21 +147,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const iWindow = iframe.contentWindow;
 
         if (iWindow) {
-            const originalConsole = {
+            const originalConsole = { // Keep a reference to original for passthrough if needed
                 log: iWindow.console.log, error: iWindow.console.error,
                 warn: iWindow.console.warn, info: iWindow.console.info,
                 debug: iWindow.console.debug, clear: iWindow.console.clear
             };
-            iWindow.console.log = (...args) => { originalConsole.log.apply(iWindow.console, args); logToCustomConsole(args, 'log'); };
-            iWindow.console.error = (...args) => { originalConsole.error.apply(iWindow.console, args); logToCustomConsole(args, 'error'); };
-            iWindow.console.warn = (...args) => { originalConsole.warn.apply(iWindow.console, args); logToCustomConsole(args, 'warn'); };
-            iWindow.console.info = (...args) => { originalConsole.info.apply(iWindow.console, args); logToCustomConsole(args, 'info'); };
-            iWindow.console.debug = (...args) => { originalConsole.debug.apply(iWindow.console, args); logToCustomConsole(args, 'debug'); };
+            iWindow.console = {}; // Create a new console object
+            iWindow.console.log = (...args) => { logToCustomConsole(args, 'log'); originalConsole.log.apply(null, args); };
+            iWindow.console.error = (...args) => { logToCustomConsole(args, 'error'); originalConsole.error.apply(null, args);};
+            iWindow.console.warn = (...args) => { logToCustomConsole(args, 'warn'); originalConsole.warn.apply(null, args);};
+            iWindow.console.info = (...args) => { logToCustomConsole(args, 'info'); originalConsole.info.apply(null, args);};
+            iWindow.console.debug = (...args) => { logToCustomConsole(args, 'debug'); originalConsole.debug.apply(null, args);};
+            iWindow.console.clear = () => { if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; originalConsole.clear.apply(null);};
             
-            iWindow.onerror = (message, source, lineno, colno, error) => {
+            iWindow.onerror = (message, source, lineno, colno, errorObj) => {
                 let Sfilename = source ? source.substring(source.lastIndexOf('/') + 1) : "script";
-                if (Sfilename === "") Sfilename = "inline script"; // Handle data URLs or empty source
+                if (Sfilename === "") Sfilename = "inline script";
                 logToCustomConsole([`Error: ${message} (${Sfilename}:${lineno}:${colno})`], 'error');
+                originalConsole.error.call(null, `Error: ${message}`, source, lineno, colno, errorObj); // Also log to browser console
                 return true; 
             };
         }
@@ -189,12 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshAllCodeMirrors();
         updatePreview();
     }
-    // Initial call with a delay to allow layout, CodeMirror, and Split.js to settle
     setTimeout(refreshEditorsAndPreview, 300);
 
     // --- Event Listeners ---
     if(runButton) runButton.addEventListener('click', () => {
-        if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
+        if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; 
         updatePreview();
     });
 
@@ -209,7 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.close-button, .close-modal-action.button-alt').forEach(button => {
         button.addEventListener('click', function() {
             const modalId = this.getAttribute('data-modal-id');
-            if (modalId) closeModal(document.getElementById(modalId));
+            const modalToClose = document.getElementById(modalId);
+            if (modalToClose) closeModal(modalToClose);
         });
     });
     window.onclick = function(event) {
@@ -234,36 +244,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const pN = projectNameInput.value.trim(); if(!pN){alert('Project name required.'); projectNameInput.focus(); return;}
         const projectData = {
             name:pN, html:htmlEditor.getValue(), css:cssEditor.getValue(), js:jsEditor.getValue(),
-            externalCSS: [...externalCSS], externalJS: [...externalJS],
+            externalCSS: [...externalCSS], externalJS: [...externalJS], 
             savedAt:new Date().toISOString()
         };
         
         let ps = getProjects();
-        let projectExists = false;
+        let projectExistsAndUpdated = false;
         if (currentProjectId) {
             ps = ps.map(p => {
                 if (p.id === currentProjectId) {
-                    projectExists = true;
-                    return { ...p, ...projectData };
+                    projectExistsAndUpdated = true;
+                    return { ...p, ...projectData }; // Update existing, keeping original ID
                 }
                 return p;
             });
         }
         
-        if (!projectExists && !currentProjectId) { // Saving as new
+        if (!projectExistsAndUpdated) { // Saving as new, or currentProjectId was invalid
              const newId = Date.now();
              ps.push({ ...projectData, id: newId });
-             currentProjectId = newId; // Set current project ID for new save
-        } else if (!projectExists && currentProjectId) {
-             // This case implies currentProjectId was set, but project not found in list (e.g., after deletion and not clearing currentProjectId)
-             // Treat as a new save or re-evaluate logic for currentProjectId
-             console.warn("Saving with currentProjectId but project not found in list. Treating as new save.");
-             const newId = Date.now();
-             ps.push({ ...projectData, id: newId });
-             currentProjectId = newId;
+             currentProjectId = newId; 
         }
-
-
         saveProjects(ps);
         alert(`Project "${pN}" saved!`);
         closeModal(saveProjectModal);
@@ -295,11 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
             
-            // Ensure CodeMirror textareas are populated before refreshing preview
-            // Setting value is synchronous, but refresh and updatePreview should happen after.
             setTimeout(()=>{
                 refreshEditorsAndPreview();
-                console.log(`Project "${pTL.name}" loaded with externalCSS:`, externalCSS, "externalJS:", externalJS);
+                console.log(`Project "${pTL.name}" loaded. External CSS:`, externalCSS, "External JS:", externalJS);
             },100); 
             alert(`Project "${pTL.name}" loaded!`); closeModal(loadProjectsModal);
         } else { alert('Error: Project not found.'); currentProjectId = null; }
@@ -309,11 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!confirm('Are you sure you want to delete this project? This cannot be undone.')) return;
         let ps=getProjects(); ps=ps.filter(p=>p.id!==pId); saveProjects(ps);
         if (currentProjectId === pId) {
-            htmlEditor.setValue(''); cssEditor.setValue(''); jsEditor.setValue('');
-            externalCSS = []; externalJS = [];
-            currentProjectId = null;
-            if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
-            setInitialContent(); // Set default content after deleting current project
+            setInitialContent(false); // Don't reload projects, just set defaults
+            currentProjectId = null; // Clear current project ID as it's deleted
         }
         renderProjectsList(); alert('Project deleted.');
     }
@@ -345,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if(externalCSS.length > 0) manifestContent += "\nCSS:\n" + externalCSS.join("\n");
         if(externalJS.length > 0) manifestContent += "\n\nJS:\n" + externalJS.join("\n");
         if(externalCSS.length > 0 || externalJS.length > 0) zip.file("external_resources.txt", manifestContent);
-
         generateAndDownloadZip(zip);
     });
     function generateAndDownloadZip(zipInstance) {
@@ -383,7 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 
     // --- Initialize with default content or last project ---
-    function setInitialContent() {
+    function setInitialContent(callRefreshPreview = true) {
+        if (!htmlEditor || !cssEditor || !jsEditor) return; // Guard against editors not ready
         htmlEditor.setValue("<h1>Welcome to Alexr Code!</h1>\n<p>Your ideas start here. Try some HTML, CSS, and JavaScript.</p>\n<button onclick=\"greetUser()\">Say Hello</button>");
         cssEditor.setValue(
 `body { 
@@ -418,23 +414,25 @@ button:hover { background-color: #218838; }`
     console.warn("User did not enter a name.");
   }
 }
-
 console.info("Alexr Code initialized and ready!");
-// Try an error:
-// undefinedFunction(); 
+// Example: console.error("This is a test error.");
+// Example: undefinedFunctionToTestOnError(); 
 `
         );
-        externalCSS = []; // Reset external libs for default content
+        externalCSS = []; 
         externalJS = [];
         currentProjectId = null;
-        setTimeout(refreshEditorsAndPreview, 250);
+        if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; // Clear console for default content
+        if (callRefreshPreview) {
+            setTimeout(refreshEditorsAndPreview, 250);
+        }
     }
 
     const projects = getProjects();
-    if (projects.length > 0) {
-       loadProject(projects[0].id); // Load the most recently saved project
+    if (projects.length > 0 && projects[0].id) { // Check if projects exist and first project has an ID
+       loadProject(projects[0].id); 
     } else {
-       setInitialContent(); // Set default content if no projects
+       setInitialContent(); 
     }
 
 }); // End DOMContentLoaded
