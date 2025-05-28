@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.documentElement.style.setProperty('--editor-font-size', `${savedFontSize}px`);
         
-        initialCodeMirrorOptions.theme = savedCmTheme; // Set for CM init
+        initialCodeMirrorOptions.theme = savedCmTheme;
 
         if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = savedCmTheme;
         if(editorFontSizeInput) editorFontSizeInput.value = savedFontSize;
