@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select a Theme - Alexr Code</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #343a40;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .theme-button {
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+            text-align: center;
+        }
+        .theme-button:hover {
+            background-color: #e9ecef;
+            border-color: #bbb;
+            transform: translateY(-2px);
+        }
+        .theme-button.default { background-color: #e0e0e0; }
+        .theme-button.dark-mode { background-color: #343a40; color: #fff; }
+        .theme-button.solarized-light { background-color: #fdf6e3; color: #657b83; border-color: #eee8d5;}
+        .theme-button.monokai-inspired { background-color: #2D2A2E; color: #F8F8F2; border-color: #49483e;}
+        .theme-button.oceanic-depth { background-color: #1A2B33; color: #B0C4DE; border-color: #2C3E50;}
+        .theme-button.retro-terminal { background-color: #000; color: #00FF00; border-color: #00FF00; font-family: 'Source Code Pro', monospace;}
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choose Your Theme</h1>
+        <div class="theme-options">
+            <button class="theme-button default" data-theme="default">Modern Default</button>
+            <button class="theme-button dark-mode" data-theme="dark-mode.css">Dark Mode</button>
+            <button class="theme-button solarized-light" data-theme="solarized-light.css">Solarized Light</button>
+            <button class="theme-button monokai-inspired" data-theme="monokai-inspired.css">Monokai Inspired</button>
+            <button class="theme-button oceanic-depth" data-theme="oceanic-depth.css">Oceanic Depth</button>
+            <button class="theme-button retro-terminal" data-theme="retro-terminal.css">Retro Terminal</button>
+        </div>
+        <div id="selection-message" class="message">Theme selected! It will be applied on the editor page.</div>
+        <a href="index.html" class="back-link">Back to Editor</a>
+    </div>
+
+    <script>
+        document.querySelectorAll('.theme-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const themeFile = this.getAttribute('data-theme');
+                if (themeFile === 'default') {
+                    localStorage.removeItem('selectedTheme'); // Or set to a specific default identifier if needed
+                } else {
+                    localStorage.setItem('selectedTheme', `themes/${themeFile}`);
+                }
+                
+                const messageDiv = document.getElementById('selection-message');
+                messageDiv.textContent = `Theme "${this.textContent}" selected! It will be applied on the editor page
