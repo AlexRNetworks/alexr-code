@@ -5,16 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewFrame = document.getElementById('preview-frame');
     const runButton = document.getElementById('run-button');
     const downloadZipButton = document.getElementById('download-zip-button');
-    const themeStylesheetLink = document.getElementById('theme-stylesheet');
+    const themeStylesheetLink = document.getElementById('theme-stylesheet'); // For page theme
     const fullscreenButton = document.getElementById('fullscreen-button');
     const saveProjectButton = document.getElementById('save-project-button');
-    const saveAsProjectButton = document.getElementById('save-as-project-button'); // NEW
     const loadProjectsButton = document.getElementById('load-projects-button');
     const settingsButton = document.getElementById('settings-button');
 
     // Modals & their content
     const saveProjectModal = document.getElementById('save-project-modal');
-    const saveModalTitle = document.getElementById('save-modal-title'); // NEW
     const projectNameInput = document.getElementById('project-name-input');
     const confirmSaveButton = document.getElementById('confirm-save-button');
 
@@ -34,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let externalCSS = []; 
     let externalJS = [];  
     let currentProjectId = null; 
-    let isSaveAsOperation = false; // NEW flag for Save As operation
 
     // --- LocalStorage Keys ---
     const LS_PROJECTS_KEY = 'alexrCodeProjects';
@@ -42,11 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const LS_CODEMIRROR_THEME_KEY = 'alexrCodeMirrorTheme'; 
     const LS_EDITOR_FONT_SIZE_KEY = 'alexrCodeEditorFontSize'; 
 
-    console.log("Alexr Code script.js: DOMContentLoaded - Save As Added");
+    console.log("Alexr Code script.js: DOMContentLoaded - Editor Settings Integrated");
 
     // --- Default Settings ---
     const DEFAULT_CODEMIRROR_THEME = 'material-darker';
-    const DEFAULT_EDITOR_FONT_SIZE = 14;
+    const DEFAULT_EDITOR_FONT_SIZE = 14; // in px
 
     // --- Apply Initial Editor Settings from LocalStorage ---
     function applyInitialEditorSettings() {
@@ -59,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = savedCmTheme;
         if(editorFontSizeInput) editorFontSizeInput.value = savedFontSize;
+
+        console.log("Initial Editor Settings Applied - Theme:", savedCmTheme, "Font Size:", savedFontSize + "px");
     }
     
     const initialCodeMirrorOptions = { 
@@ -79,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("CodeMirror instances initialized.");
     } catch (e) {
         console.error("Error initializing CodeMirror:", e);
+        alert("Could not initialize code editors. Please ensure CodeMirror scripts are loaded correctly.");
     }
 
     // --- CodeMirror Refresh Function ---
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (jsEditor) jsEditor.refresh();
     }
 
-    // --- Initialize Split.js Panes (Fixed Vertical Layout from your base) ---
+    // --- Initialize Split.js Panes for Fixed Vertical Layout ---
     function initializeFixedSplits() {
         try {
             Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
@@ -102,19 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 gutterStyle: (dim, gutterSize) => ({ 'flex-basis': `${gutterSize}px` })
             });
             
-            // Your provided script (Turn 57) had this as 'horizontal'.
-            // If you want Editors Top | Output Bottom, this should be 'vertical'.
-            // I will keep it as 'horizontal' to match your provided script's Split.js config.
-            // If you intended fixed vertical, change direction here to 'vertical' and cursor to 'row-resize'.
             Split(['#code-editors-pane', '#output-pane'], {
-                sizes: [60, 40], 
+                sizes: [55, 45], 
                 minSize: [150, 150], 
                 gutterSize: 8,
-                direction: 'horizontal', // Main layout direction from your provided script
-                cursor: 'col-resize',    
+                direction: 'vertical', 
+                cursor: 'row-resize',    
                 onDragEnd: refreshAllCodeMirrors
             });
-            console.log("Split.js panes initialized.");
+            console.log("Split.js panes initialized for fixed vertical layout.");
             setTimeout(refreshAllCodeMirrors, 100); 
         } catch (e) {
             console.error("Error initializing Split.js:", e);
@@ -122,11 +118,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     initializeFixedSplits(); 
     
-    // --- Page Theme Application ---
+    // --- Page Theme Application for index.html ---
     function applyAppTheme() {
         const selectedThemePath = localStorage.getItem(LS_PAGE_THEME_KEY);
+        console.log("[script.js] applyAppTheme: Stored page theme path:", selectedThemePath);
         if (themeStylesheetLink) {
-            themeStylesheetLink.setAttribute('href', (selectedThemePath && selectedThemePath !== "default") ? selectedThemePath : '');
+            if (selectedThemePath && selectedThemePath !== "default") {
+                themeStylesheetLink.setAttribute('href', selectedThemePath);
+            } else {
+                themeStylesheetLink.setAttribute('href', '');
+            }
+        } else {
+            console.error("[script.js] applyAppTheme: themeStylesheetLink not found!");
         }
     }
     applyAppTheme();
@@ -153,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Preview Update ---
     function updatePreview() {
         if (!htmlEditor || !cssEditor || !jsEditor || !previewFrame) {
-            console.error("Editor or previewFrame not initialized.");
+            console.error("Editor or previewFrame not initialized. Cannot update preview.");
             return;
         }
         const htmlCode = htmlEditor.getValue();
@@ -171,25 +174,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const iWindow = iframe.contentWindow;
 
         if (iWindow) {
-            const originalConsole = {log: iWindow.console.log, error: iWindow.console.error, warn: iWindow.console.warn, info: iWindow.console.info, debug: iWindow.console.debug, clear: iWindow.console.clear};
+            const originalConsole = { 
+                log: iWindow.console.log, error: iWindow.console.error, warn: iWindow.console.warn, 
+                info: iWindow.console.info, debug: iWindow.console.debug, clear: iWindow.console.clear
+            };
             iWindow.console = {};
-            Object.keys(originalConsole).forEach(key => {
-                iWindow.console[key] = (...args) => {
-                    logToCustomConsole(args, key);
-                    if (typeof originalConsole[key] === 'function') {
-                        originalConsole[key].apply(null, args);
-                    }
-                };
-            });
-            if (clearConsoleButton && typeof originalConsole.clear === 'function') { // Make custom clear also clear browser console for iframe
-                iWindow.console.clear = () => { if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; originalConsole.clear.apply(null);};
-            }
+            iWindow.console.log = (...args) => { logToCustomConsole(args, 'log'); originalConsole.log.apply(null, args); };
+            iWindow.console.error = (...args) => { logToCustomConsole(args, 'error'); originalConsole.error.apply(null, args);};
+            iWindow.console.warn = (...args) => { logToCustomConsole(args, 'warn'); originalConsole.warn.apply(null, args);};
+            iWindow.console.info = (...args) => { logToCustomConsole(args, 'info'); originalConsole.info.apply(null, args);};
+            iWindow.console.debug = (...args) => { logToCustomConsole(args, 'debug'); originalConsole.debug.apply(null, args);};
+            iWindow.console.clear = () => { if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; originalConsole.clear.apply(null);};
             
             iWindow.onerror = (message, source, lineno, colno, errorObj) => {
                 let Sfilename = source ? source.substring(source.lastIndexOf('/') + 1) : "script";
                 if (Sfilename === "") Sfilename = "inline script";
                 logToCustomConsole([`Error: ${message} (${Sfilename}:${lineno}:${colno})`], 'error');
-                if(typeof originalConsole.error === 'function') originalConsole.error.call(null, `Error: ${message}`, source, lineno, colno, errorObj);
+                originalConsole.error.call(null, `Error: ${message}`, source, lineno, colno, errorObj);
                 return true; 
             };
         }
@@ -256,42 +257,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function getProjects() { const p = localStorage.getItem(LS_PROJECTS_KEY); return p ? JSON.parse(p) : []; }
     function saveProjects(pA) { localStorage.setItem(LS_PROJECTS_KEY, JSON.stringify(pA)); }
 
-    // Helper function to open the save modal
-    function openSaveModal(isSaveAs = false) {
-        isSaveAsOperation = isSaveAs; // Set global flag
-        const projects = getProjects();
-        const existingProject = !isSaveAs && currentProjectId ? projects.find(p => p.id === currentProjectId) : null;
-        
-        if (saveModalTitle) {
-            saveModalTitle.textContent = isSaveAs ? 'Save New Project As...' : (existingProject ? 'Update Project' : 'Save New Project');
-        }
-        
-        if (isSaveAs) {
-            // If there's content in editors and a current project name, suggest a copy name
-            const currentNameInEditor = existingProject ? existingProject.name : projectNameInput.value; // Or get from loaded project name if available
-            projectNameInput.value = currentNameInEditor ? `${currentNameInEditor} (Copy)` : '';
-        } else {
-            projectNameInput.value = existingProject ? existingProject.name : '';
-        }
-        
+    if(saveProjectButton) saveProjectButton.addEventListener('click', () => {
+        const existingProject = currentProjectId ? getProjects().find(p => p.id === currentProjectId) : null;
+        projectNameInput.value = existingProject ? existingProject.name : '';
         saveProjectModal.style.display = 'block';
         projectNameInput.focus();
-        if (isSaveAs || !existingProject) {
-             setTimeout(() => projectNameInput.select(), 0);
-        }
-    }
-
-    if(saveProjectButton) saveProjectButton.addEventListener('click', () => openSaveModal(false));
-    if(saveAsProjectButton) saveAsProjectButton.addEventListener('click', () => openSaveModal(true));
-
+    });
 
     if(confirmSaveButton) confirmSaveButton.addEventListener('click', () => {
-        const pN = projectNameInput.value.trim(); 
-        if(!pN){
-            alert('Project name required.'); 
-            projectNameInput.focus(); 
-            return;
-        }
+        const pN = projectNameInput.value.trim(); if(!pN){alert('Project name required.'); projectNameInput.focus(); return;}
         
         const cmThemeToSave = localStorage.getItem(LS_CODEMIRROR_THEME_KEY) || DEFAULT_CODEMIRROR_THEME;
         const editorFontSizeToSave = parseInt(localStorage.getItem(LS_EDITOR_FONT_SIZE_KEY), 10) || DEFAULT_EDITOR_FONT_SIZE;
@@ -305,62 +279,222 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         let ps = getProjects();
-        
-        if (isSaveAsOperation || !currentProjectId) { // Always save as new for "Save As" or if no current project
-             const newId = Date.now() + Math.random(); // Add random to ensure uniqueness even if saved in same ms
-             ps.push({ ...projectData, id: newId });
-             currentProjectId = newId; // The newly saved/forked project becomes the current one
-             console.log("Project saved as new with ID:", currentProjectId);
-        } else { // Update existing project (not a "Save As" operation and currentProjectId exists)
-            let projectFoundAndUpdated = false;
+        let projectExistsAndUpdated = false;
+        if (currentProjectId) {
             ps = ps.map(p => {
                 if (p.id === currentProjectId) {
-                    projectFoundAndUpdated = true;
-                    return { ...p, ...projectData, name: pN }; // Update existing, keeping original ID but allowing name change
+                    projectExistsAndUpdated = true;
+                    return { ...p, ...projectData }; 
                 }
                 return p;
             });
-            if (!projectFoundAndUpdated) { // Should not happen if currentProjectId is valid
-                console.error("Error: Tried to update a project that was not found. Saving as new instead.");
-                const newId = Date.now() + Math.random();
-                ps.push({ ...projectData, id: newId });
-                currentProjectId = newId;
-            } else {
-                console.log("Project updated with ID:", currentProjectId);
-            }
+        }
+        
+        if (!projectExistsAndUpdated) { 
+             const newId = Date.now();
+             ps.push({ ...projectData, id: newId });
+             currentProjectId = newId; 
         }
         saveProjects(ps);
         alert(`Project "${pN}" saved!`);
-        isSaveAsOperation = false; // Reset flag
         closeModal(saveProjectModal);
     });
 
     if(loadProjectsButton) loadProjectsButton.addEventListener('click', () => { renderProjectsList(); loadProjectsModal.style.display = 'block'; });
     
-    function renderProjectsList() { /* ... (Same as Turn 53) ... */ }
-    function loadProject(pId) { /* ... (Same as Turn 53) ... */ }
-    function deleteProject(pId) { /* ... (Same as Turn 53, but ensure setInitialContent(false) doesn't cause issues) ... */ }
+    function renderProjectsList() {
+        const ps = getProjects(); projectsListContainer.innerHTML = '';
+        if(ps.length === 0){projectsListContainer.innerHTML='<p>No projects saved yet.</p>'; return;}
+        ps.sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
+        ps.forEach(p => {
+            const pD=document.createElement('div');pD.className='project-item';
+            const nS=document.createElement('span');nS.className='project-item-name';nS.textContent=p.name;
+            const aD=document.createElement('div');aD.className='project-item-actions';
+            const lB=document.createElement('button');lB.textContent='Load';lB.className='load-button primary-action'; lB.onclick=()=>loadProject(p.id);
+            const dB=document.createElement('button');dB.textContent='Delete';dB.className='delete-button'; dB.onclick=()=>deleteProject(p.id);
+            aD.appendChild(lB);aD.appendChild(dB);pD.appendChild(nS);pD.appendChild(aD);projectsListContainer.appendChild(pD);
+        });
+    }
+
+    function loadProject(pId) {
+        const ps=getProjects(); const pTL=ps.find(p=>p.id===pId);
+        if(pTL){
+            htmlEditor.setValue(pTL.html || ''); cssEditor.setValue(pTL.css || ''); jsEditor.setValue(pTL.js || '');
+            externalCSS = Array.isArray(pTL.externalCSS) ? [...pTL.externalCSS] : [];
+            externalJS = Array.isArray(pTL.externalJS) ? [...pTL.externalJS] : [];
+            currentProjectId = pTL.id;
+
+            const cmTheme = pTL.cmTheme || DEFAULT_CODEMIRROR_THEME;
+            const editorFontSize = pTL.editorFontSize || DEFAULT_EDITOR_FONT_SIZE;
+
+            localStorage.setItem(LS_CODEMIRROR_THEME_KEY, cmTheme);
+            localStorage.setItem(LS_EDITOR_FONT_SIZE_KEY, editorFontSize);
+
+            if (htmlEditor) htmlEditor.setOption('theme', cmTheme);
+            if (cssEditor) cssEditor.setOption('theme', cmTheme);
+            if (jsEditor) jsEditor.setOption('theme', cmTheme);
+            document.documentElement.style.setProperty('--editor-font-size', `${editorFontSize}px`);
+            
+            if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = cmTheme;
+            if(editorFontSizeInput) editorFontSizeInput.value = editorFontSize;
+            
+            if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
+            
+            setTimeout(()=>{
+                refreshEditorsAndPreview();
+            },100); 
+            alert(`Project "${pTL.name}" loaded!`); closeModal(loadProjectsModal);
+        } else { alert('Error: Project not found.'); currentProjectId = null; }
+    }
+
+    function deleteProject(pId) {
+        if(!confirm('Are you sure you want to delete this project? This cannot be undone.')) return;
+        let ps=getProjects(); ps=ps.filter(p=>p.id!==pId); saveProjects(ps);
+        if (currentProjectId === pId) {
+            setInitialContent(false); 
+            currentProjectId = null; 
+        }
+        renderProjectsList(); alert('Project deleted.');
+    }
     
     // --- Settings Modal (External Resources AND Editor Settings) ---
-    if(settingsButton) settingsButton.addEventListener('click', () => { /* ... (Same as Turn 53) ... */ });
-    if(applySettingsButton) applySettingsButton.addEventListener('click', () => { /* ... (Same as Turn 53) ... */ });
+    if(settingsButton) settingsButton.addEventListener('click', () => {
+        externalCssUrlsTextarea.value = externalCSS.join('\n');
+        externalJsUrlsTextarea.value = externalJS.join('\n');
+        
+        codeMirrorThemeSelect.value = localStorage.getItem(LS_CODEMIRROR_THEME_KEY) || DEFAULT_CODEMIRROR_THEME;
+        editorFontSizeInput.value = parseInt(localStorage.getItem(LS_EDITOR_FONT_SIZE_KEY), 10) || DEFAULT_EDITOR_FONT_SIZE;
+            
+        settingsModal.style.display = 'block';
+    });
+
+    if(applySettingsButton) applySettingsButton.addEventListener('click', () => {
+        externalCSS = externalCssUrlsTextarea.value.split('\n').map(url => url.trim()).filter(url => url);
+        externalJS = externalJsUrlsTextarea.value.split('\n').map(url => url.trim()).filter(url => url);
+
+        const newCmTheme = codeMirrorThemeSelect.value;
+        const newFontSize = parseInt(editorFontSizeInput.value, 10);
+
+        localStorage.setItem(LS_CODEMIRROR_THEME_KEY, newCmTheme);
+        if (htmlEditor) htmlEditor.setOption('theme', newCmTheme);
+        if (cssEditor) cssEditor.setOption('theme', newCmTheme);
+        if (jsEditor) jsEditor.setOption('theme', newCmTheme);
+
+        if (!isNaN(newFontSize) && newFontSize >= 8 && newFontSize <= 30) {
+            localStorage.setItem(LS_EDITOR_FONT_SIZE_KEY, newFontSize);
+            document.documentElement.style.setProperty('--editor-font-size', `${newFontSize}px`);
+            refreshAllCodeMirrors(); 
+        } else {
+            alert("Invalid font size. Please enter a number between 8 and 30.");
+            editorFontSizeInput.value = localStorage.getItem(LS_EDITOR_FONT_SIZE_KEY) || DEFAULT_EDITOR_FONT_SIZE;
+        }
+        
+        console.log("[script.js] Settings Applied. CM Theme:", newCmTheme, "Font Size:", newFontSize + "px");
+        closeModal(settingsModal); 
+        if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
+        updatePreview(); 
+    });
 
     // --- Download ZIP ---
-    if(downloadZipButton) downloadZipButton.addEventListener('click', () => { /* ... (Same as Turn 53) ... */ });
-    function generateAndDownloadZip(zipInstance) { /* ... (Same as Turn 53) ... */ }
+    if(downloadZipButton) downloadZipButton.addEventListener('click', () => {
+        const zip = new JSZip();
+        zip.file("index.html", htmlEditor.getValue());
+        zip.file("style.css", cssEditor.getValue());
+        zip.file("script.js", jsEditor.getValue());
+        let manifestContent = "External Resources:\n";
+        if(externalCSS.length > 0) manifestContent += "\nCSS:\n" + externalCSS.join("\n");
+        if(externalJS.length > 0) manifestContent += "\n\nJS:\n" + externalJS.join("\n");
+        if(externalCSS.length > 0 || externalJS.length > 0) zip.file("external_resources.txt", manifestContent);
+        generateAndDownloadZip(zip);
+    });
+    function generateAndDownloadZip(zipInstance) {
+        zipInstance.generateAsync({ type: "blob" }).then(content => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = "alexr-code-project.zip";
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }).catch(err => { console.error("Error generating ZIP: ", err); alert("Could not generate ZIP."); });
+    }
     
     // --- Fullscreen Preview ---
     if(fullscreenButton) fullscreenButton.addEventListener('click', () => toggleFullScreen(previewFrame));
-    function toggleFullScreen(element) { /* ... (Same as Turn 53) ... */ }
-    function updateFullscreenButtonText() { /* ... (Same as Turn 53) ... */ }
+    function toggleFullScreen(element) {
+        if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+            if (element.requestFullscreen) element.requestFullscreen();
+            else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
+            else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+            else if (element.msRequestFullscreen) element.msRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.msExitFullscreen) document.msExitFullscreen();
+        }
+    }
+    function updateFullscreenButtonText() {
+        if(fullscreenButton) {
+            const isFs = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+            fullscreenButton.textContent = isFs ? 'Exit Fullscreen' : 'Fullscreen Preview';
+        }
+    }
     ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(event => 
         document.addEventListener(event, updateFullscreenButtonText, false)
     );
 
     // --- Initialize with default content or last project ---
-    function setInitialContent(callRefreshPreview = true) { /* ... (Same as Turn 53, including applying editor settings) ... */ }
+    function setInitialContent(callRefreshPreview = true) {
+        if (!htmlEditor || !cssEditor || !jsEditor) return; 
+        htmlEditor.setValue("<h1>Welcome to Alexr Code!</h1>\n<p>Your ideas start here. Try some HTML, CSS, and JavaScript.</p>\n<button onclick=\"greetUser()\">Say Hello</button>");
+        cssEditor.setValue(
+`body { 
+    font-family: Arial, Helvetica, sans-serif; 
+    margin: 20px; 
+    text-align: center; 
+}
+h1 { color: #007aff; }
+p { font-size: 1.1em; }
+button { 
+    padding: 10px 20px; font-size: 1em; color: white; 
+    background-color: #28a745; border: none; border-radius: 5px; 
+    cursor: pointer; transition: background-color 0.2s;
+}
+button:hover { background-color: #218838; }`
+        );
+        jsEditor.setValue(
+`function greetUser() {
+  const name = prompt("What's your name?", "Coder");
+  if (name) {
+    alert("Hello, " + name + "! Happy coding!");
+    console.log("Greeted: " + name);
+  } else {
+    alert("Hello there! Happy coding!");
+    console.warn("User did not enter a name.");
+  }
+}
+console.info("Alexr Code initialized and ready! Try your custom console messages.");
+`
+        );
+        externalCSS = []; 
+        externalJS = [];
+        currentProjectId = null;
 
-    // Load initial state
+        const initialCmTheme = localStorage.getItem(LS_CODEMIRROR_THEME_KEY) || DEFAULT_CODEMIRROR_THEME;
+        const initialFontSize = parseInt(localStorage.getItem(LS_EDITOR_FONT_SIZE_KEY), 10) || DEFAULT_EDITOR_FONT_SIZE;
+        
+        if (htmlEditor) htmlEditor.setOption('theme', initialCmTheme);
+        if (cssEditor) cssEditor.setOption('theme', initialCmTheme);
+        if (jsEditor) jsEditor.setOption('theme', initialCmTheme);
+        document.documentElement.style.setProperty('--editor-font-size', `${initialFontSize}px`);
+        
+        if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = initialCmTheme;
+        if(editorFontSizeInput) editorFontSizeInput.value = initialFontSize;
+
+        if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
+        if (callRefreshPreview) {
+            setTimeout(refreshEditorsAndPreview, 250);
+        }
+    }
+
     const projects = getProjects();
     if (projects.length > 0 && projects[0].id) {
        loadProject(projects[0].id); 
@@ -368,26 +502,5 @@ document.addEventListener('DOMContentLoaded', () => {
        setInitialContent(); 
     }
     setTimeout(refreshAllCodeMirrors, 400);
-
-
-    // == Ensure all the functions below this line are correctly copied from your working Turn 53 script.js ==
-    // (These are just stubs here for completeness of the full structure)
-
-    // function renderProjectsList() { // FULL IMPLEMENTATION FROM TURN 53/YOUR SCRIPT
-    //     const ps = getProjects(); projectsListContainer.innerHTML = '';
-    //     if(ps.length === 0){projectsListContainer.innerHTML='<p>No projects saved yet.</p>'; return;}
-    //     ps.sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
-    //     ps.forEach(p => { /* ... create list items ... */ });
-    // }
-    // function loadProject(pId) { // FULL IMPLEMENTATION FROM TURN 53/YOUR SCRIPT
-    //     /* ... find project, set editors, set externalCSS/JS, set currentProjectId, apply editor settings ... */
-    // }
-    // function deleteProject(pId) { // FULL IMPLEMENTATION FROM TURN 53/YOUR SCRIPT
-    //     /* ... confirm, filter, save, update UI, call setInitialContent(false) if current deleted ... */
-    // }
-    // function setInitialContent(callRefreshPreview = true) { // FULL IMPLEMENTATION FROM TURN 53/YOUR SCRIPT
-    //     /* ... set default HTML/CSS/JS, reset externalCSS/JS, reset currentProjectId, apply default editor settings ... */
-    // }
-    // ... any other helper functions from your script ...
 
 }); // End DOMContentLoaded
