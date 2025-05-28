@@ -12,14 +12,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/monokai.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/eclipse.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
-    </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.css">
+
+</head>
 <body>
     <header>
         <div class="header-left">
             <h1>Alexr Code</h1>
         </div>
-        <div class="header-center">
-            </div>
+        <div class="header-center"></div>
         <div class="header-right">
             <a href="themes.html" class="theme-selector-button">Themes</a>
         </div>
@@ -47,7 +48,7 @@
             <div class="editor-main-controls">
                 <button id="run-button">Run Code</button>
                 <button id="save-project-button">Save Project</button>
-                <button id="load-projects-button">Load Projects</button>
+                <button id="save-as-project-button">Save As...</button> <button id="load-projects-button">Load Projects</button>
                 <button id="settings-button">Settings</button>
                 <button id="download-zip-button">Download ZIP</button>
                 <button id="fullscreen-button">Fullscreen Preview</button>
@@ -74,51 +75,9 @@
         <p>&copy; 2025 Alexr Code</p>
     </footer>
 
-    <div id="save-project-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="save-project-modal">&times;</span> <h2>Save Project</h2> <label for="project-name-input">Project Name:</label> <input type="text" id="project-name-input" placeholder="Enter project name..."> <div class="modal-actions"> <button id="confirm-save-button" class="primary-action">Save</button> <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button> </div> </div> </div>
+    <div id="save-project-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="save-project-modal">&times;</span> <h2 id="save-modal-title">Save Project</h2> <label for="project-name-input">Project Name:</label> <input type="text" id="project-name-input" placeholder="Enter project name..."> <div class="modal-actions"> <button id="confirm-save-button" class="primary-action">Save</button> <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button> </div> </div> </div>
     <div id="load-projects-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="load-projects-modal">&times;</span> <h2>Load Project</h2> <div id="projects-list-container"><p>No projects saved yet.</p></div> <div class="modal-actions"> <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button> </div> </div> </div>
-    
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" data-modal-id="settings-modal">&times;</span>
-            <h2>Settings</h2>
-            
-            <div class="setting-group">
-                <h3>Editor Appearance</h3>
-                <div class="setting-section">
-                    <label for="codemirror-theme-select">Code Editor Theme:</label>
-                    <select id="codemirror-theme-select">
-                        <option value="material-darker">Material Darker</option>
-                        <option value="default">Default Light</option>
-                        <option value="neat">Neat (Light)</option>
-                        <option value="monokai">Monokai (Dark)</option>
-                        <option value="eclipse">Eclipse (Light)</option>
-                        <option value="dracula">Dracula (Dark)</option>
-                    </select>
-                </div>
-                <div class="setting-section">
-                    <label for="editor-font-size-input">Editor Font Size (px):</label>
-                    <input type="number" id="editor-font-size-input" min="8" max="30" step="1">
-                </div>
-            </div>
-
-            <div class="setting-group">
-                <h3>External Resources</h3>
-                <div class="setting-section">
-                    <label for="external-css-urls">External CSS URLs (one per line):</label>
-                    <textarea id="external-css-urls" rows="3" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea>
-                </div>
-                <div class="setting-section">
-                    <label for="external-js-urls">External JavaScript URLs (one per line):</label>
-                    <textarea id="external-js-urls" rows="3" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
-                </div>
-            </div>
-            
-            <div class="modal-actions">
-                <button id="apply-settings-button" class="primary-action">Apply & Close</button>
-                <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <div id="settings-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="settings-modal">&times;</span> <h2>Settings</h2> <div class="setting-group"> <h3>Editor Appearance</h3> <div class="setting-section"> <label for="codemirror-theme-select">Code Editor Theme:</label> <select id="codemirror-theme-select"> <option value="material-darker">Material Darker</option> <option value="default">Default Light</option> <option value="neat">Neat (Light)</option> <option value="monokai">Monokai (Dark)</option> <option value="eclipse">Eclipse (Light)</option> <option value="dracula">Dracula (Dark)</option> </select> </div> <div class="setting-section"> <label for="editor-font-size-input">Editor Font Size (px):</label> <input type="number" id="editor-font-size-input" min="8" max="30" step="1"> </div> </div> <div class="setting-group"> <h3>External Resources</h3> <div class="setting-section"> <label for="external-css-urls">External CSS URLs (one per line):</label> <textarea id="external-css-urls" rows="3" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea> </div> <div class="setting-section"> <label for="external-js-urls">External JavaScript URLs (one per line):</label> <textarea id="external-js-urls" rows="3" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea> </div> </div> <div class="modal-actions"> <button id="apply-settings-button" class="primary-action">Apply & Close</button> <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button> </div> </div> </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
@@ -128,7 +87,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closetag.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closebrackets.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/javascript-lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/css-lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/html-lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/1.1.4/htmlhint.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
 
     <script src="script.js"></script>
 </body>
