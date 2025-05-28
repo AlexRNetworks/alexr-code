@@ -187,14 +187,6 @@ header h1 {
 }
 .editor-main-controls button:hover { background-color: var(--color-background-button-hover); transform: translateY(-1px); }
 .editor-main-controls button:active { transform: translateY(0px); }
-/* Style for Save As button - it will inherit .editor-main-controls button style unless overridden */
-#save-as-project-button {
-    /* Example: if you want it to look slightly different */
-    /* background-color: #6c757d; */
-    /* border-color: #6c757d; */
-}
-/* #save-as-project-button:hover { background-color: #5a6268; border-color: #545b62; } */
-
 
 .output-sub-pane { /* e.g., #preview-wrapper, #console-wrapper */
     display: flex; 
@@ -301,6 +293,8 @@ footer {
 }
 .modal select {
     appearance: none;
+    -webkit-appearance: none; /* For Safari */
+    -moz-appearance: none; /* For Firefox */
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFE%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
     background-repeat: no-repeat;
     background-position: right .7em top 50%, 0 0;
@@ -389,28 +383,4 @@ footer {
 .setting-section { margin-bottom: 15px; }
 .setting-section:last-of-type { margin-bottom: 0; }
 
-/* CodeMirror Lint Addon markers styling (usually provided by lint.css from CDN) */
-/* You can add overrides here if you don't like the default lint marker appearance */
-/*
-.CodeMirror-lint-marker-error, 
-.CodeMirror-lint-marker-warning {
-    background-position: left bottom;
-    background-repeat: repeat-x;
-    opacity: 0.7; 
-}
-.CodeMirror-lint-marker-error {
-    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/َق/ Ministère des Affaires étrangères et du Développement international</translation>
-}
-.CodeMirror-lint-marker-warning {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhL1rQAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAF0lEQVQI12NggIMHDAwKqMAKMBDNwAAAAPgCBgE953VtAAAAAElFTkSuQmCC");
-}
-.CodeMirror-lint-tooltip {
-  background-color: var(--color-background-editor);
-  border: 1px solid var(--border-color-dark);
-  color: var(--color-text-main);
-  padding: 5px;
-  border-radius: var(--border-radius-small);
-  box-shadow: var(--box-shadow-main);
-  z-index: 10000; 
-}
-*/
+/* CodeMirror Lint Addon markers styling is handled by lint.min.css from CDN */
