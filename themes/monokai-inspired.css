@@ -1,0 +1,27 @@
+/* Monokai Inspired Dark Theme */
+:root {
+    --color-background-main: #272822;
+    --color-background-header: #1e1f1a;
+    --color-background-editor: #2D2A2E; /* Slightly different for editor */
+    --color-background-preview: #2D2A2E;
+    --color-background-footer: #1e1f1a;
+    --color-background-button: #AE81FF; /* Purple */
+    --color-background-button-hover: #9767e1;
+    --color-background-section-header: #3e3d32;
+
+    --color-text-main: #F8F8F2;
+    --color-text-header: #F8F8F2;
+    --color-text-editor-label: #A6E22E; /* Green for labels */
+    --color-text-button: #272822; /* Dark text on light button */
+    --color-text-footer: #F8F8F2;
+    --color-text-link: #66D9EF; /* Cyan */
+
+    --border-color-light: #49483e;
+    --border-color-dark: #75715e;
+    --box-shadow-main: 0 2px 8px rgba(0,0,0,0.3);
+}
+textarea {
+    background-color: var(--color-background-editor);
+    color: var(--color-text-main);
+    caret-color: #F8F8F0;
+}
