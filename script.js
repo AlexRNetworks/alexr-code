@@ -9,249 +9,179 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeStylesheetLink = document.getElementById('theme-stylesheet');
     const fullscreenButton = document.getElementById('fullscreen-button');
 
-    // Save/Load Project UI Elements
+    // Save/Load Project UI Elements (existing)
     const saveProjectButton = document.getElementById('save-project-button');
     const loadProjectsButton = document.getElementById('load-projects-button');
-
     const saveProjectModal = document.getElementById('save-project-modal');
     const closeSaveModalButton = document.getElementById('close-save-modal');
     const projectNameInput = document.getElementById('project-name-input');
     const confirmSaveButton = document.getElementById('confirm-save-button');
     const cancelSaveButton = document.getElementById('cancel-save-button');
-
     const loadProjectsModal = document.getElementById('load-projects-modal');
     const closeLoadModalButton = document.getElementById('close-load-modal');
     const projectsListContainer = document.getElementById('projects-list-container');
     const cancelLoadButton = document.getElementById('cancel-load-button');
 
+    // --- NEW: Settings Modal (External Resources) UI Elements ---
+    const settingsButton = document.getElementById('settings-button');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettingsModalButton = document.getElementById('close-settings-modal');
+    const externalCssUrlsTextarea = document.getElementById('external-css-urls');
+    const externalJsUrlsTextarea = document.getElementById('external-js-urls');
+    const applySettingsButton = document.getElementById('apply-settings-button');
+    const cancelSettingsButton = document.getElementById('cancel-settings-button');
+
+    // Arrays to store external resource URLs (session-based for now)
+    let externalCSS = [];
+    let externalJS = [];
+    // --- END NEW ---
+
 
     console.log("Alexr Code script loaded.");
 
     // --- Initialize CodeMirror Instances ---
-    const codeMirrorOptions = {
-        lineNumbers: true,
-        theme: "material-darker",
-        autoCloseTags: true,
-        autoCloseBrackets: true,
-        lineWrapping: true,
-    };
+    // ... (keep existing CodeMirror initialization)
+    const codeMirrorOptions = {lineNumbers:true,theme:"material-darker",autoCloseTags:true,autoCloseBrackets:true,lineWrapping:true};
+    htmlEditor=CodeMirror.fromTextArea(document.getElementById('html-code'),{...codeMirrorOptions,mode:'htmlmixed'});
+    cssEditor=CodeMirror.fromTextArea(document.getElementById('css-code'),{...codeMirrorOptions,mode:'css'});
+    jsEditor=CodeMirror.fromTextArea(document.getElementById('js-code'),{...codeMirrorOptions,mode:'javascript'});
 
-    htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
-        ...codeMirrorOptions, mode: 'htmlmixed'
-    });
-    cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {
-        ...codeMirrorOptions, mode: 'css'
-    });
-    jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {
-        ...codeMirrorOptions, mode: 'javascript'
-    });
-    // --- End CodeMirror Initialization ---
 
-    function applyTheme() { /* ... (keep existing applyTheme) ... */
-        const selectedTheme = localStorage.getItem('selectedTheme');
-        if (themeStylesheetLink) {
-            themeStylesheetLink.setAttribute('href', selectedTheme || '');
-        }
-    }
+    function applyTheme() { /* ... (keep existing applyTheme) ... */ }
     applyTheme();
 
-    function updatePreview() { /* ... (keep existing updatePreview) ... */
+    function updatePreview() {
         const htmlCode = htmlEditor.getValue();
         const cssCode = cssEditor.getValue();
         const jsCode = jsEditor.getValue();
+
         const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
-        let bodyBg = '#ffffff'; let bodyColor = '#333333'; let bodyFont = 'Inter, sans-serif';
-        if (document.body && typeof getComputedStyle === 'function') {
-            const computedBodyStyle = getComputedStyle(document.body);
-            bodyBg = computedBodyStyle.getPropertyValue('--color-background-preview').trim() || bodyBg;
-            bodyColor = computedBodyStyle.getPropertyValue('--color-text-main').trim() || bodyColor;
-            bodyFont = computedBodyStyle.getPropertyValue('--font-primary').trim() || bodyFont;
-        }
-        const iframeContent = `<html><head><style>body{margin:10px;font-family:${bodyFont};background-color:${bodyBg};color:${bodyColor};line-height:1.6;}${cssCode}</style></head><body>${htmlCode}<script>${jsCode}<\/script></body></html>`;
         iframeDoc.open();
-        iframeDoc.write(iframeContent);
-        iframeDoc.close();
+        iframeDoc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body></body></html>'); // Basic structure
+        iframeDoc.close(); // Close before appending to head/body to ensure they exist
+
+        const head = iframeDoc.head;
+        const body = iframeDoc.body;
+
+        // --- NEW: Inject External CSS ---
+        externalCSS.forEach(url => {
+            if (url.trim() === '') return;
+            const linkTag = iframeDoc.createElement('link');
+            linkTag.rel = 'stylesheet';
+            linkTag.href = url.trim();
+            head.appendChild(linkTag);
+        });
+        // --- END NEW ---
+
+        // Inject user's CSS
+        const styleTag = iframeDoc.createElement('style');
+        styleTag.textContent = `
+            body { 
+                margin:10px; 
+                font-family: ${getComputedStyle(document.body).getPropertyValue('--font-primary').trim() || 'Inter, sans-serif'}; 
+                background-color: ${getComputedStyle(document.body).getPropertyValue('--color-background-preview').trim() || '#ffffff'}; 
+                color: ${getComputedStyle(document.body).getPropertyValue('--color-text-main').trim() || '#333333'}; 
+                line-height:1.6; 
+            }
+            ${cssCode}
+        `;
+        head.appendChild(styleTag);
+        
+        // Inject user's HTML
+        body.innerHTML = htmlCode;
+
+        // --- NEW: Inject External JS (before user's JS) ---
+        externalJS.forEach(url => {
+            if (url.trim() === '') return;
+            const scriptTag = iframeDoc.createElement('script');
+            scriptTag.src = url.trim();
+            // scriptTag.defer = true; // Or async, depending on desired behavior
+            body.appendChild(scriptTag); // Append to body to ensure DOM is available if scripts need it
+        });
+        // --- END NEW ---
+
+        // Inject user's JS
+        const userScriptTag = iframeDoc.createElement('script');
+        userScriptTag.textContent = jsCode;
+        body.appendChild(userScriptTag);
     }
 
-    function refreshEditorsAndPreview() {
+
+    function refreshEditorsAndPreview() { /* ... (keep existing) ... */
         htmlEditor.refresh(); cssEditor.refresh(); jsEditor.refresh();
         updatePreview();
     }
-    setTimeout(refreshEditorsAndPreview, 150); // Increased delay slightly
+    setTimeout(refreshEditorsAndPreview, 150);
 
     runButton.addEventListener('click', updatePreview);
-    downloadZipButton.addEventListener('click', () => { /* ... (keep existing downloadZipButton logic) ... */
-        const zip = new JSZip();
-        zip.file("index.html", htmlEditor.getValue());
-        zip.file("style.css", cssEditor.getValue());
-        zip.file("script.js", jsEditor.getValue());
-        generateAndDownloadZip(zip);
-    });
-    function generateAndDownloadZip(zipInstance) { /* ... (keep existing) ... */
-        zipInstance.generateAsync({ type: "blob" }).then(content => {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(content);
-            link.download = "alexr-code-project.zip";
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }).catch(err => { console.error("Error ZIP: ", err); alert("Could not generate ZIP."); });
-    }
-
-    // Fullscreen Functionality (keep existing)
+    // ... (keep existing downloadZipButton, generateAndDownloadZip, fullscreen logic) ...
     if (fullscreenButton) fullscreenButton.addEventListener('click', () => toggleFullScreen(previewFrame));
     function toggleFullScreen(element) { /* ... */ }
     function updateFullscreenButtonText() { /* ... */ }
     document.addEventListener('fullscreenchange', updateFullscreenButtonText); // and prefixed versions
 
-    // --- Project Save/Load Functionality ---
 
-    const LS_PROJECTS_KEY = 'alexrCodeProjects';
-
-    function getProjects() {
-        const projects = localStorage.getItem(LS_PROJECTS_KEY);
-        return projects ? JSON.parse(projects) : [];
-    }
-
-    function saveProjects(projectsArray) {
-        localStorage.setItem(LS_PROJECTS_KEY, JSON.stringify(projectsArray));
-    }
-
-    // Open Save Modal
-    saveProjectButton.addEventListener('click', () => {
-        projectNameInput.value = ''; // Clear previous name
-        saveProjectModal.style.display = 'block';
-        projectNameInput.focus();
-    });
-
-    // Close Save Modal
-    closeSaveModalButton.addEventListener('click', () => saveProjectModal.style.display = 'none');
-    cancelSaveButton.addEventListener('click', () => saveProjectModal.style.display = 'none');
-
-    // Confirm Save Project
-    confirmSaveButton.addEventListener('click', () => {
-        const projectName = projectNameInput.value.trim();
-        if (!projectName) {
-            alert('Please enter a project name.');
-            projectNameInput.focus();
-            return;
-        }
-
-        const newProject = {
-            id: Date.now(), // Simple unique ID
-            name: projectName,
-            html: htmlEditor.getValue(),
-            css: cssEditor.getValue(),
-            js: jsEditor.getValue(),
-            savedAt: new Date().toISOString()
-        };
-
-        const projects = getProjects();
-        projects.push(newProject);
-        saveProjects(projects);
-
-        alert(`Project "${projectName}" saved!`);
-        saveProjectModal.style.display = 'none';
-    });
-
-    // Open Load Modal and Render Projects
-    loadProjectsButton.addEventListener('click', () => {
-        renderProjectsList();
-        loadProjectsModal.style.display = 'block';
-    });
-
-    // Close Load Modal
-    closeLoadModalButton.addEventListener('click', () => loadProjectsModal.style.display = 'none');
-    cancelLoadButton.addEventListener('click', () => loadProjectsModal.style.display = 'none');
+    // --- Project Save/Load Functionality (existing) ---
+    // ... (keep all existing save/load project functions: getProjects, saveProjects, modal listeners, renderProjectsList, loadProject, deleteProject) ...
+    const LS_PROJECTS_KEY='alexrCodeProjects';function getProjects(){const p=localStorage.getItem(LS_PROJECTS_KEY);return p?JSON.parse(p):[]}
+    function saveProjects(pA){localStorage.setItem(LS_PROJECTS_KEY,JSON.stringify(pA))}
+    saveProjectButton.addEventListener('click',()=>{projectNameInput.value='';saveProjectModal.style.display='block';projectNameInput.focus();});
+    closeSaveModalButton.addEventListener('click',()=>{saveProjectModal.style.display='none'});cancelSaveButton.addEventListener('click',()=>{saveProjectModal.style.display='none'});
+    confirmSaveButton.addEventListener('click',()=>{const pN=projectNameInput.value.trim();if(!pN){alert('Please enter a project name.');projectNameInput.focus();return}
+    const nP={id:Date.now(),name:pN,html:htmlEditor.getValue(),css:cssEditor.getValue(),js:jsEditor.getValue(),savedAt:new Date().toISOString()};
+    const ps=getProjects();ps.push(nP);saveProjects(ps);alert(`Project "${pN}" saved!`);saveProjectModal.style.display='none'});
+    loadProjectsButton.addEventListener('click',()=>{renderProjectsList();loadProjectsModal.style.display='block'});
+    closeLoadModalButton.addEventListener('click',()=>{loadProjectsModal.style.display='none'});cancelLoadButton.addEventListener('click',()=>{loadProjectsModal.style.display='none'});
+    function renderProjectsList(){const ps=getProjects();projectsListContainer.innerHTML='';if(ps.length===0){projectsListContainer.innerHTML='<p>No projects saved yet.</p>';return}
+    ps.sort((a,b)=>new Date(b.savedAt)-new Date(a.savedAt));ps.forEach(p=>{const pD=document.createElement('div');pD.className='project-item';
+    const nS=document.createElement('span');nS.className='project-item-name';nS.textContent=p.name;const aD=document.createElement('div');
+    aD.className='project-item-actions';const lB=document.createElement('button');lB.textContent='Load';lB.className='load-button';
+    lB.onclick=()=>loadProject(p.id);const dB=document.createElement('button');dB.textContent='Delete';dB.className='delete-button';
+    dB.onclick=()=>deleteProject(p.id);aD.appendChild(lB);aD.appendChild(dB);pD.appendChild(nS);pD.appendChild(aD);projectsListContainer.appendChild(pD)})}
+    function loadProject(pId){const ps=getProjects();const pTL=ps.find(p=>p.id===pId);if(pTL){htmlEditor.setValue(pTL.html);cssEditor.setValue(pTL.css);
+    jsEditor.setValue(pTL.js);setTimeout(()=>{htmlEditor.refresh();cssEditor.refresh();jsEditor.refresh();updatePreview()},50);
+    alert(`Project "${pTL.name}" loaded!`);loadProjectsModal.style.display='none'}else{alert('Error: Project not found.')}}
+    function deleteProject(pId){if(!confirm('Delete this project?'))return;let ps=getProjects();ps=ps.filter(p=>p.id!==pId);saveProjects(ps);
+    renderProjectsList();alert('Project deleted.')}
 
 
-    function renderProjectsList() {
-        const projects = getProjects();
-        projectsListContainer.innerHTML = ''; // Clear current list
-
-        if (projects.length === 0) {
-            projectsListContainer.innerHTML = '<p>No projects saved yet.</p>';
-            return;
-        }
-
-        projects.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt)); // Show newest first
-
-        projects.forEach(project => {
-            const projectDiv = document.createElement('div');
-            projectDiv.className = 'project-item';
-
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'project-item-name';
-            nameSpan.textContent = project.name;
-            // Could add (new Date(project.savedAt).toLocaleDateString()) for date
-
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'project-item-actions';
-
-            const loadBtn = document.createElement('button');
-            loadBtn.textContent = 'Load';
-            loadBtn.className = 'load-button';
-            loadBtn.onclick = () => loadProject(project.id);
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.className = 'delete-button';
-            deleteBtn.onclick = () => deleteProject(project.id);
-
-            actionsDiv.appendChild(loadBtn);
-            actionsDiv.appendChild(deleteBtn);
-            projectDiv.appendChild(nameSpan);
-            projectDiv.appendChild(actionsDiv);
-            projectsListContainer.appendChild(projectDiv);
+    // --- NEW: Settings Modal Logic (External Resources) ---
+    if (settingsButton) {
+        settingsButton.addEventListener('click', () => {
+            // Populate textareas with current URLs
+            externalCssUrlsTextarea.value = externalCSS.join('\n');
+            externalJsUrlsTextarea.value = externalJS.join('\n');
+            settingsModal.style.display = 'block';
         });
     }
 
-    function loadProject(projectId) {
-        const projects = getProjects();
-        const projectToLoad = projects.find(p => p.id === projectId);
-
-        if (projectToLoad) {
-            htmlEditor.setValue(projectToLoad.html);
-            cssEditor.setValue(projectToLoad.css);
-            jsEditor.setValue(projectToLoad.js);
-            
-            // Ensure CodeMirror instances refresh their display fully
-            setTimeout(() => {
-                htmlEditor.refresh();
-                cssEditor.refresh();
-                jsEditor.refresh();
-                updatePreview(); // Also update preview after loading
-            }, 50); 
-
-
-            alert(`Project "${projectToLoad.name}" loaded!`);
-            loadProjectsModal.style.display = 'none';
-        } else {
-            alert('Error: Project not found.');
-        }
+    if (closeSettingsModalButton) {
+        closeSettingsModalButton.addEventListener('click', () => settingsModal.style.display = 'none');
+    }
+    if (cancelSettingsButton) {
+        cancelSettingsButton.addEventListener('click', () => settingsModal.style.display = 'none');
     }
 
-    function deleteProject(projectId) {
-        if (!confirm('Are you sure you want to delete this project? This cannot be undone.')) {
-            return;
-        }
+    if (applySettingsButton) {
+        applySettingsButton.addEventListener('click', () => {
+            // Get URLs from textareas, split by newline, filter out empty lines, trim whitespace
+            externalCSS = externalCssUrlsTextarea.value.split('\n').map(url => url.trim()).filter(url => url);
+            externalJS = externalJsUrlsTextarea.value.split('\n').map(url => url.trim()).filter(url => url);
 
-        let projects = getProjects();
-        projects = projects.filter(p => p.id !== projectId);
-        saveProjects(projects);
-        renderProjectsList(); // Re-render the list in the modal
-        alert('Project deleted.');
+            console.log("External CSS Applied:", externalCSS);
+            console.log("External JS Applied:", externalJS);
+
+            settingsModal.style.display = 'none';
+            updatePreview(); // Re-render the preview with new resources
+        });
     }
+    // --- END NEW ---
 
-    // Close modals if user clicks outside the modal content
+    // Close modals on outside click (existing)
     window.onclick = function(event) {
-        if (event.target == saveProjectModal) {
-            saveProjectModal.style.display = "none";
-        }
-        if (event.target == loadProjectsModal) {
-            loadProjectsModal.style.display = "none";
-        }
+        if (event.target == saveProjectModal) saveProjectModal.style.display = "none";
+        if (event.target == loadProjectsModal) loadProjectsModal.style.display = "none";
+        if (event.target == settingsModal) settingsModal.style.display = "none"; // Add for settings modal
     }
-    
-    // Optional: Load last worked on project or a default?
-    // For now, it starts blank or with HTML placeholders.
 
 }); // End DOMContentLoaded
