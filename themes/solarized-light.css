@@ -1,0 +1,31 @@
+/* Solarized Light Theme */
+:root {
+    --font-primary: 'Roboto', sans-serif;
+    --font-code: 'Source Code Pro', monospace;
+
+    --color-background-main: #fdf6e3; /* base03 */
+    --color-background-header: #eee8d5; /* base02 */
+    --color-background-editor: #fdf6e3; /* base03 */
+    --color-background-preview: #fdf6e3;
+    --color-background-footer: #eee8d5;
+    --color-background-button: #268bd2; /* blue */
+    --color-background-button-hover: #1e6a9e;
+    --color-background-section-header: #eee8d5; /* base02 */
+
+    --color-text-main: #657b83; /* base00 */
+    --color-text-header: #586e75; /* base01 */
+    --color-text-editor-label: #586e75;
+    --color-text-button: #fdf6e3; /* base03 for text on blue button */
+    --color-text-footer: #586e75;
+    --color-text-link: #268bd2; /* blue */
+
+    --border-color-light: #eee8d5; /* base02 */
+    --border-color-dark: #93a1a1; /* base01 */
+    --box-shadow-main: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+textarea {
+    background-color: #fdf6e3; /* base03 */
+    color: #586e75; /* base01 */
+    caret-color: #586e75;
+}
