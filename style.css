@@ -84,8 +84,8 @@ header .header-left {
 header .header-right {
     justify-content: flex-end;
 }
-header .header-center {
-    flex: 2; 
+header .header-center { /* Kept for potential future use, takes up space if needed */
+    flex: 0 1 auto; /* Allow it to shrink if header-left/right need more space */
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -117,37 +117,39 @@ header h1 {
     outline: none;
 }
 
-/* Main Layout Container for Split.js - Fixed Vertical */
+/* Main Layout Container for Split.js - Fixed Vertical Layout */
 .editor-layout-container {
     display: flex;
-    flex-direction: column; /* Default to Editors Top | Output Bottom */
+    flex-direction: column; /* Editors Top | Output Bottom */
     flex-grow: 1; 
     overflow: hidden;
     padding: 10px; 
-    gap: 8px; 
+    gap: 8px; /* Space for the main vertical gutter */
 }
 
-/* Panes for the main split */
+/* Panes for the main split (Top: Code Editors, Bottom: Output) */
 #code-editors-pane, #output-pane {
     display: flex; 
-    flex-direction: column; 
-    overflow: hidden; /* Important for nested splits */
+    flex-direction: column; /* Children stack vertically by default */
+    overflow: hidden; 
 }
 
-/* Code Editors Area */
+/* Code Editors Area (#code-editors-pane) */
 #code-section-editors { 
     display: flex;
     flex-direction: row; /* HTML, CSS, JS side-by-side */
     flex-grow: 1; 
-    min-height: 150px; /* Min height for the entire code editors block */
+    min-height: 150px; 
     overflow: hidden;
+    /* gap is handled by Split.js gutter */
 }
 
-/* Individual Editor Panes */
+/* Individual Editor Panes (HTML, CSS, JS Wrappers) */
 .editor-pane { 
     display: flex;
     flex-direction: column;
     overflow: hidden; 
+    /* flex-basis (width) is controlled by Split.js */
 }
 .editor { 
     display: flex; flex-direction: column; background-color: var(--color-background-editor);
@@ -167,10 +169,12 @@ header h1 {
     flex-grow: 1;
 }
 
-/* Output Pane */
+/* Output Pane (#output-pane) */
 #output-pane {
     flex-grow: 1; 
     min-height: 200px; 
+    display: flex; /* Override default flex-direction from #code-editors-pane, #output-pane rule */
+    flex-direction: column; /* Ensure children stack vertically */
 }
 .editor-main-controls {
     margin-bottom: 8px; text-align: center; padding: 5px 0; display: flex;
@@ -185,9 +189,12 @@ header h1 {
 .editor-main-controls button:hover { background-color: var(--color-background-button-hover); transform: translateY(-1px); }
 .editor-main-controls button:active { transform: translateY(0px); }
 
-.output-sub-pane { 
-    display: flex; flex-direction: column; overflow: hidden;
-    flex-grow: 1; 
+.output-sub-pane { /* e.g., #preview-wrapper, #console-wrapper */
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden;
+    flex-grow: 1; /* Allow these sub-panes to share space and grow */
+    /* min-height controlled by Split.js */
 }
 
 .preview-section, .console-section {
@@ -274,7 +281,7 @@ footer {
 .modal input[type="text"], 
 .modal textarea, 
 .modal select,
-.modal input[type="number"] {
+.modal input[type="number"] { /* Grouped for common styling */
     width: 100%; padding: 10px 12px; margin-bottom: 20px; border: 1px solid var(--border-color-dark);
     border-radius: var(--border-radius-small); font-family: var(--font-primary); font-size: 1em;
     background-color: var(--color-background-input); color: var(--color-text-main);
@@ -284,7 +291,7 @@ footer {
     font-family: var(--font-code); 
     font-size: 0.9em; 
     resize: vertical; 
-    min-height: 60px;
+    min-height: 60px; /* Reduced from 80px */
 }
 .modal select {
     appearance: none;
@@ -295,7 +302,7 @@ footer {
     padding-right: 2em; 
 }
 .modal input[type="number"] { /* For Editor Font Size input */
-    width: 80px; 
+    width: 100px; /* Specific width */
 }
 
 .modal input[type="text"]:focus, 
