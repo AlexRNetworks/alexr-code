@@ -15,6 +15,8 @@
     --color-background-button-hover: #005bb5;
     --color-background-section-header: #eef1f4; /* For h2 in editor panels */
     --color-background-input: var(--color-background-main); /* For text inputs/textareas in modals */
+    --color-background-gutter: var(--color-background-section-header); /* For Split.js gutters */
+    --color-background-gutter-hover: var(--border-color-dark);
 
 
     --color-text-main: #333333;
@@ -49,7 +51,9 @@ body {
     color: var(--color-text-main);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: 100vh; /* Full viewport height */
+    height: 100vh; /* Ensure body takes full height for flex children */
+    overflow: hidden; /* Prevent body scrollbars when panes handle their own */
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -59,18 +63,19 @@ body {
 header {
     background-color: var(--color-background-header);
     color: var(--color-text-header);
-    padding: 0.8rem 1.5rem;
+    padding: 0.6rem 1.5rem; /* Slightly reduced padding */
     text-align: center;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--border-color-light);
     box-shadow: var(--box-shadow-light);
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 header h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.4rem; /* Slightly smaller */
     font-weight: 600;
 }
 
@@ -78,11 +83,11 @@ header h1 {
     background-color: transparent;
     color: var(--color-text-link);
     border: 1px solid var(--border-color-light);
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem; /* Smaller theme button */
     border-radius: var(--border-radius-small);
     cursor: pointer;
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
@@ -95,203 +100,155 @@ header h1 {
     outline: none;
 }
 
-/* Editor Container */
-.editor-container {
+/* Main Layout Container for Split.js */
+.editor-layout-container {
+    display: flex;
+    flex-direction: row; /* Editors on left (or top), output on right (or bottom) */
+    flex-grow: 1; /* Takes up all space between header and footer */
+    overflow: hidden;
+    padding: 10px; /* Overall padding around the split areas */
+    gap: 10px; /* Space for the main gutter */
+}
+
+/* Direct children of .editor-layout-container are the main panes */
+#code-editors-pane, #output-pane {
+    /* Split.js will control the flex-basis/width/height */
+    /* overflow: hidden; /* Prevent panes from showing scrollbars, content inside should scroll */
+    display: flex; /* Allows content within panes to use flexbox */
+    flex-direction: column; /* Default for content stacking within these primary panes */
+}
+
+/* Code Editors Area (#code-editors-pane already a flex column) */
+#code-section-editors { /* This div contains the 3 editor panes */
+    display: flex;
+    flex-direction: row; /* HTML, CSS, JS side-by-side */
+    flex-grow: 1; /* Fill #code-editors-pane */
+    min-height: 0; /* Important for nested flex elements */
+    /* gap: 10px; /* Gutters will provide spacing */
+}
+
+/* Individual Editor Panes (HTML, CSS, JS Wrappers) */
+.editor-pane { /* e.g., #html-editor-wrapper */
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    padding: 15px; /* Slightly reduced padding for more content space */
-    gap: 15px; /* Slightly reduced gap */
+    /* background-color is set by .editor */
+    overflow: hidden; /* This is important! */
+    /* flex-basis will be set by Split.js */
 }
 
-.code-section {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-@media (min-width: 992px) { /* Medium screens and up */
-    .code-section {
-        flex-direction: row;
-        justify-content: space-between;
-        flex-grow: 1; /* Allow code section to take available height */
-        min-height: 300px; /* Ensure it has some minimum height */
-    }
-    .editor {
-        flex-basis: calc(33.333% - 10px); /* Adjusted for 15px gap */
-        min-height: 0; /* Override previous min-height if it causes issues with flex */
-    }
-}
-@media (min-width: 1200px) { /* Large screens */
-     .editor-container { padding: 20px; gap: 20px; }
-     .code-section { gap: 20px; }
-     .editor { flex-basis: calc(33.333% - 14px); } /* Adjusted for 20px gap */
-}
-
-
-.editor {
+.editor { /* Styles for the .editor div inside .editor-pane */
     display: flex;
     flex-direction: column;
     background-color: var(--color-background-editor);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden;
-    min-height: 300px; /* Default min height for mobile/stacked view */
+    overflow: hidden; /* Crucial for CodeMirror */
+    height: 100%; /* Make .editor fill its .editor-pane wrapper */
 }
 
 .editor h2 {
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 10px 15px; /* Adjusted padding */
-    font-size: 0.9rem;
+    padding: 8px 12px; /* Reduced padding */
+    font-size: 0.85rem; /* Reduced font size */
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
-    flex-shrink: 0; /* Prevent h2 from shrinking */
+    flex-shrink: 0;
 }
 
-/* CodeMirror Styling Adjustments */
 .CodeMirror {
     font-family: var(--font-code);
     font-size: 14px;
     line-height: 1.5;
-    height: 100%; /* Crucial for flex-grow to work on parent */
-    flex-grow: 1; /* Makes CM instance fill available space in .editor */
-    border: 1px solid var(--border-color-dark); /* Keep this subtle border */
+    height: 100%; /* Make CodeMirror fill the .editor div */
+    flex-grow: 1;
+    border-top: none; /* Remove CM's top border if .editor already has one via h2 */
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    /* border: 1px solid var(--border-color-dark); /* Optional if you want border directly on CM */
 }
 
-/* EDITOR MAIN Controls Styling */
+
+/* Output Pane (#output-pane already a flex column) */
 .editor-main-controls {
-    margin-bottom: 15px;
+    margin-bottom: 8px; /* Space below controls */
     text-align: center;
-    padding: 8px 0; /* Reduced padding */
+    padding: 5px 0; /* Reduced padding */
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 8px; /* Reduced gap */
-    flex-shrink: 0; /* Prevent controls from shrinking too much */
+    gap: 8px;
+    flex-shrink: 0; /* Prevent controls from shrinking */
 }
-
 .editor-main-controls button {
     background-color: var(--color-background-button);
     color: var(--color-text-button);
     border: none;
-    padding: 8px 15px; /* Adjusted padding */
+    padding: 6px 12px; /* Smaller buttons */
     border-radius: var(--border-radius-small);
     cursor: pointer;
-    font-size: 0.85rem; /* Adjusted font size */
+    font-size: 0.8rem; /* Smaller font */
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
+.editor-main-controls button:hover { background-color: var(--color-background-button-hover); transform: translateY(-1px); }
+.editor-main-controls button:active { transform: translateY(0px); }
 
-.editor-main-controls button:hover {
-    background-color: var(--color-background-button-hover);
-    transform: translateY(-1px);
-}
-.editor-main-controls button:active {
-    transform: translateY(0px);
+/* Output Sub-Panes Wrappers (Preview, Console Wrappers) */
+.output-sub-pane { /* e.g., #preview-wrapper, #console-wrapper */
+    display: flex; /* These wrappers should be flex to allow their children to grow */
+    flex-direction: column;
+    overflow: hidden;
+    /* flex-basis will be set by Split.js */
+    /* min-height is set by Split.js options */
 }
 
-/* Preview Section */
-.preview-section {
-    flex-grow: 1;
+.preview-section, .console-section {
+    flex-grow: 1; /* Make these fill their respective wrappers */
     display: flex;
     flex-direction: column;
-    background-color: var(--color-background-preview);
+    background-color: var(--color-background-editor);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden;
-    min-height: 250px; /* Min height for preview */
+    overflow: hidden; /* Content will scroll internally */
+    height: 100%; /* Ensure they take full height of their split pane */
 }
+.preview-section { background-color: var(--color-background-preview); }
 
-.preview-section h2 {
+.preview-section h2, .console-header {
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 10px 15px;
-    font-size: 0.9rem;
+    padding: 8px 12px; /* Reduced padding */
+    font-size: 0.85rem; /* Reduced font size */
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
     flex-shrink: 0;
 }
+.console-header { display: flex; justify-content: space-between; align-items: center; }
 
-#preview-frame {
-    flex-grow: 1;
-    width: 100%;
-    border: none;
-    background-color: var(--color-background-preview);
-}
-
-/* --- Console Section Styles --- */
-.console-section {
-    background-color: var(--color-background-editor);
-    color: var(--color-text-main);
-    border: 1px solid var(--border-color-light);
-    border-radius: var(--border-radius-main);
-    box-shadow: var(--box-shadow-main);
-    margin-top: 15px; /* Space above the console */
-    display: flex;
-    flex-direction: column;
-    min-height: 120px; /* Minimum height */
-    max-height: 25vh; /* Max height based on viewport, then scroll */
-    overflow: hidden;
-    flex-shrink: 0; /* Prevent console from shrinking too much */
-}
-
-.console-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 15px; /* Adjusted padding */
-    background-color: var(--color-background-section-header);
-    border-bottom: 1px solid var(--border-color-light);
-    flex-shrink: 0;
-}
-
-.console-header h2 {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-text-editor-label);
-}
+#preview-frame { flex-grow: 1; width: 100%; border: none; background-color: var(--color-background-preview); }
 
 #clear-console-button {
-    background-color: transparent;
-    color: var(--color-text-link);
-    border: 1px solid var(--border-color-dark);
-    padding: 4px 10px;
-    font-size: 0.8rem;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
+    background-color: transparent; color: var(--color-text-link); border: 1px solid var(--border-color-dark);
+    padding: 3px 8px; font-size: 0.75rem; border-radius: var(--border-radius-small); cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
-
-#clear-console-button:hover {
-    background-color: var(--color-background-button);
-    color: var(--color-text-button);
-    border-color: var(--color-background-button);
-}
+#clear-console-button:hover { background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button); }
 
 #console-output {
-    flex-grow: 1;
-    padding: 8px 12px; /* Adjusted padding */
-    overflow-y: auto;
-    font-family: var(--font-code);
-    font-size: 0.85em;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-all;
+    flex-grow: 1; padding: 8px 12px; overflow-y: auto; font-family: var(--font-code);
+    font-size: 0.85em; line-height: 1.6; white-space: pre-wrap; word-break: break-all;
+    background-color: var(--color-background-editor); /* Match editor background */
+    color: var(--color-text-main); /* Ensure text color matches */
 }
-
-.console-message {
-    padding: 2px 0;
-    border-bottom: 1px solid var(--border-color-light);
-    margin-bottom: 2px;
-}
+.console-message { padding: 2px 0; border-bottom: 1px solid var(--border-color-light); margin-bottom: 2px; }
 .console-message:last-child { border-bottom: none; margin-bottom: 0; }
 .console-message.log { color: var(--color-text-main); }
 .console-message.error { color: #e74c3c; font-weight: bold; }
@@ -300,66 +257,70 @@ header h1 {
 .console-message.debug { color: #9b59b6; }
 .console-message .timestamp { color: var(--color-text-editor-label); font-size: 0.9em; margin-right: 8px; opacity: 0.7; }
 
+/* Split.js Gutter Styling */
+.gutter {
+    background-color: var(--color-background-gutter);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transition: background-color 0.2s ease;
+    z-index: 10; /* Ensure gutters are above editor content if overlapping occurs */
+}
+.gutter:hover {
+    background-color: var(--color-background-gutter-hover);
+}
+.gutter.gutter-horizontal { /* Between vertical panes (e.g. code editors pane vs output pane) */
+    cursor: col-resize;
+    /* border-left: 1px solid var(--border-color-light);
+    border-right: 1px solid var(--border-color-light); */
+}
+.gutter.gutter-vertical { /* Between horizontal panes (e.g. preview vs console) */
+    cursor: row-resize;
+    /* border-top: 1px solid var(--border-color-light);
+    border-bottom: 1px solid var(--border-color-light); */
+}
+/* Optional: Add visual indicators to gutters if desired, e.g. using ::before/::after or background images */
+/* Example: basic background image for grab handle (from Split.js examples) */
+.gutter.gutter-horizontal {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeAgB+oz4K9qXoRgAAAABJRU5ErkJggg==');
+}
+.gutter.gutter-vertical {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+}
+
 
 /* Footer */
 footer {
     background-color: var(--color-background-footer);
     color: var(--color-text-footer);
     text-align: center;
-    padding: 1rem 1.5rem; /* Adjusted padding */
-    margin-top: auto; /* Pushes to bottom if content is short */
-    font-size: 0.85rem;
-    flex-shrink: 0; /* Prevent footer from shrinking */
+    padding: 0.8rem 1.5rem; /* Reduced padding */
+    margin-top: auto;
+    font-size: 0.8rem; /* Reduced font size */
+    flex-shrink: 0;
 }
-
 
 /* --- Modal Styles (Generic for Save, Load, Settings) --- */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
-    animation: fadeIn 0.2s ease-out;
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+    width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px); animation: fadeIn 0.2s ease-out;
 }
-
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
 .modal-content {
-    background-color: var(--color-background-editor);
-    color: var(--color-text-main);
-    margin: 10vh auto;
-    padding: 25px 30px;
-    border: 1px solid var(--border-color-light);
-    border-radius: var(--border-radius-main);
-    width: 90%;
-    max-width: 550px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-    position: relative;
+    background-color: var(--color-background-editor); color: var(--color-text-main);
+    margin: 10vh auto; padding: 25px 30px; border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-main); width: 90%; max-width: 550px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25); position: relative;
     animation: slideInModal 0.25s ease-out;
 }
-
 @keyframes slideInModal { from { transform: translateY(-25px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-
 .close-button {
-    color: var(--color-text-editor-label);
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    transition: color 0.2s ease;
+    color: var(--color-text-editor-label); position: absolute; top: 10px; right: 15px;
+    font-size: 28px; font-weight: bold; transition: color 0.2s ease;
 }
 .close-button:hover, .close-button:focus { color: var(--color-text-main); text-decoration: none; cursor: pointer; }
-
 .modal h2 { margin-top: 5px; margin-bottom: 25px; color: var(--color-text-header); font-weight: 600; font-size: 1.3rem; }
 .modal label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--color-text-editor-label); }
-
 .modal input[type="text"], .modal textarea {
     width: 100%; padding: 10px 12px; margin-bottom: 20px; border: 1px solid var(--border-color-dark);
     border-radius: var(--border-radius-small); font-family: var(--font-primary); font-size: 1em;
@@ -371,7 +332,6 @@ footer {
     outline: none; border-color: var(--color-text-link);
     box-shadow: 0 0 0 3px rgba(var(--color-text-link-rgb), 0.2);
 }
-
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
 .modal-actions button {
     padding: 10px 20px; border-radius: var(--border-radius-small); font-weight: 500; cursor: pointer;
@@ -391,7 +351,6 @@ footer {
 .modal-actions button.button-alt:hover {
     background-color: var(--color-background-section-header); color: var(--color-text-main); border-color: var(--border-color-dark); opacity: 1;
 }
-
 #projects-list-container {
     max-height: 35vh; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-small); padding: 5px; background-color: var(--color-background-input);
@@ -417,6 +376,5 @@ footer {
     background-color: transparent; color: #e74c3c; border-color: #e74c3c;
 }
 .project-item-actions button.delete-button:hover { background-color: #e74c3c; color: white; opacity: 1; }
-
 .setting-section { margin-bottom: 20px; }
 .setting-section:last-of-type { margin-bottom: 0; }
