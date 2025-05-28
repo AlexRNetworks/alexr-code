@@ -100,25 +100,34 @@ header h1 {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    padding: 20px;
-    gap: 20px;
+    padding: 15px; /* Slightly reduced padding for more content space */
+    gap: 15px; /* Slightly reduced gap */
 }
 
 .code-section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 992px) { /* Medium screens and up */
     .code-section {
         flex-direction: row;
         justify-content: space-between;
+        flex-grow: 1; /* Allow code section to take available height */
+        min-height: 300px; /* Ensure it has some minimum height */
     }
     .editor {
-        flex-basis: calc(33.333% - 14px);
+        flex-basis: calc(33.333% - 10px); /* Adjusted for 15px gap */
+        min-height: 0; /* Override previous min-height if it causes issues with flex */
     }
 }
+@media (min-width: 1200px) { /* Large screens */
+     .editor-container { padding: 20px; gap: 20px; }
+     .code-section { gap: 20px; }
+     .editor { flex-basis: calc(33.333% - 14px); } /* Adjusted for 20px gap */
+}
+
 
 .editor {
     display: flex;
@@ -128,49 +137,51 @@ header h1 {
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
     overflow: hidden;
-    min-height: 350px;
+    min-height: 300px; /* Default min height for mobile/stacked view */
 }
 
 .editor h2 {
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 12px 18px;
+    padding: 10px 15px; /* Adjusted padding */
     font-size: 0.9rem;
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
+    flex-shrink: 0; /* Prevent h2 from shrinking */
 }
 
 /* CodeMirror Styling Adjustments */
 .CodeMirror {
-    font-family: var(--font-code); /* Fallback font, CM theme often dictates this */
-    font-size: 14px; /* Base size, can be adjusted by CM theme */
+    font-family: var(--font-code);
+    font-size: 14px;
     line-height: 1.5;
-    height: 100%;
-    flex-grow: 1;
-    border: 1px solid var(--border-color-dark); /* Subtle border for CM instances */
+    height: 100%; /* Crucial for flex-grow to work on parent */
+    flex-grow: 1; /* Makes CM instance fill available space in .editor */
+    border: 1px solid var(--border-color-dark); /* Keep this subtle border */
 }
 
-/* EDITOR MAIN Controls Styling (Run, Save, Load, Settings, ZIP, Fullscreen buttons) */
+/* EDITOR MAIN Controls Styling */
 .editor-main-controls {
     margin-bottom: 15px;
     text-align: center;
-    padding: 10px 0;
+    padding: 8px 0; /* Reduced padding */
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px; /* Reduced gap */
+    flex-shrink: 0; /* Prevent controls from shrinking too much */
 }
 
 .editor-main-controls button {
     background-color: var(--color-background-button);
     color: var(--color-text-button);
     border: none;
-    padding: 10px 18px;
+    padding: 8px 15px; /* Adjusted padding */
     border-radius: var(--border-radius-small);
     cursor: pointer;
-    font-size: 0.88rem;
+    font-size: 0.85rem; /* Adjusted font size */
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
@@ -193,18 +204,19 @@ header h1 {
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
     overflow: hidden;
-    min-height: 350px;
+    min-height: 250px; /* Min height for preview */
 }
 
 .preview-section h2 {
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 12px 18px;
+    padding: 10px 15px;
     font-size: 0.9rem;
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
+    flex-shrink: 0;
 }
 
 #preview-frame {
@@ -214,14 +226,90 @@ header h1 {
     background-color: var(--color-background-preview);
 }
 
+/* --- Console Section Styles --- */
+.console-section {
+    background-color: var(--color-background-editor);
+    color: var(--color-text-main);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-main);
+    box-shadow: var(--box-shadow-main);
+    margin-top: 15px; /* Space above the console */
+    display: flex;
+    flex-direction: column;
+    min-height: 120px; /* Minimum height */
+    max-height: 25vh; /* Max height based on viewport, then scroll */
+    overflow: hidden;
+    flex-shrink: 0; /* Prevent console from shrinking too much */
+}
+
+.console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px; /* Adjusted padding */
+    background-color: var(--color-background-section-header);
+    border-bottom: 1px solid var(--border-color-light);
+    flex-shrink: 0;
+}
+
+.console-header h2 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-editor-label);
+}
+
+#clear-console-button {
+    background-color: transparent;
+    color: var(--color-text-link);
+    border: 1px solid var(--border-color-dark);
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+#clear-console-button:hover {
+    background-color: var(--color-background-button);
+    color: var(--color-text-button);
+    border-color: var(--color-background-button);
+}
+
+#console-output {
+    flex-grow: 1;
+    padding: 8px 12px; /* Adjusted padding */
+    overflow-y: auto;
+    font-family: var(--font-code);
+    font-size: 0.85em;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.console-message {
+    padding: 2px 0;
+    border-bottom: 1px solid var(--border-color-light);
+    margin-bottom: 2px;
+}
+.console-message:last-child { border-bottom: none; margin-bottom: 0; }
+.console-message.log { color: var(--color-text-main); }
+.console-message.error { color: #e74c3c; font-weight: bold; }
+.console-message.warn { color: #f39c12; }
+.console-message.info { color: #3498db; }
+.console-message.debug { color: #9b59b6; }
+.console-message .timestamp { color: var(--color-text-editor-label); font-size: 0.9em; margin-right: 8px; opacity: 0.7; }
+
+
 /* Footer */
 footer {
     background-color: var(--color-background-footer);
     color: var(--color-text-footer);
     text-align: center;
-    padding: 1.25rem 1.5rem;
-    margin-top: auto;
+    padding: 1rem 1.5rem; /* Adjusted padding */
+    margin-top: auto; /* Pushes to bottom if content is short */
     font-size: 0.85rem;
+    flex-shrink: 0; /* Prevent footer from shrinking */
 }
 
 
@@ -240,10 +328,7 @@ footer {
     animation: fadeIn 0.2s ease-out;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .modal-content {
     background-color: var(--color-background-editor);
@@ -259,10 +344,7 @@ footer {
     animation: slideInModal 0.25s ease-out;
 }
 
-@keyframes slideInModal {
-    from { transform: translateY(-25px) scale(0.98); opacity: 0; }
-    to { transform: translateY(0) scale(1); opacity: 1; }
-}
+@keyframes slideInModal { from { transform: translateY(-25px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
 .close-button {
     color: var(--color-text-editor-label);
@@ -273,168 +355,68 @@ footer {
     font-weight: bold;
     transition: color 0.2s ease;
 }
+.close-button:hover, .close-button:focus { color: var(--color-text-main); text-decoration: none; cursor: pointer; }
 
-.close-button:hover,
-.close-button:focus {
-    color: var(--color-text-main);
-    text-decoration: none;
-    cursor: pointer;
-}
+.modal h2 { margin-top: 5px; margin-bottom: 25px; color: var(--color-text-header); font-weight: 600; font-size: 1.3rem; }
+.modal label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--color-text-editor-label); }
 
-.modal h2 {
-    margin-top: 5px;
-    margin-bottom: 25px;
-    color: var(--color-text-header);
-    font-weight: 600;
-    font-size: 1.3rem;
-}
-
-.modal label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: var(--color-text-editor-label);
-}
-
-/* Input and Textarea styles within modals */
-.modal input[type="text"],
-.modal textarea {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color-dark);
-    border-radius: var(--border-radius-small);
-    font-family: var(--font-primary);
-    font-size: 1em;
-    background-color: var(--color-background-input);
-    color: var(--color-text-main);
+.modal input[type="text"], .modal textarea {
+    width: 100%; padding: 10px 12px; margin-bottom: 20px; border: 1px solid var(--border-color-dark);
+    border-radius: var(--border-radius-small); font-family: var(--font-primary); font-size: 1em;
+    background-color: var(--color-background-input); color: var(--color-text-main);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.modal textarea { /* Specific for settings modal's textareas */
-    font-family: var(--font-code);
-    font-size: 0.9em;
-    resize: vertical;
-    min-height: 80px;
-}
-
-.modal input[type="text"]:focus,
-.modal textarea:focus {
-    outline: none;
-    border-color: var(--color-text-link);
+.modal textarea { font-family: var(--font-code); font-size: 0.9em; resize: vertical; min-height: 80px; }
+.modal input[type="text"]:focus, .modal textarea:focus {
+    outline: none; border-color: var(--color-text-link);
     box-shadow: 0 0 0 3px rgba(var(--color-text-link-rgb), 0.2);
 }
 
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 25px;
-}
-
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
 .modal-actions button {
-    padding: 10px 20px;
-    border-radius: var(--border-radius-small);
-    font-weight: 500;
-    cursor: pointer;
+    padding: 10px 20px; border-radius: var(--border-radius-small); font-weight: 500; cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
-    border: 1px solid transparent;
-    font-size: 0.9rem;
+    border: 1px solid transparent; font-size: 0.9rem;
 }
-.modal-actions button:hover {
-    opacity: 0.85;
-}
-
+.modal-actions button:hover { opacity: 0.85; }
 .modal-actions button.primary-action {
-    background-color: var(--color-background-button);
-    color: var(--color-text-button);
-    border-color: var(--color-background-button);
+    background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button);
 }
-.modal-actions button.primary-action:hover { /* More specific hover for primary */
-    background-color: var(--color-background-button-hover);
-    border-color: var(--color-background-button-hover);
-    opacity: 1; /* Reset opacity if you want full color on hover */
+.modal-actions button.primary-action:hover {
+    background-color: var(--color-background-button-hover); border-color: var(--color-background-button-hover); opacity: 1;
 }
-
-
 .modal-actions button.button-alt {
-    background-color: transparent;
-    color: var(--color-text-editor-label);
-    border-color: var(--border-color-dark);
+    background-color: transparent; color: var(--color-text-editor-label); border-color: var(--border-color-dark);
 }
 .modal-actions button.button-alt:hover {
-    background-color: var(--color-background-section-header);
-    color: var(--color-text-main);
-    border-color: var(--border-color-dark);
-    opacity: 1;
+    background-color: var(--color-background-section-header); color: var(--color-text-main); border-color: var(--border-color-dark); opacity: 1;
 }
 
-/* Project List Styling (Load Modal) */
 #projects-list-container {
-    max-height: 35vh;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color-light);
-    border-radius: var(--border-radius-small);
-    padding: 5px;
-    background-color: var(--color-background-input);
+    max-height: 35vh; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-small); padding: 5px; background-color: var(--color-background-input);
 }
-
 .project-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid var(--border-color-light);
-    transition: background-color 0.15s ease;
+    display: flex; justify-content: space-between; align-items: center; padding: 10px;
+    border-bottom: 1px solid var(--border-color-light); transition: background-color 0.15s ease;
 }
-.project-item:last-child {
-    border-bottom: none;
-}
-.project-item:hover {
-    background-color: var(--color-background-section-header);
-}
-
+.project-item:last-child { border-bottom: none; }
+.project-item:hover { background-color: var(--color-background-section-header); }
 .project-item-name {
-    font-weight: 500;
-    color: var(--color-text-main);
-    flex-grow: 1;
-    margin-right: 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-weight: 500; color: var(--color-text-main); flex-grow: 1; margin-right: 10px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
-.project-item-actions button {
-    margin-left: 8px;
-    padding: 5px 10px;
-    font-size: 0.8rem;
-}
-.project-item-actions button.load-button { /* Load button in list */
-    background-color: var(--color-background-button);
-    color: var(--color-text-button);
-    border-color: var(--color-background-button);
+.project-item-actions button { margin-left: 8px; padding: 5px 10px; font-size: 0.8rem; }
+.project-item-actions button.load-button {
+    background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button);
 }
 .project-item-actions button.load-button:hover {
-    background-color: var(--color-background-button-hover);
-    border-color: var(--color-background-button-hover);
-    opacity: 1;
+    background-color: var(--color-background-button-hover); border-color: var(--color-background-button-hover); opacity: 1;
 }
-
 .project-item-actions button.delete-button {
-    background-color: transparent;
-    color: #e74c3c;
-    border-color: #e74c3c;
+    background-color: transparent; color: #e74c3c; border-color: #e74c3c;
 }
-.project-item-actions button.delete-button:hover {
-    background-color: #e74c3c;
-    color: white;
-    opacity: 1;
-}
+.project-item-actions button.delete-button:hover { background-color: #e74c3c; color: white; opacity: 1; }
 
-/* Settings Modal Specifics */
-.setting-section {
-    margin-bottom: 20px;
-}
-.setting-section:last-of-type {
-    margin-bottom: 0;
-}
+.setting-section { margin-bottom: 20px; }
+.setting-section:last-of-type { margin-bottom: 0; }
