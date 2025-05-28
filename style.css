@@ -4,35 +4,44 @@
 /* --- CSS Variables for Theming (Enhanced Default) --- */
 :root {
     --font-primary: 'Inter', sans-serif;
-    /* --font-code: 'Fira Code', monospace; /* CodeMirror will use its theme's font */
+    --font-code: 'Fira Code', monospace; /* Used for some elements like settings textarea, CM has its own */
 
     --color-background-main: #f4f7f9;
     --color-background-header: #ffffff;
-    --color-background-editor: #ffffff; /* Background for the .editor div */
+    --color-background-editor: #ffffff; /* Background for editor panels AND modal content */
     --color-background-preview: #ffffff;
     --color-background-footer: #2c3e50;
     --color-background-button: #007aff;
     --color-background-button-hover: #005bb5;
-    --color-background-section-header: #eef1f4;
+    --color-background-section-header: #eef1f4; /* For h2 in editor panels */
+    --color-background-input: var(--color-background-main); /* For text inputs/textareas in modals */
+
 
     --color-text-main: #333333;
     --color-text-header: #2c3e50;
-    --color-text-editor-label: #555555;
+    --color-text-editor-label: #555555; /* For h2 in editor panels & modal labels */
     --color-text-button: #ffffff;
     --color-text-footer: #e0e0e0;
     --color-text-link: #007aff;
     --color-text-placeholder: #999999;
 
     --border-color-light: #dce1e6;
-    --border-color-dark: #c0c5cb;
+    --border-color-dark: #c0c5cb; /* For inputs, etc. */
     --border-radius-main: 8px;
     --border-radius-small: 5px;
     --box-shadow-main: 0 4px 12px rgba(0,0,0,0.06);
     --box-shadow-light: 0 2px 6px rgba(0,0,0,0.04);
+
+    /* For focus rings - ensure your theme files also define this if they change link color */
+    --color-text-link-rgb: 0, 123, 255; /* RGB components of --color-text-link */
 }
+/* --- End CSS Variables --- */
 
 /* General Reset and Body */
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     font-family: var(--font-primary);
     margin: 0;
@@ -47,7 +56,7 @@ body {
 }
 
 /* Header */
-header { /* ... (keep your existing header styles) ... */
+header {
     background-color: var(--color-background-header);
     color: var(--color-text-header);
     padding: 0.8rem 1.5rem;
@@ -58,102 +67,181 @@ header { /* ... (keep your existing header styles) ... */
     border-bottom: 1px solid var(--border-color-light);
     box-shadow: var(--box-shadow-light);
 }
-header h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
-.theme-selector-button { /* ... (keep existing theme button styles) ... */
-    background-color: transparent; color: var(--color-text-link); border: 1px solid var(--border-color-light);
-    padding: 0.5rem 1rem; border-radius: var(--border-radius-small); cursor: pointer; text-decoration: none;
-    font-size: 0.85rem; font-weight: 500; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
-.theme-selector-button:hover, .theme-selector-button:focus {
-    background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button); outline: none;
+
+.theme-selector-button {
+    background-color: transparent;
+    color: var(--color-text-link);
+    border: 1px solid var(--border-color-light);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-selector-button:hover,
+.theme-selector-button:focus {
+    background-color: var(--color-background-button);
+    color: var(--color-text-button);
+    border-color: var(--color-background-button);
+    outline: none;
 }
 
 /* Editor Container */
-.editor-container { display: flex; flex-direction: column; flex-grow: 1; padding: 20px; gap: 20px; }
-.code-section { display: flex; flex-direction: column; gap: 20px; }
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
+    gap: 20px;
+}
+
+.code-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
 @media (min-width: 992px) {
-    .code-section { flex-direction: row; justify-content: space-between; }
-    .editor { flex-basis: calc(33.333% - 14px); }
+    .code-section {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .editor {
+        flex-basis: calc(33.333% - 14px);
+    }
 }
 
 .editor {
     display: flex;
-    flex-direction: column; /* Important for h2 and CodeMirror to stack */
-    background-color: var(--color-background-editor); /* BG for the whole editor box */
+    flex-direction: column;
+    background-color: var(--color-background-editor);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden; /* To contain CodeMirror's rounded corners if its theme doesn't do it */
-    min-height: 350px; /* Minimum height for each editor panel */
+    overflow: hidden;
+    min-height: 350px;
 }
 
-.editor h2 { /* ... (keep existing editor h2 styles) ... */
-    background-color: var(--color-background-section-header); color: var(--color-text-editor-label); margin: 0;
-    padding: 12px 18px; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color-light);
+.editor h2 {
+    background-color: var(--color-background-section-header);
+    color: var(--color-text-editor-label);
+    margin: 0;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color-light);
     text-align: left;
 }
 
 /* CodeMirror Styling Adjustments */
 .CodeMirror {
-    font-family: 'Fira Code', monospace; /* Fallback if theme doesn't set one, or override */
-    font-size: 14px; /* Adjust as needed */
+    font-family: var(--font-code); /* Fallback font, CM theme often dictates this */
+    font-size: 14px; /* Base size, can be adjusted by CM theme */
     line-height: 1.5;
-    height: 100%; /* Makes CodeMirror fill the .editor div's remaining space */
-    flex-grow: 1; /* Allow CodeMirror to grow */
-    border: none; /* Remove CodeMirror default borders if any */
+    height: 100%;
+    flex-grow: 1;
+    border: 1px solid var(--border-color-dark); /* Subtle border for CM instances */
 }
 
 /* Hide original textareas if CodeMirror is successfully initialized (JS will handle this ideally) */
-/* textarea { display: none; } /* You might not need this if CodeMirror handles it well */
+/* textarea#html-code, textarea#css-code, textarea#js-code { display: none; } */
 
 
-/* EDITOR MAIN Controls Styling */
-.editor-main-controls { /* ... (keep existing editor-main-controls styles) ... */
-    margin-bottom: 15px; text-align: center; padding: 10px 0; display: flex;
-    justify-content: center; flex-wrap: wrap; gap: 12px;
+/* EDITOR MAIN Controls Styling (Run, Save, Load, Settings, ZIP, Fullscreen buttons) */
+.editor-main-controls {
+    margin-bottom: 15px;
+    text-align: center;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px; /* Reduced gap slightly */
 }
-.editor-main-controls button { /* ... (keep existing editor-main-controls button styles) ... */
-    background-color: var(--color-background-button); color: var(--color-text-button); border: none;
-    padding: 10px 22px; border-radius: var(--border-radius-small); cursor: pointer;
-    font-size: 0.9rem; font-weight: 500; transition: background-color 0.2s ease, transform 0.1s ease;
-}
-.editor-main-controls button:hover { background-color: var(--color-background-button-hover); transform: translateY(-1px); }
-.editor-main-controls button:active { transform: translateY(0px); }
 
+.editor-main-controls button {
+    background-color: var(--color-background-button);
+    color: var(--color-text-button);
+    border: none;
+    padding: 10px 18px; /* Adjusted padding for more buttons */
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-size: 0.88rem; /* Adjusted font size */
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.editor-main-controls button:hover {
+    background-color: var(--color-background-button-hover);
+    transform: translateY(-1px);
+}
+.editor-main-controls button:active {
+    transform: translateY(0px);
+}
 
 /* Preview Section */
-.preview-section { /* ... (keep existing preview-section styles) ... */
-    flex-grow: 1; display: flex; flex-direction: column; background-color: var(--color-background-preview);
-    border: 1px solid var(--border-color-light); border-radius: var(--border-radius-main); box-shadow: var(--box-shadow-main);
-    overflow: hidden; min-height: 350px;
+.preview-section {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background-preview);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-main);
+    box-shadow: var(--box-shadow-main);
+    overflow: hidden;
+    min-height: 350px;
 }
-.preview-section h2 { /* ... (keep existing preview-section h2 styles) ... */
-    background-color: var(--color-background-section-header); color: var(--color-text-editor-label); margin: 0;
-    padding: 12px 18px; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color-light);
+
+.preview-section h2 {
+    background-color: var(--color-background-section-header);
+    color: var(--color-text-editor-label);
+    margin: 0;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color-light);
     text-align: left;
 }
-#preview-frame { flex-grow: 1; width: 100%; border: none; background-color: var(--color-background-preview); }
 
-/* Footer */
-footer { /* ... (keep existing footer styles) ... */
-    background-color: var(--color-background-footer); color: var(--color-text-footer); text-align: center;
-    padding: 1.25rem 1.5rem; margin-top: auto; font-size: 0.85rem;
+#preview-frame {
+    flex-grow: 1;
+    width: 100%;
+    border: none;
+    background-color: var(--color-background-preview);
 }
 
-/* Modal Styles */
+/* Footer */
+footer {
+    background-color: var(--color-background-footer);
+    color: var(--color-text-footer);
+    text-align: center;
+    padding: 1.25rem 1.5rem;
+    margin-top: auto;
+    font-size: 0.85rem;
+}
+
+
+/* --- Modal Styles (Generic for Save, Load, Settings) --- */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.5); /* Black w/ opacity (dimmed background) */
-    backdrop-filter: blur(5px); /* Optional: blur background */
-    animation: fadeIn 0.3s ease-out;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
@@ -162,27 +250,29 @@ footer { /* ... (keep existing footer styles) ... */
 }
 
 .modal-content {
-    background-color: var(--color-background-editor); /* Use theme variable */
-    color: var(--color-text-main); /* Use theme variable */
-    margin: 10% auto; /* 10% from the top and centered */
+    background-color: var(--color-background-editor);
+    color: var(--color-text-main);
+    margin: 10vh auto; /* Adjusted margin for better vertical centering */
     padding: 25px 30px;
-    border: 1px solid var(--border-color-light); /* Use theme variable */
-    border-radius: var(--border-radius-main); /* Use theme variable */
-    width: 80%;
-    max-width: 500px; /* Max width for the modal */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-main);
+    width: 90%;
+    max-width: 550px; /* Slightly increased max-width */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
     position: relative;
-    animation: slideIn 0.3s ease-out;
+    animation: slideInModal 0.25s ease-out;
 }
 
-@keyframes slideIn {
-    from { transform: translateY(-30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+@keyframes slideInModal {
+    from { transform: translateY(-25px) scale(0.98); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .close-button {
-    color: var(--color-text-editor-label); /* Use theme variable */
-    float: right;
+    color: var(--color-text-editor-label);
+    position: absolute; /* Position relative to modal-content */
+    top: 10px;
+    right: 15px;
     font-size: 28px;
     font-weight: bold;
     transition: color 0.2s ease;
@@ -190,16 +280,17 @@ footer { /* ... (keep existing footer styles) ... */
 
 .close-button:hover,
 .close-button:focus {
-    color: var(--color-text-main); /* Darker on hover */
+    color: var(--color-text-main);
     text-decoration: none;
     cursor: pointer;
 }
 
 .modal h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: var(--color-text-header); /* Use theme variable for heading */
+    margin-top: 5px; /* Adjusted due to absolute positioned close button */
+    margin-bottom: 25px; /* Increased spacing */
+    color: var(--color-text-header);
     font-weight: 600;
+    font-size: 1.3rem; /* Slightly larger modal titles */
 }
 
 .modal label {
@@ -209,29 +300,39 @@ footer { /* ... (keep existing footer styles) ... */
     color: var(--color-text-editor-label);
 }
 
-.modal input[type="text"] {
+/* Input and Textarea styles within modals */
+.modal input[type="text"],
+.modal textarea {
     width: 100%;
     padding: 10px 12px;
     margin-bottom: 20px;
-    border: 1px solid var(--border-color-dark); /* Use theme variable */
+    border: 1px solid var(--border-color-dark);
     border-radius: var(--border-radius-small);
-    font-family: var(--font-primary);
+    font-family: var(--font-primary); /* Use primary font for name input */
     font-size: 1em;
-    background-color: var(--color-background-main); /* Lighter background for input */
+    background-color: var(--color-background-input);
     color: var(--color-text-main);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.modal input[type="text"]:focus {
-    outline: none;
-    border-color: var(--color-text-link); /* Use theme variable */
-    box-shadow: 0 0 0 2px rgba(var(--color-text-link-rgb, 0, 123, 255), 0.25); /* Needs --color-text-link-rgb if you have it */
+.modal textarea { /* Specific for settings modal's textareas */
+    font-family: var(--font-code); /* Use code font for URL inputs */
+    font-size: 0.9em;
+    resize: vertical;
+    min-height: 80px;
 }
 
+.modal input[type="text"]:focus,
+.modal textarea:focus {
+    outline: none;
+    border-color: var(--color-text-link);
+    box-shadow: 0 0 0 3px rgba(var(--color-text-link-rgb), 0.2); /* Softer focus ring */
+}
 
 .modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px; /* Increased gap */
+    margin-top: 25px; /* Increased spacing */
 }
 
 .modal-actions button {
@@ -239,122 +340,107 @@ footer { /* ... (keep existing footer styles) ... */
     border-radius: var(--border-radius-small);
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
     border: 1px solid transparent;
+    font-size: 0.9rem;
+}
+.modal-actions button:hover {
+    opacity: 0.85;
 }
 
-.modal-actions button#confirm-save-button,
-.modal-actions button.load-button { /* Primary action */
+.modal-actions button.primary-action { /* Generic primary action button */
     background-color: var(--color-background-button);
     color: var(--color-text-button);
     border-color: var(--color-background-button);
 }
-.modal-actions button#confirm-save-button:hover,
-.modal-actions button.load-button:hover {
+/* Specific IDs if needed, or use .primary-action */
+#confirm-save-button, #apply-settings-button {
+    background-color: var(--color-background-button);
+    color: var(--color-text-button);
+    border-color: var(--color-background-button);
+}
+#confirm-save-button:hover, #apply-settings-button:hover {
     background-color: var(--color-background-button-hover);
     border-color: var(--color-background-button-hover);
 }
 
-.modal-actions button.button-alt,
-.modal-actions button.delete-button { /* Secondary/destructive action */
+
+.modal-actions button.button-alt {
     background-color: transparent;
     color: var(--color-text-editor-label);
     border-color: var(--border-color-dark);
 }
 .modal-actions button.button-alt:hover {
-    background-color: var(--color-background-section-header); /* Light hover */
+    background-color: var(--color-background-section-header);
     color: var(--color-text-main);
-}
-.modal-actions button.delete-button {
-    color: #dc3545; /* Red for delete */
-    border-color: #dc3545;
-}
-.modal-actions button.delete-button:hover {
-    background-color: #dc3545;
-    color: white;
+    border-color: var(--border-color-dark); /* Keep border consistent on hover */
 }
 
-
-/* Project List Styling */
+/* Project List Styling (Load Modal) */
 #projects-list-container {
-    max-height: 300px;
+    max-height: 35vh; /* Use viewport height for better responsiveness */
     overflow-y: auto;
     margin-bottom: 20px;
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-small);
-    padding: 10px;
-    background-color: var(--color-background-main); /* Slightly different BG for list area */
+    padding: 5px; /* Reduced padding */
+    background-color: var(--color-background-input); /* Consistent with inputs */
 }
 
 .project-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 10px;
+    padding: 10px; /* Adjusted padding */
     border-bottom: 1px solid var(--border-color-light);
-    transition: background-color 0.2s ease;
+    transition: background-color 0.15s ease;
 }
 .project-item:last-child {
     border-bottom: none;
 }
 .project-item:hover {
-    background-color: var(--color-background-section-header); /* Hover effect for list item */
+    background-color: var(--color-background-section-header);
 }
 
 .project-item-name {
     font-weight: 500;
     color: var(--color-text-main);
     flex-grow: 1;
+    margin-right: 10px; /* Space before buttons */
+    overflow: hidden; /* Prevent long names from breaking layout */
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .project-item-actions button {
     margin-left: 8px;
-    padding: 6px 10px; /* Smaller buttons for list items */
-    font-size: 0.85em;
+    padding: 5px 10px; /* Smaller buttons */
+    font-size: 0.8rem; /* Smaller font */
 }
-/* Add this if you don't have --color-text-link-rgb for the focus shadow */
-:root {
-    /* Assuming your --color-text-link is #007aff */
-    --color-text-link-rgb: 0, 123, 255; 
+.project-item-actions button.load-button { /* Load button in list */
+    background-color: var(--color-background-button);
+    color: var(--color-text-button);
+    border-color: var(--color-background-button);
 }
-
-/* Ensure CodeMirror theme variables don't clash badly if a page theme is very different.
-   The CodeMirror theme itself (e.g., material-darker) will mostly dictate editor appearance. */
-.CodeMirror {
-    /* ... existing CodeMirror styles ... */
-    border: 1px solid var(--border-color-dark); /* Add a subtle border to CM instances */
+.project-item-actions button.load-button:hover {
+    background-color: var(--color-background-button-hover);
+    border-color: var(--color-background-button-hover);
 }
 
-/* Modal Styles - These are generic and should mostly apply to the new modal too */
-/* ... (ensure your .modal, .modal-content, .close-button, .modal h2, .modal-actions styles are present) ... */
+.project-item-actions button.delete-button {
+    background-color: transparent;
+    color: #e74c3c; /* More distinct red */
+    border-color: #e74c3c;
+}
+.project-item-actions button.delete-button:hover {
+    background-color: #e74c3c;
+    color: white;
+}
 
-/* Specific styles for Settings Modal content if needed */
+/* Settings Modal Specifics */
 .setting-section {
     margin-bottom: 20px;
 }
-
-.setting-section label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: var(--color-text-editor-label);
-}
-
-.setting-section textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border-color-dark);
-    border-radius: var(--border-radius-small);
-    font-family: var(--font-code); /* Use code font for URLs */
-    font-size: 0.9em;
-    background-color: var(--color-background-main);
-    color: var(--color-text-main);
-    resize: vertical; /* Allow vertical resizing */
-    min-height: 80px; /* Decent default height */
-}
-
-.setting-section textarea:focus {
-    outline: none;
-    border-color: var(--color-text-link);
-    box-shadow: 0 0 0 2px rgba(var(--color-text-link-rgb, 0, 123, 255), 0.25);
+.setting-section:last-of-type {
+    margin-bottom: 0; /* Remove margin for the last section before actions */
 }
