@@ -11,18 +11,11 @@
 </head>
 <body>
     <header>
-        <div class="header-left">
-            <h1>Alexr Code</h1>
-        </div>
-        <div class="header-center">
-            </div>
-        <div class="header-right">
-            <a href="themes.html" class="theme-selector-button">Themes</a>
-        </div>
+        <h1>Alexr Code</h1>
+        <a href="themes.html" class="theme-selector-button">Themes</a>
     </header>
 
-    <div id="editor-layout-container" class="editor-layout-container"> 
-        <div id="code-editors-pane" class="split-pane">
+    <div class="editor-layout-container"> <div id="code-editors-pane" class="split-pane">
             <div class="code-section" id="code-section-editors"> <div id="html-editor-wrapper" class="editor editor-pane">
                     <h2>HTML</h2>
                     <textarea id="html-code" spellcheck="false"></textarea>
@@ -48,15 +41,13 @@
                 <button id="fullscreen-button">Fullscreen Preview</button>
             </div>
 
-            <div id="preview-wrapper" class="output-sub-pane"> 
-                <div class="preview-section">
+            <div id="preview-wrapper" class="output-sub-pane"> <div class="preview-section">
                     <h2>Preview</h2>
                     <iframe id="preview-frame" allowfullscreen></iframe>
                 </div>
             </div>
 
-            <div id="console-wrapper" class="output-sub-pane"> 
-                <div id="console-section" class="console-section">
+            <div id="console-wrapper" class="output-sub-pane"> <div id="console-section" class="console-section">
                     <div class="console-header">
                         <h2>Console</h2>
                         <button id="clear-console-button">Clear</button>
@@ -69,9 +60,48 @@
         <p>&copy; 2025 Alexr Code</p>
     </footer>
 
-    <div id="save-project-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="save-project-modal">&times;</span> <h2>Save Project</h2> <label for="project-name-input">Project Name:</label> <input type="text" id="project-name-input" placeholder="Enter project name..."> <div class="modal-actions"> <button id="confirm-save-button" class="primary-action">Save</button> <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button> </div> </div> </div>
-    <div id="load-projects-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="load-projects-modal">&times;</span> <h2>Load Project</h2> <div id="projects-list-container"><p>No projects saved yet.</p></div> <div class="modal-actions"> <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button> </div> </div> </div>
-    <div id="settings-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="settings-modal">&times;</span> <h2>Settings - External Resources</h2> <div class="setting-section"> <label for="external-css-urls">External CSS URLs (one per line):</label> <textarea id="external-css-urls" rows="4" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea> </div> <div class="setting-section"> <label for="external-js-urls">External JavaScript URLs (one per line):</label> <textarea id="external-js-urls" rows="4" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea> </div> <div class="modal-actions"> <button id="apply-settings-button" class="primary-action">Apply & Close</button> <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button> </div> </div> </div>
+    <div id="save-project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="save-project-modal">&times;</span>
+            <h2>Save Project</h2>
+            <label for="project-name-input">Project Name:</label>
+            <input type="text" id="project-name-input" placeholder="Enter project name...">
+            <div class="modal-actions">
+                <button id="confirm-save-button" class="primary-action">Save</button>
+                <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="load-projects-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="load-projects-modal">&times;</span>
+            <h2>Load Project</h2>
+            <div id="projects-list-container"><p>No projects saved yet.</p></div>
+            <div class="modal-actions">
+                <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="settings-modal">&times;</span>
+            <h2>Settings - External Resources</h2>
+            <div class="setting-section">
+                <label for="external-css-urls">External CSS URLs (one per line):</label>
+                <textarea id="external-css-urls" rows="4" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea>
+            </div>
+            <div class="setting-section">
+                <label for="external-js-urls">External JavaScript URLs (one per line):</label>
+                <textarea id="external-js-urls" rows="4" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button id="apply-settings-button" class="primary-action">Apply & Close</button>
+                <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
@@ -81,8 +111,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closetag.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closebrackets.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
-
-    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script> <script src="script.js"></script>
 </body>
 </html>
