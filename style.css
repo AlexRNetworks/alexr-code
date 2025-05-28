@@ -103,56 +103,51 @@ header h1 {
 /* Main Layout Container for Split.js */
 .editor-layout-container {
     display: flex;
-    flex-direction: row; /* Editors on left (or top), output on right (or bottom) */
-    flex-grow: 1; /* Takes up all space between header and footer */
+    flex-direction: row; 
+    flex-grow: 1; 
     overflow: hidden;
-    padding: 10px; /* Overall padding around the split areas */
-    gap: 10px; /* Space for the main gutter */
+    padding: 10px; 
+    gap: 10px; 
 }
 
 /* Direct children of .editor-layout-container are the main panes */
 #code-editors-pane, #output-pane {
-    /* Split.js will control the flex-basis/width/height */
-    /* overflow: hidden; /* Prevent panes from showing scrollbars, content inside should scroll */
-    display: flex; /* Allows content within panes to use flexbox */
-    flex-direction: column; /* Default for content stacking within these primary panes */
+    display: flex; 
+    flex-direction: column; 
 }
 
 /* Code Editors Area (#code-editors-pane already a flex column) */
-#code-section-editors { /* This div contains the 3 editor panes */
+#code-section-editors { 
     display: flex;
-    flex-direction: row; /* HTML, CSS, JS side-by-side */
-    flex-grow: 1; /* Fill #code-editors-pane */
-    min-height: 0; /* Important for nested flex elements */
-    /* gap: 10px; /* Gutters will provide spacing */
+    flex-direction: row; 
+    flex-grow: 1; 
+    min-height: 0; 
 }
 
 /* Individual Editor Panes (HTML, CSS, JS Wrappers) */
-.editor-pane { /* e.g., #html-editor-wrapper */
+.editor-pane { 
     display: flex;
     flex-direction: column;
-    /* background-color is set by .editor */
-    overflow: hidden; /* This is important! */
-    /* flex-basis will be set by Split.js */
+    overflow: hidden; 
 }
 
-.editor { /* Styles for the .editor div inside .editor-pane */
+.editor { 
     display: flex;
     flex-direction: column;
     background-color: var(--color-background-editor);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden; /* Crucial for CodeMirror */
-    height: 100%; /* Make .editor fill its .editor-pane wrapper */
+    overflow: hidden; 
+    height: 100%; 
 }
 
 .editor h2 {
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 8px 12px; /* Reduced padding */
-    font-size: 0.85rem; /* Reduced font size */
+    padding: 8px 12px; 
+    font-size: 0.85rem; 
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
@@ -163,35 +158,31 @@ header h1 {
     font-family: var(--font-code);
     font-size: 14px;
     line-height: 1.5;
-    height: 100%; /* Make CodeMirror fill the .editor div */
+    height: 100%; 
     flex-grow: 1;
-    border-top: none; /* Remove CM's top border if .editor already has one via h2 */
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    /* border: 1px solid var(--border-color-dark); /* Optional if you want border directly on CM */
+    /* border: 1px solid var(--border-color-dark); /* Removed to rely on .editor border */
 }
 
 
 /* Output Pane (#output-pane already a flex column) */
 .editor-main-controls {
-    margin-bottom: 8px; /* Space below controls */
+    margin-bottom: 8px; 
     text-align: center;
-    padding: 5px 0; /* Reduced padding */
+    padding: 5px 0; 
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
-    flex-shrink: 0; /* Prevent controls from shrinking */
+    flex-shrink: 0; 
 }
 .editor-main-controls button {
     background-color: var(--color-background-button);
     color: var(--color-text-button);
     border: none;
-    padding: 6px 12px; /* Smaller buttons */
+    padding: 6px 12px; 
     border-radius: var(--border-radius-small);
     cursor: pointer;
-    font-size: 0.8rem; /* Smaller font */
+    font-size: 0.8rem; 
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
@@ -199,24 +190,22 @@ header h1 {
 .editor-main-controls button:active { transform: translateY(0px); }
 
 /* Output Sub-Panes Wrappers (Preview, Console Wrappers) */
-.output-sub-pane { /* e.g., #preview-wrapper, #console-wrapper */
-    display: flex; /* These wrappers should be flex to allow their children to grow */
+.output-sub-pane { 
+    display: flex; 
     flex-direction: column;
     overflow: hidden;
-    /* flex-basis will be set by Split.js */
-    /* min-height is set by Split.js options */
 }
 
 .preview-section, .console-section {
-    flex-grow: 1; /* Make these fill their respective wrappers */
+    flex-grow: 1; 
     display: flex;
     flex-direction: column;
     background-color: var(--color-background-editor);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden; /* Content will scroll internally */
-    height: 100%; /* Ensure they take full height of their split pane */
+    overflow: hidden; 
+    height: 100%; 
 }
 .preview-section { background-color: var(--color-background-preview); }
 
@@ -224,8 +213,8 @@ header h1 {
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 8px 12px; /* Reduced padding */
-    font-size: 0.85rem; /* Reduced font size */
+    padding: 8px 12px; 
+    font-size: 0.85rem; 
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
@@ -245,8 +234,8 @@ header h1 {
 #console-output {
     flex-grow: 1; padding: 8px 12px; overflow-y: auto; font-family: var(--font-code);
     font-size: 0.85em; line-height: 1.6; white-space: pre-wrap; word-break: break-all;
-    background-color: var(--color-background-editor); /* Match editor background */
-    color: var(--color-text-main); /* Ensure text color matches */
+    background-color: var(--color-background-editor); 
+    color: var(--color-text-main); 
 }
 .console-message { padding: 2px 0; border-bottom: 1px solid var(--border-color-light); margin-bottom: 2px; }
 .console-message:last-child { border-bottom: none; margin-bottom: 0; }
@@ -263,39 +252,28 @@ header h1 {
     background-repeat: no-repeat;
     background-position: 50%;
     transition: background-color 0.2s ease;
-    z-index: 10; /* Ensure gutters are above editor content if overlapping occurs */
+    z-index: 10; 
 }
 .gutter:hover {
     background-color: var(--color-background-gutter-hover);
 }
-.gutter.gutter-horizontal { /* Between vertical panes (e.g. code editors pane vs output pane) */
+.gutter.gutter-horizontal { 
     cursor: col-resize;
-    /* border-left: 1px solid var(--border-color-light);
-    border-right: 1px solid var(--border-color-light); */
-}
-.gutter.gutter-vertical { /* Between horizontal panes (e.g. preview vs console) */
-    cursor: row-resize;
-    /* border-top: 1px solid var(--border-color-light);
-    border-bottom: 1px solid var(--border-color-light); */
-}
-/* Optional: Add visual indicators to gutters if desired, e.g. using ::before/::after or background images */
-/* Example: basic background image for grab handle (from Split.js examples) */
-.gutter.gutter-horizontal {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeAgB+oz4K9qXoRgAAAABJRU5ErkJggg==');
 }
-.gutter.gutter-vertical {
+.gutter.gutter-vertical { 
+    cursor: row-resize;
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
 }
-
 
 /* Footer */
 footer {
     background-color: var(--color-background-footer);
     color: var(--color-text-footer);
     text-align: center;
-    padding: 0.8rem 1.5rem; /* Reduced padding */
+    padding: 0.8rem 1.5rem; 
     margin-top: auto;
-    font-size: 0.8rem; /* Reduced font size */
+    font-size: 0.8rem; 
     flex-shrink: 0;
 }
 
