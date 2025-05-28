@@ -71,6 +71,26 @@ header {
     border-bottom: 1px solid var(--border-color-light);
     box-shadow: var(--box-shadow-light);
     flex-shrink: 0; /* Prevent header from shrinking */
+    position: relative; /* For z-index if needed above gutters */
+    z-index: 20; /* Ensure header is above gutters */
+}
+
+header .header-left, header .header-right {
+    flex: 1;
+    display: flex;
+    align-items: center; /* Vertically align items in header parts */
+}
+header .header-left {
+    justify-content: flex-start;
+}
+header .header-right {
+    justify-content: flex-end;
+}
+header .header-center {
+    flex: 2; /* Allow more space for central controls if needed */
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
 header h1 {
@@ -78,6 +98,29 @@ header h1 {
     font-size: 1.4rem; /* Slightly smaller */
     font-weight: 600;
 }
+
+/* Layout Toggle Buttons in Header */
+.layout-toggle-button {
+    background-color: var(--color-background-section-header);
+    color: var(--color-text-editor-label);
+    border: 1px solid var(--border-color-dark);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-size: 0.75rem; /* Smaller font */
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.layout-toggle-button:hover {
+    background-color: var(--border-color-dark);
+    color: var(--color-text-main);
+}
+.layout-toggle-button.active { /* Style for the active layout button */
+    background-color: var(--color-background-button);
+    color: var(--color-text-button);
+    border-color: var(--color-background-button);
+}
+
 
 .theme-selector-button {
     background-color: transparent;
@@ -102,87 +145,100 @@ header h1 {
 
 /* Main Layout Container for Split.js */
 .editor-layout-container {
-    display: flex;
-    flex-direction: row; 
-    flex-grow: 1; 
-    overflow: hidden;
-    padding: 10px; 
-    gap: 10px; 
-}
-
-/* Direct children of .editor-layout-container are the main panes */
-#code-editors-pane, #output-pane {
     display: flex; 
-    flex-direction: column; 
+    flex-grow: 1; /* Takes up all space between header and footer */
+    overflow: hidden; /* Crucial */
+    padding: 10px; 
+    gap: 8px; /* Space for the main gutter, matches Split.js gutterSize */
+}
+/* Dynamic layout classes - these will be toggled by JavaScript */
+.layout-horizontal-main {
+    flex-direction: row !important; /* Editors Left | Output Right */
+}
+.layout-vertical-main {
+    flex-direction: column !important; /* Editors Top | Output Bottom */
 }
 
-/* Code Editors Area (#code-editors-pane already a flex column) */
-#code-section-editors { 
+
+/* Direct children of .editor-layout-container are the main panes for Split.js */
+#code-editors-pane, #output-pane {
+    display: flex; /* Essential for internal flex behavior */
+    flex-direction: column; /* Content within these panes stacks vertically by default */
+    overflow: hidden; /* Prevent these panes from showing scrollbars themselves */
+    /* Split.js will control flex-basis/width/height */
+}
+
+/* Code Editors Area (#code-editors-pane is already a flex column) */
+#code-section-editors { /* This div contains the 3 editor panes */
     display: flex;
-    flex-direction: row; 
-    flex-grow: 1; 
-    min-height: 0; 
+    flex-direction: row; /* HTML, CSS, JS side-by-side, Split.js manages this too */
+    flex-grow: 1; /* Fill #code-editors-pane */
+    min-height: 0; /* Important for nested flex elements */
+    overflow: hidden; /* Prevent scrollbars on the group */
+    /* gap: 8px; /* Gutters will provide spacing */
 }
 
 /* Individual Editor Panes (HTML, CSS, JS Wrappers) */
-.editor-pane { 
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; 
+.editor-pane { /* e.g., #html-editor-wrapper */
+    display: flex; /* This pane itself is a flex container */
+    flex-direction: column; /* Its children (.editor) will stack */
+    overflow: hidden; /* This is important! */
+    /* flex-basis will be set by Split.js for horizontal splitting */
+    /* height will be 100% of parent for vertical splitting */
 }
 
-.editor { 
+.editor { /* Styles for the .editor div inside .editor-pane */
     display: flex;
     flex-direction: column;
     background-color: var(--color-background-editor);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden; 
-    height: 100%; 
+    overflow: hidden; /* Crucial for CodeMirror */
+    height: 100%; /* Make .editor fill its .editor-pane wrapper */
 }
 
 .editor h2 {
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 8px 12px; 
-    font-size: 0.85rem; 
+    padding: 8px 12px; /* Reduced padding */
+    font-size: 0.85rem; /* Reduced font size */
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent h2 from shrinking if content is too large */
 }
 
 .CodeMirror {
     font-family: var(--font-code);
     font-size: 14px;
     line-height: 1.5;
-    height: 100%; 
-    flex-grow: 1;
-    /* border: 1px solid var(--border-color-dark); /* Removed to rely on .editor border */
+    height: 100%; /* Make CodeMirror fill the .editor div's available space */
+    flex-grow: 1; /* Allows CodeMirror to take remaining space */
+    /* border: 1px solid var(--border-color-dark); /* Optional: if you want a border directly on CM instances */
 }
 
 
-/* Output Pane (#output-pane already a flex column) */
+/* Output Pane (#output-pane is already a flex column) */
 .editor-main-controls {
-    margin-bottom: 8px; 
+    margin-bottom: 8px; /* Space below controls */
     text-align: center;
-    padding: 5px 0; 
+    padding: 5px 0; /* Reduced padding */
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
-    flex-shrink: 0; 
+    flex-shrink: 0; /* Prevent controls from shrinking */
 }
 .editor-main-controls button {
     background-color: var(--color-background-button);
     color: var(--color-text-button);
     border: none;
-    padding: 6px 12px; 
+    padding: 6px 12px; /* Smaller buttons */
     border-radius: var(--border-radius-small);
     cursor: pointer;
-    font-size: 0.8rem; 
+    font-size: 0.8rem; /* Smaller font */
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
@@ -190,35 +246,37 @@ header h1 {
 .editor-main-controls button:active { transform: translateY(0px); }
 
 /* Output Sub-Panes Wrappers (Preview, Console Wrappers) */
-.output-sub-pane { 
-    display: flex; 
-    flex-direction: column;
-    overflow: hidden;
+.output-sub-pane { /* e.g., #preview-wrapper, #console-wrapper */
+    display: flex; /* These wrappers should be flex to allow their children to grow */
+    flex-direction: column; /* Their children (.preview-section, .console-section) stack */
+    overflow: hidden; /* Important for nested splits */
+    /* flex-basis will be set by Split.js for vertical splitting */
+    /* height will be 100% of parent for horizontal splitting (if output pane is a row item) */
 }
 
 .preview-section, .console-section {
-    flex-grow: 1; 
+    flex-grow: 1; /* Make these fill their respective wrappers */
     display: flex;
     flex-direction: column;
-    background-color: var(--color-background-editor);
+    background-color: var(--color-background-editor); /* Base background */
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main);
-    overflow: hidden; 
-    height: 100%; 
+    overflow: hidden; /* Content will scroll internally */
+    height: 100%; /* Ensure they take full height of their split pane parent */
 }
-.preview-section { background-color: var(--color-background-preview); }
+.preview-section { background-color: var(--color-background-preview); } /* Specific preview BG */
 
-.preview-section h2, .console-header {
+.preview-section h2, .console-header { /* Common styling for headers of these sections */
     background-color: var(--color-background-section-header);
     color: var(--color-text-editor-label);
     margin: 0;
-    padding: 8px 12px; 
-    font-size: 0.85rem; 
+    padding: 8px 12px; /* Reduced padding */
+    font-size: 0.85rem; /* Reduced font size */
     font-weight: 600;
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 .console-header { display: flex; justify-content: space-between; align-items: center; }
 
@@ -234,8 +292,8 @@ header h1 {
 #console-output {
     flex-grow: 1; padding: 8px 12px; overflow-y: auto; font-family: var(--font-code);
     font-size: 0.85em; line-height: 1.6; white-space: pre-wrap; word-break: break-all;
-    background-color: var(--color-background-editor); 
-    color: var(--color-text-main); 
+    background-color: var(--color-background-editor); /* Match editor background */
+    color: var(--color-text-main); /* Ensure text color matches */
 }
 .console-message { padding: 2px 0; border-bottom: 1px solid var(--border-color-light); margin-bottom: 2px; }
 .console-message:last-child { border-bottom: none; margin-bottom: 0; }
@@ -252,7 +310,7 @@ header h1 {
     background-repeat: no-repeat;
     background-position: 50%;
     transition: background-color 0.2s ease;
-    z-index: 10; 
+    z-index: 10; /* Ensure gutters are above editor content if overlapping occurs */
 }
 .gutter:hover {
     background-color: var(--color-background-gutter-hover);
@@ -266,15 +324,18 @@ header h1 {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
 }
 
+
 /* Footer */
 footer {
     background-color: var(--color-background-footer);
     color: var(--color-text-footer);
     text-align: center;
-    padding: 0.8rem 1.5rem; 
-    margin-top: auto;
-    font-size: 0.8rem; 
-    flex-shrink: 0;
+    padding: 0.8rem 1.5rem; /* Reduced padding */
+    margin-top: auto; /* This works when body is display:flex; flex-direction:column; */
+    font-size: 0.8rem; /* Reduced font size */
+    flex-shrink: 0; /* Prevent footer from shrinking */
+    position: relative; /* For z-index if needed */
+    z-index: 20; /* Ensure footer is above gutters if overlap occurs */
 }
 
 /* --- Modal Styles (Generic for Save, Load, Settings) --- */
@@ -284,6 +345,7 @@ footer {
     backdrop-filter: blur(4px); animation: fadeIn 0.2s ease-out;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 .modal-content {
     background-color: var(--color-background-editor); color: var(--color-text-main);
     margin: 10vh auto; padding: 25px 30px; border: 1px solid var(--border-color-light);
@@ -292,13 +354,16 @@ footer {
     animation: slideInModal 0.25s ease-out;
 }
 @keyframes slideInModal { from { transform: translateY(-25px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
 .close-button {
     color: var(--color-text-editor-label); position: absolute; top: 10px; right: 15px;
     font-size: 28px; font-weight: bold; transition: color 0.2s ease;
 }
 .close-button:hover, .close-button:focus { color: var(--color-text-main); text-decoration: none; cursor: pointer; }
+
 .modal h2 { margin-top: 5px; margin-bottom: 25px; color: var(--color-text-header); font-weight: 600; font-size: 1.3rem; }
 .modal label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--color-text-editor-label); }
+
 .modal input[type="text"], .modal textarea {
     width: 100%; padding: 10px 12px; margin-bottom: 20px; border: 1px solid var(--border-color-dark);
     border-radius: var(--border-radius-small); font-family: var(--font-primary); font-size: 1em;
@@ -306,29 +371,35 @@ footer {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .modal textarea { font-family: var(--font-code); font-size: 0.9em; resize: vertical; min-height: 80px; }
+
 .modal input[type="text"]:focus, .modal textarea:focus {
     outline: none; border-color: var(--color-text-link);
     box-shadow: 0 0 0 3px rgba(var(--color-text-link-rgb), 0.2);
 }
+
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
 .modal-actions button {
     padding: 10px 20px; border-radius: var(--border-radius-small); font-weight: 500; cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
     border: 1px solid transparent; font-size: 0.9rem;
 }
-.modal-actions button:hover { opacity: 0.85; }
+.modal-actions button:hover { opacity: 0.85; } /* General hover for modal buttons */
+
 .modal-actions button.primary-action {
     background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button);
 }
 .modal-actions button.primary-action:hover {
     background-color: var(--color-background-button-hover); border-color: var(--color-background-button-hover); opacity: 1;
 }
+
 .modal-actions button.button-alt {
     background-color: transparent; color: var(--color-text-editor-label); border-color: var(--border-color-dark);
 }
 .modal-actions button.button-alt:hover {
     background-color: var(--color-background-section-header); color: var(--color-text-main); border-color: var(--border-color-dark); opacity: 1;
 }
+
+/* Project List Styling (Load Modal) */
 #projects-list-container {
     max-height: 35vh; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-small); padding: 5px; background-color: var(--color-background-input);
@@ -339,12 +410,13 @@ footer {
 }
 .project-item:last-child { border-bottom: none; }
 .project-item:hover { background-color: var(--color-background-section-header); }
+
 .project-item-name {
     font-weight: 500; color: var(--color-text-main); flex-grow: 1; margin-right: 10px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .project-item-actions button { margin-left: 8px; padding: 5px 10px; font-size: 0.8rem; }
-.project-item-actions button.load-button {
+.project-item-actions button.load-button { /* Load button in list */
     background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button);
 }
 .project-item-actions button.load-button:hover {
@@ -354,5 +426,7 @@ footer {
     background-color: transparent; color: #e74c3c; border-color: #e74c3c;
 }
 .project-item-actions button.delete-button:hover { background-color: #e74c3c; color: white; opacity: 1; }
+
+/* Settings Modal Specifics */
 .setting-section { margin-bottom: 20px; }
 .setting-section:last-of-type { margin-bottom: 0; }
