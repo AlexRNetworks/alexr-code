@@ -1,1 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexr Code - Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Alexr Code</h1>
+    </header>
 
+    <div class="editor-container">
+        <div class="code-section">
+            <div class="editor">
+                <h2>HTML</h2>
+                <textarea id="html-code" spellcheck="false"><h1>Hello, Alexr Code!</h1>
+<p>This is a live test.</p>
+<button onclick="greet()">Click Me</button></textarea>
+            </div>
+            <div class="editor">
+                <h2>CSS</h2>
+                <textarea id="css-code" spellcheck="false">body {
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 20px;
+}
+
+h1 {
+    color: steelblue;
+}
+
+button {
+    background-color: lightgreen;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}</textarea>
+            </div>
+            <div class="editor">
+                <h2>JavaScript</h2>
+                <textarea id="js-code" spellcheck="false">function greet() {
+    alert("JavaScript is working!");
+}</textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="run-button">Run Code</button>
+            <button id="download-zip-button">Download as ZIP</button>
+        </div>
+
+        <div class="preview-section">
+            <h2>Preview</h2>
+            <iframe id="preview-frame"></iframe>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Alexr Code</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
