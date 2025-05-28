@@ -83,6 +83,25 @@
             <h2>Settings</h2>
             
             <div class="setting-group">
+                <h3>Editor Appearance</h3>
+                <div class="setting-section">
+                    <label for="codemirror-theme-select">Code Editor Theme:</label>
+                    <select id="codemirror-theme-select">
+                        <option value="material-darker">Material Darker</option>
+                        <option value="default">Default Light</option>
+                        <option value="neat">Neat (Light)</option>
+                        <option value="monokai">Monokai (Dark)</option>
+                        <option value="eclipse">Eclipse (Light)</option>
+                        <option value="dracula">Dracula (Dark)</option>
+                    </select>
+                </div>
+                <div class="setting-section">
+                    <label for="editor-font-size-input">Editor Font Size (px):</label>
+                    <input type="number" id="editor-font-size-input" min="8" max="30" step="1">
+                </div>
+            </div>
+
+            <div class="setting-group">
                 <h3>External Resources</h3>
                 <div class="setting-section">
                     <label for="external-css-urls">External CSS URLs (one per line):</label>
@@ -91,25 +110,6 @@
                 <div class="setting-section">
                     <label for="external-js-urls">External JavaScript URLs (one per line):</label>
                     <textarea id="external-js-urls" rows="3" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
-                </div>
-            </div>
-
-            <div class="setting-group">
-                <h3>Editor Appearance</h3>
-                <div class="setting-section">
-                    <label for="codemirror-theme-select">Code Editor Theme:</label>
-                    <select id="codemirror-theme-select">
-                        <option value="material-darker">Material Darker (Default)</option>
-                        <option value="default">Default Light</option>
-                        <option value="neat">Neat</option>
-                        <option value="monokai">Monokai</option>
-                        <option value="eclipse">Eclipse</option>
-                        <option value="dracula">Dracula</option>
-                        </select>
-                </div>
-                <div class="setting-section">
-                    <label for="editor-font-size-input">Editor Font Size (px):</label>
-                    <input type="number" id="editor-font-size-input" min="8" max="30" step="1" value="14">
                 </div>
             </div>
             
