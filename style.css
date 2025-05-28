@@ -157,17 +157,18 @@ textarea::placeholder {
     font-style: italic;
 }
 
-/* Controls */
-.controls {
-    margin-bottom: 15px; /* Increased margin */
+/* EDITOR MAIN Controls Styling (Run, ZIP, Fullscreen buttons) */
+.editor-main-controls {
+    margin-bottom: 15px;
     text-align: center;
     padding: 10px 0;
     display: flex;
     justify-content: center;
-    gap: 12px; /* Adjusted gap */
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    gap: 12px;
 }
 
-.controls button {
+.editor-main-controls button {
     background-color: var(--color-background-button);
     color: var(--color-text-button);
     border: none;
@@ -179,11 +180,11 @@ textarea::placeholder {
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.controls button:hover {
+.editor-main-controls button:hover {
     background-color: var(--color-background-button-hover);
     transform: translateY(-1px); /* Subtle hover effect */
 }
-.controls button:active {
+.editor-main-controls button:active {
     transform: translateY(0px);
 }
 
