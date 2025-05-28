@@ -1,0 +1,45 @@
+/* Retro Terminal Theme */
+:root {
+    --font-primary: 'Source Code Pro', monospace; /* Force mono for entire UI */
+    --font-code: 'Source Code Pro', monospace;
+
+    --color-background-main: #000000;
+    --color-background-header: #000000;
+    --color-background-editor: #0a0a0a;
+    --color-background-preview: #0a0a0a;
+    --color-background-footer: #000000;
+    --color-background-button: #00FF00; /* Bright Green */
+    --color-background-button-hover: #00DD00;
+    --color-background-section-header: #101010;
+
+    --color-text-main: #00FF00; /* Bright Green */
+    --color-text-header: #00FF00;
+    --color-text-editor-label: #00FF00;
+    --color-text-button: #000000; /* Black text on green button */
+    --color-text-footer: #00FF00;
+    --color-text-link: #00FF00;
+
+    --border-color-light: #00FF00;
+    --border-color-dark: #00AA00;
+    --border-radius-main: 0px; /* Sharp corners for retro feel */
+    --box-shadow-main: none;
+}
+
+body, header, .editor, .preview-section, footer, button, .theme-selector-button {
+    border-radius: var(--border-radius-main) !important; /* Override default radius */
+    border: 1px solid var(--border-color-light);
+}
+
+header {
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.editor h2, .preview-section h2 {
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+textarea {
+    background-color: var(--color-background-editor);
+    color: var(--color-text-main);
+    caret-color: #00FF00;
+}
