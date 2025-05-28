@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material-darker.min.css">
-    </head>
+</head>
 <body>
     <header>
         <h1>Alexr Code</h1>
@@ -21,193 +21,15 @@
         <div class="code-section">
             <div class="editor">
                 <h2>HTML</h2>
-                <textarea id="html-code" spellcheck="false"><div class="card">
-  <img id="destinationImage" src="https://images.unsplash.com/photo-1500835556837-99ac94a94552?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dHJhdmVsfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" alt="Scenic Destination">
-  <div class="card-content">
-    <h2 id="destinationName">Paris, France</h2>
-    <p id="destinationDescription">Explore the city of lights, visit iconic landmarks like the Eiffel Tower, and enjoy world-class cuisine.</p>
-    <div class="tags">
-      <span>#Travel</span>
-      <span>#Europe</span>
-      <span>#Adventure</span>
-    </div>
-    <button id="detailsButton">Discover More</button>
-  </div>
-</div>
-
-<div class="controls">
-  <p>Next Destination:</p>
-  <button id="loadParis">Paris</button>
-  <button id="loadTokyo">Tokyo</button>
-  <button id="loadRome">Rome</button>
-</div></textarea>
+                <textarea id="html-code" spellcheck="false"></textarea>
             </div>
             <div class="editor">
                 <h2>CSS</h2>
-                <textarea id="css-code" spellcheck="false">/* Default styles for the card */
-:root {
-    --card-bg: #ffffff;
-    --card-shadow: rgba(0, 0, 0, 0.1);
-    --text-color: #333;
-    --heading-color: #1a1a1a;
-    --accent-color: #007bff;
-    --accent-text-color: #ffffff;
-    --tag-bg: #f0f0f0;
-    --tag-text: #555;
-}
-
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #e9e9e9;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 90vh;
-    color: var(--text-color);
-}
-
-.card {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: 0 8px 25px var(--card-shadow);
-    overflow: hidden;
-    width: 100%;
-    max-width: 380px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-}
-
-img { /* More specific to card if needed: .card img */
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    display: block;
-}
-
-.card-content {
-    padding: 25px;
-}
-
-.card-content h2 {
-    font-size: 1.75em;
-    font-weight: 600;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: var(--heading-color);
-}
-
-.card-content p {
-    font-size: 1em;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-.tags span {
-    background-color: var(--tag-bg);
-    color: var(--tag-text);
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 0.8em;
-    margin-right: 8px;
-    display: inline-block;
-    margin-bottom: 5px;
-}
-
-#detailsButton {
-    background-color: var(--accent-color);
-    color: var(--accent-text-color);
-    border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-size: 1em;
-    font-weight: 500;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.2s ease;
-}
-
-#detailsButton:hover {
-    background-color: #0056b3;
-}
-
-.controls { /* For buttons inside the preview */
-    margin-top: 30px;
-    padding: 15px;
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    box-shadow: 0 4px 15px var(--card-shadow);
-    text-align: center;
-}
-.controls p { margin: 0 0 10px 0; font-weight: 500; color: var(--heading-color); }
-.controls button {
-    background-color: #e0e0e0; color: #333; border: 1px solid #ccc;
-    padding: 8px 15px; border-radius: 5px; margin: 0 5px; cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-.controls button:hover { background-color: #d0d0d0; }
-</textarea>
+                <textarea id="css-code" spellcheck="false">/* Default CSS or last loaded project */</textarea>
             </div>
             <div class="editor">
                 <h2>JavaScript</h2>
-                <textarea id="js-code" spellcheck="false">const detailsButton = document.getElementById('detailsButton');
-const destinationImage = document.getElementById('destinationImage');
-const destinationName = document.getElementById('destinationName');
-const destinationDescription = document.getElementById('destinationDescription');
-
-const loadParisButton = document.getElementById('loadParis');
-const loadTokyoButton = document.getElementById('loadTokyo');
-const loadRomeButton = document.getElementById('loadRome');
-
-const destinations = {
-    paris: {
-        name: "Paris, France",
-        description: "Explore the city of lights, visit iconic landmarks like the Eiffel Tower, and enjoy world-class cuisine.",
-        image: "https://images.unsplash.com/photo-1500835556837-99ac94a94552?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dHJhdmVsfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
-        alt: "Scenic view of Paris"
-    },
-    tokyo: {
-        name: "Tokyo, Japan",
-        description: "Experience the vibrant culture of Tokyo, from serene temples to bustling cityscapes and futuristic technology.",
-        image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dG9reW98ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
-        alt: "Cityscape of Tokyo at night"
-    },
-    rome: {
-        name: "Rome, Italy",
-        description: "Discover ancient wonders in Rome, like the Colosseum and Roman Forum, and indulge in authentic Italian pasta.",
-        image: "https://images.unsplash.com/photo-1529260830199-42c24126f198?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Um9tZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
-        alt: "The Colosseum in Rome"
-    }
-};
-
-function loadDestination(destinationKey) {
-    const destination = destinations[destinationKey];
-    if (destination) {
-        destinationImage.src = destination.image;
-        destinationImage.alt = destination.alt;
-        destinationName.textContent = destination.name;
-        destinationDescription.textContent = destination.description;
-    }
-}
-
-if (detailsButton) {
-    detailsButton.addEventListener('click', () => {
-        alert(`You're interested in ${destinationName.textContent}! More details coming soon.`);
-    });
-}
-
-if (loadParisButton) loadParisButton.addEventListener('click', () => loadDestination('paris'));
-if (loadTokyoButton) loadTokyoButton.addEventListener('click', () => loadDestination('tokyo'));
-if (loadRomeButton) loadRomeButton.addEventListener('click', () => loadDestination('rome'));
-
-loadDestination('paris'); // Initialize with Paris
-console.log("Destination card script loaded!");</textarea>
+                <textarea id="js-code" spellcheck="false">// Default JS or last loaded project</textarea>
             </div>
         </div>
 
@@ -215,6 +37,8 @@ console.log("Destination card script loaded!");</textarea>
             <button id="run-button">Run Code</button>
             <button id="download-zip-button">Download ZIP</button>
             <button id="fullscreen-button">Fullscreen Preview</button>
+            <button id="save-project-button">Save Project</button>
+            <button id="load-projects-button">Load Projects</button>
         </div>
 
         <div class="preview-section">
@@ -227,8 +51,34 @@ console.log("Destination card script loaded!");</textarea>
         <p>&copy; 2025 Alexr Code</p>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <div id="save-project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-save-modal">&times;</span>
+            <h2>Save Project</h2>
+            <label for="project-name">Project Name:</label>
+            <input type="text" id="project-name-input" placeholder="Enter project name...">
+            <div class="modal-actions">
+                <button id="confirm-save-button">Save</button>
+                <button id="cancel-save-button" class="button-alt">Cancel</button>
+            </div>
+        </div>
+    </div>
 
+    <div id="load-projects-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-load-modal">&times;</span>
+            <h2>Load Project</h2>
+            <div id="projects-list-container">
+                <p>No projects saved yet.</p>
+            </div>
+             <div class="modal-actions">
+                <button id="cancel-load-button" class="button-alt">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/xml/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
@@ -236,7 +86,6 @@ console.log("Destination card script loaded!");</textarea>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closetag.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closebrackets.min.js"></script>
-
 
     <script src="script.js"></script>
 </body>
