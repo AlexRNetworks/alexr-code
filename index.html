@@ -25,20 +25,20 @@
             </div>
             <div class="editor">
                 <h2>CSS</h2>
-                <textarea id="css-code" spellcheck="false">/* Default CSS or last loaded project */</textarea>
+                <textarea id="css-code" spellcheck="false">/* Default CSS */</textarea>
             </div>
             <div class="editor">
                 <h2>JavaScript</h2>
-                <textarea id="js-code" spellcheck="false">// Default JS or last loaded project</textarea>
+                <textarea id="js-code" spellcheck="false">// Default JS</textarea>
             </div>
         </div>
 
         <div class="editor-main-controls">
             <button id="run-button">Run Code</button>
-            <button id="download-zip-button">Download ZIP</button>
-            <button id="fullscreen-button">Fullscreen Preview</button>
             <button id="save-project-button">Save Project</button>
             <button id="load-projects-button">Load Projects</button>
+            <button id="settings-button">Settings</button> <button id="download-zip-button">Download ZIP</button>
+            <button id="fullscreen-button">Fullscreen Preview</button>
         </div>
 
         <div class="preview-section">
@@ -73,6 +73,28 @@
             </div>
              <div class="modal-actions">
                 <button id="cancel-load-button" class="button-alt">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-settings-modal">&times;</span>
+            <h2>Settings - External Resources</h2>
+            
+            <div class="setting-section">
+                <label for="external-css-urls">External CSS URLs (one per line):</label>
+                <textarea id="external-css-urls" rows="4" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea>
+            </div>
+
+            <div class="setting-section">
+                <label for="external-js-urls">External JavaScript URLs (one per line):</label>
+                <textarea id="external-js-urls" rows="4" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="apply-settings-button">Apply & Close</button>
+                <button id="cancel-settings-button" class="button-alt">Cancel</button>
             </div>
         </div>
     </div>
