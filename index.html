@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alexr Code - Test</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Alexr Code</title> <link rel="stylesheet" href="style.css">
+    <link id="theme-stylesheet" rel="stylesheet" href="">
 </head>
 <body>
     <header>
         <h1>Alexr Code</h1>
+        <a href="themes.html" class="theme-selector-button">Themes</a>
     </header>
 
     <div class="editor-container">
@@ -16,16 +17,18 @@
             <div class="editor">
                 <h2>HTML</h2>
                 <textarea id="html-code" spellcheck="false"><h1>Hello, Alexr Code!</h1>
-<p>This is a live test.</p>
+<p>Try out different themes!</p>
 <button onclick="greet()">Click Me</button></textarea>
             </div>
             <div class="editor">
                 <h2>CSS</h2>
                 <textarea id="css-code" spellcheck="false">body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
+    font-family: var(--font-primary, sans-serif); /* Use theme variable */
+    background-color: #f0f0f0; /* Will be overridden by iframe specific CSS or theme */
     color: #333;
     margin: 20px;
+    padding: 10px;
+    border: 2px solid orange; /* For testing preview */
 }
 
 h1 {
@@ -34,15 +37,17 @@ h1 {
 
 button {
     background-color: lightgreen;
-    padding: 10px;
+    padding: 10px 15px;
     border: none;
+    border-radius: 4px;
     cursor: pointer;
+    font-weight: bold;
 }</textarea>
             </div>
             <div class="editor">
                 <h2>JavaScript</h2>
                 <textarea id="js-code" spellcheck="false">function greet() {
-    alert("JavaScript is working!");
+    alert("JavaScript is working with the current theme!");
 }</textarea>
             </div>
         </div>
