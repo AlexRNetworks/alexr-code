@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     let htmlEditor, cssEditor, jsEditor; // CodeMirror instances
-    let mainSplitInstance, editorSplitInstance, outputSplitInstance; // Split.js instances
+    // Removed: mainSplitInstance, editorSplitInstance, outputSplitInstance (will be local to init if not needed globally)
 
     // UI Elements
-    const editorLayoutContainer = document.getElementById('editor-layout-container');
-    const layoutHorizontalButton = document.getElementById('layout-horizontal-button');
-    const layoutVerticalButton = document.getElementById('layout-vertical-button');
-    
+    // Removed: layoutHorizontalButton, layoutVerticalButton
+    // const editorLayoutContainer = document.getElementById('editor-layout-container'); // Still needed for class if any, but direction is fixed by CSS
+
     const previewFrame = document.getElementById('preview-frame');
     const runButton = document.getElementById('run-button');
     const downloadZipButton = document.getElementById('download-zip-button');
@@ -34,9 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let externalCSS = []; 
     let externalJS = [];  
     let currentProjectId = null; 
-    const LS_LAYOUT_KEY = 'alexrCodeLayout';
+    // Removed: const LS_LAYOUT_KEY = 'alexrCodeLayout';
 
-    console.log("Alexr Code script.js: DOMContentLoaded");
+    console.log("Alexr Code script.js: DOMContentLoaded - Fixed Vertical Layout");
 
     // --- Initialize CodeMirror ---
     const codeMirrorOptions = {
@@ -57,94 +56,57 @@ document.addEventListener('DOMContentLoaded', () => {
         if (jsEditor) jsEditor.refresh();
     }
 
-    // --- Split.js Initialization and Management ---
-    function destroySplits() {
-        if (editorSplitInstance) editorSplitInstance.destroy(true);
-        if (outputSplitInstance) outputSplitInstance.destroy(true);
-        if (mainSplitInstance) mainSplitInstance.destroy(true);
-        editorSplitInstance = outputSplitInstance = mainSplitInstance = null;
-        console.log("Split.js instances destroyed.");
+    // --- Initialize Split.js Panes for Fixed Vertical Layout ---
+    function initializeFixedSplits() {
+        try {
+            // Horizontal split for code editors (HTML, CSS, JS) - remains the same
+            Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
+                sizes: [33.3, 33.3, 33.4], minSize: 60, gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
+                onDragEnd: refreshAllCodeMirrors
+            });
+
+            // Vertical split for output area (Preview vs Console) - remains the same
+            Split(['#preview-wrapper', '#console-wrapper'], {
+                sizes: [70, 30], minSize: [50, 40], gutterSize: 8, direction: 'vertical', cursor: 'row-resize',
+                elementStyle: (dim, size, gutterSize) => ({ 'flex-basis': `calc(${size}% - ${gutterSize}px)` }),
+                gutterStyle: (dim, gutterSize) => ({ 'flex-basis': `${gutterSize}px` })
+            });
+            
+            // Main split (Code Editors Pane vs Output Pane) - NOW FIXED TO VERTICAL
+            Split(['#code-editors-pane', '#output-pane'], {
+                sizes: [55, 45], // Editors take 55%, Output 45% height initially
+                minSize: [150, 150], 
+                gutterSize: 8,
+                direction: 'vertical', // Main direction is now vertical
+                cursor: 'row-resize',    // Cursor for vertical drag
+                onDragEnd: function() {
+                    refreshAllCodeMirrors(); 
+                }
+            });
+            console.log("Split.js panes initialized for fixed vertical layout.");
+            setTimeout(refreshAllCodeMirrors, 100); // Initial refresh after splits are set
+        } catch (e) {
+            console.error("Error initializing Split.js:", e);
+        }
     }
-
-    function initializeSplits(mainLayoutDirection = 'horizontal') {
-        destroySplits(); // Ensure any previous splits are gone
-
-        // Horizontal split for code editors (HTML, CSS, JS)
-        editorSplitInstance = Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
-            sizes: [33.3, 33.3, 33.4], minSize: 60, gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
-            onDragEnd: refreshAllCodeMirrors
-        });
-
-        // Vertical split for output area (Preview vs Console)
-        outputSplitInstance = Split(['#preview-wrapper', '#console-wrapper'], {
-            sizes: [70, 30], minSize: [50, 40], gutterSize: 8, direction: 'vertical', cursor: 'row-resize',
-            elementStyle: (dim, size, gutterSize) => ({ 'flex-basis': `calc(${size}% - ${gutterSize}px)` }),
-            gutterStyle: (dim, gutterSize) => ({ 'flex-basis': `${gutterSize}px` })
-        });
-        
-        // Main split (Code Editors Pane vs Output Pane)
-        mainSplitInstance = Split(['#code-editors-pane', '#output-pane'], {
-            sizes: [60, 40], // Default sizes
-            minSize: [150, 150], // Min width/height for code editors area and output area
-            gutterSize: 8,
-            direction: mainLayoutDirection, // 'horizontal' or 'vertical'
-            cursor: mainLayoutDirection === 'horizontal' ? 'col-resize' : 'row-resize',
-            onDragEnd: function() {
-                refreshAllCodeMirrors(); // Editors might need refresh if their parent's size changed
-            }
-        });
-        console.log(`Split.js panes initialized with main direction: ${mainLayoutDirection}`);
-        setTimeout(refreshAllCodeMirrors, 50); // Extra refresh after splits are set
-    }
+    initializeFixedSplits(); // Initialize splits once on load
     
-    // --- Layout Management ---
-    function applyLayout(layoutName) {
-        console.log("Applying layout:", layoutName);
-        if (!editorLayoutContainer) {
-            console.error("editorLayoutContainer not found!");
-            return;
-        }
-        
-        let mainDirection = 'horizontal'; // Default (Editors Left | Output Right)
-        editorLayoutContainer.classList.remove('layout-horizontal-main', 'layout-vertical-main');
-
-        if (layoutName === 'vertical') {
-            editorLayoutContainer.classList.add('layout-vertical-main');
-            mainDirection = 'vertical'; // Editors Top | Output Bottom
-        } else { // Default to horizontal
-            editorLayoutContainer.classList.add('layout-horizontal-main');
-            layoutName = 'horizontal'; // Ensure consistent storage value
-        }
-        
-        initializeSplits(mainDirection); // Re-initialize splits for the new layout
-        localStorage.setItem(LS_LAYOUT_KEY, layoutName);
-        updateActiveLayoutButton(layoutName);
-    }
-
-    function updateActiveLayoutButton(activeLayout) {
-        if (layoutHorizontalButton) layoutHorizontalButton.classList.toggle('active', activeLayout === 'horizontal');
-        if (layoutVerticalButton) layoutVerticalButton.classList.toggle('active', activeLayout === 'vertical');
-    }
-
-    if(layoutHorizontalButton) layoutHorizontalButton.addEventListener('click', () => applyLayout('horizontal'));
-    if(layoutVerticalButton) layoutVerticalButton.addEventListener('click', () => applyLayout('vertical'));
-
-
     // --- Theme Application for index.html ---
-    function applyAppTheme() { /* ... (Same as Turn 41) ... */ }
+    function applyAppTheme() { /* ... (Same as Turn 41 - no changes needed here) ... */ }
     applyAppTheme();
 
     // --- Custom Console Logging ---
     function logToCustomConsole(argsArray, type = 'log') { /* ... (Same as Turn 41) ... */ }
 
     // --- Preview Update ---
-    function updatePreview() { /* ... (Same as Turn 41, ensure console override logic) ... */ }
+    function updatePreview() { /* ... (Same as Turn 41 - no changes needed here) ... */ }
 
     function refreshEditorsAndPreview() {
         refreshAllCodeMirrors();
         updatePreview();
     }
-    // Initial call is now handled after initial layout is set
+    // Initial call with a delay to allow layout, CodeMirror, and Split.js to settle
+    setTimeout(refreshEditorsAndPreview, 350); // Adjusted delay slightly
 
     // --- Event Listeners ---
     if(runButton) runButton.addEventListener('click', () => { /* ... (Same as Turn 41) ... */ });
@@ -160,10 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function getProjects() { /* ... (Same as Turn 41) ... */ }
     function saveProjects(pA) { /* ... (Same as Turn 41) ... */ }
     if(saveProjectButton) saveProjectButton.addEventListener('click', () => { /* ... (Same as Turn 41) ... */ });
-    if(confirmSaveButton) confirmSaveButton.addEventListener('click', () => { /* ... (Same as Turn 41, ensures externalCSS/JS are saved) ... */ });
+    if(confirmSaveButton) confirmSaveButton.addEventListener('click', () => { /* ... (Same as Turn 41 - ensures externalCSS/JS are saved) ... */ });
     if(loadProjectsButton) loadProjectsButton.addEventListener('click', () => { /* ... (Same as Turn 41) ... */ });
     function renderProjectsList() { /* ... (Same as Turn 41) ... */ }
-    function loadProject(pId) { /* ... (Same as Turn 41, ensures externalCSS/JS are loaded) ... */ }
+    function loadProject(pId) { /* ... (Same as Turn 41 - ensures externalCSS/JS are loaded) ... */ }
     function deleteProject(pId) { /* ... (Same as Turn 41, including setInitialContent(false) ) ... */ }
     
     // --- Settings Modal (External Resources) ---
@@ -185,9 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initialize with default content or last project ---
     function setInitialContent(callRefreshPreview = true) { /* ... (Same as Turn 41) ... */ }
 
-    // --- Initial Page Setup ---
-    const savedLayout = localStorage.getItem(LS_LAYOUT_KEY) || 'horizontal'; // Default to horizontal
-    applyLayout(savedLayout); // This will also initialize splits and refresh CM
+    // Initial Page Setup
+    // Removed: const savedLayout = localStorage.getItem(LS_LAYOUT_KEY) || 'horizontal';
+    // Removed: applyLayout(savedLayout); 
+    // Split.js is now initialized directly via initializeFixedSplits()
 
     const projects = getProjects();
     if (projects.length > 0 && projects[0].id) {
@@ -195,16 +158,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
        setInitialContent(); 
     }
-    // The initial refreshEditorsAndPreview is now effectively handled by applyLayout and then loadProject/setInitialContent.
-    // A final refresh after everything might still be good if there are race conditions.
-    setTimeout(refreshAllCodeMirrors, 400); // Give a bit more time for initial layout and content loading.
+    // An extra refresh after content load and split init can sometimes help.
+    setTimeout(refreshAllCodeMirrors, 400);
 
 }); // End DOMContentLoaded
 
-// == PASTE ALL PREVIOUSLY WORKING JS FUNCTIONS HERE ==
+// == PASTE ALL PREVIOUSLY WORKING JS FUNCTIONS FROM TURN 41 HERE ==
 // To avoid making this response excessively long by repeating ~250 lines,
 // please ensure all the function definitions from Turn 41's script.js are included here,
 // such as: applyAppTheme, logToCustomConsole, updatePreview, closeModal,
 // getProjects, saveProjects, renderProjectsList, loadProject, deleteProject,
 // generateAndDownloadZip, toggleFullScreen, updateFullscreenButtonText, setInitialContent.
-// The structure above shows WHERE the new layout logic is integrated.
+// The structure above shows WHERE the new layout logic is integrated/removed.
+// The main change is initializeFixedSplits() and removal of layout switching.
