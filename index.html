@@ -8,15 +8,27 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material-darker.min.css">
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/neat.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/eclipse.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
+    </head>
 <body>
     <header>
-        <h1>Alexr Code</h1>
-        <a href="themes.html" class="theme-selector-button">Themes</a>
+        <div class="header-left">
+            <h1>Alexr Code</h1>
+        </div>
+        <div class="header-center">
+            </div>
+        <div class="header-right">
+            <a href="themes.html" class="theme-selector-button">Themes</a>
+        </div>
     </header>
 
-    <div class="editor-layout-container"> <div id="code-editors-pane" class="split-pane">
-            <div class="code-section" id="code-section-editors"> <div id="html-editor-wrapper" class="editor editor-pane">
+    <div id="editor-layout-container" class="editor-layout-container"> 
+        <div id="code-editors-pane" class="split-pane">
+            <div class="code-section" id="code-section-editors">
+                <div id="html-editor-wrapper" class="editor editor-pane">
                     <h2>HTML</h2>
                     <textarea id="html-code" spellcheck="false"></textarea>
                 </div>
@@ -40,14 +52,14 @@
                 <button id="download-zip-button">Download ZIP</button>
                 <button id="fullscreen-button">Fullscreen Preview</button>
             </div>
-
-            <div id="preview-wrapper" class="output-sub-pane"> <div class="preview-section">
+            <div id="preview-wrapper" class="output-sub-pane"> 
+                <div class="preview-section">
                     <h2>Preview</h2>
                     <iframe id="preview-frame" allowfullscreen></iframe>
                 </div>
             </div>
-
-            <div id="console-wrapper" class="output-sub-pane"> <div id="console-section" class="console-section">
+            <div id="console-wrapper" class="output-sub-pane"> 
+                <div id="console-section" class="console-section">
                     <div class="console-header">
                         <h2>Console</h2>
                         <button id="clear-console-button">Clear</button>
@@ -56,46 +68,51 @@
                 </div>
             </div>
         </div>
-    </div> <footer>
+    </div>
+
+    <footer>
         <p>&copy; 2025 Alexr Code</p>
     </footer>
 
-    <div id="save-project-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" data-modal-id="save-project-modal">&times;</span>
-            <h2>Save Project</h2>
-            <label for="project-name-input">Project Name:</label>
-            <input type="text" id="project-name-input" placeholder="Enter project name...">
-            <div class="modal-actions">
-                <button id="confirm-save-button" class="primary-action">Save</button>
-                <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="load-projects-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" data-modal-id="load-projects-modal">&times;</span>
-            <h2>Load Project</h2>
-            <div id="projects-list-container"><p>No projects saved yet.</p></div>
-            <div class="modal-actions">
-                <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button>
-            </div>
-        </div>
-    </div>
-
+    <div id="save-project-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="save-project-modal">&times;</span> <h2>Save Project</h2> <label for="project-name-input">Project Name:</label> <input type="text" id="project-name-input" placeholder="Enter project name..."> <div class="modal-actions"> <button id="confirm-save-button" class="primary-action">Save</button> <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button> </div> </div> </div>
+    <div id="load-projects-modal" class="modal"> <div class="modal-content"> <span class="close-button" data-modal-id="load-projects-modal">&times;</span> <h2>Load Project</h2> <div id="projects-list-container"><p>No projects saved yet.</p></div> <div class="modal-actions"> <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button> </div> </div> </div>
+    
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <span class="close-button" data-modal-id="settings-modal">&times;</span>
-            <h2>Settings - External Resources</h2>
-            <div class="setting-section">
-                <label for="external-css-urls">External CSS URLs (one per line):</label>
-                <textarea id="external-css-urls" rows="4" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea>
+            <h2>Settings</h2>
+            
+            <div class="setting-group">
+                <h3>External Resources</h3>
+                <div class="setting-section">
+                    <label for="external-css-urls">External CSS URLs (one per line):</label>
+                    <textarea id="external-css-urls" rows="3" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea>
+                </div>
+                <div class="setting-section">
+                    <label for="external-js-urls">External JavaScript URLs (one per line):</label>
+                    <textarea id="external-js-urls" rows="3" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
+                </div>
             </div>
-            <div class="setting-section">
-                <label for="external-js-urls">External JavaScript URLs (one per line):</label>
-                <textarea id="external-js-urls" rows="4" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
+
+            <div class="setting-group">
+                <h3>Editor Appearance</h3>
+                <div class="setting-section">
+                    <label for="codemirror-theme-select">Code Editor Theme:</label>
+                    <select id="codemirror-theme-select">
+                        <option value="material-darker">Material Darker (Default)</option>
+                        <option value="default">Default Light</option>
+                        <option value="neat">Neat</option>
+                        <option value="monokai">Monokai</option>
+                        <option value="eclipse">Eclipse</option>
+                        <option value="dracula">Dracula</option>
+                        </select>
+                </div>
+                <div class="setting-section">
+                    <label for="editor-font-size-input">Editor Font Size (px):</label>
+                    <input type="number" id="editor-font-size-input" min="8" max="30" step="1" value="14">
+                </div>
             </div>
+            
             <div class="modal-actions">
                 <button id="apply-settings-button" class="primary-action">Apply & Close</button>
                 <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button>
@@ -111,6 +128,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closetag.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closebrackets.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script> <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
