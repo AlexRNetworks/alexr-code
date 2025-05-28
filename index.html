@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alexr Code</title>
-    <link rel="stylesheet" href="style.css">
-    <link id="theme-stylesheet" rel="stylesheet" href="">
-    <link rel="icon" type="image/png" href="alexr-favicon.png">
+    <link rel="stylesheet" href="style.css"> <link id="theme-stylesheet" rel="stylesheet" href=""> <link rel="icon" type="image/png" href="alexr-favicon.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material-darker.min.css">
@@ -25,11 +23,11 @@
             </div>
             <div class="editor">
                 <h2>CSS</h2>
-                <textarea id="css-code" spellcheck="false">/* Default CSS */</textarea>
+                <textarea id="css-code" spellcheck="false">/* Default CSS or loaded project */</textarea>
             </div>
             <div class="editor">
                 <h2>JavaScript</h2>
-                <textarea id="js-code" spellcheck="false">// Default JS</textarea>
+                <textarea id="js-code" spellcheck="false">// Default JS or loaded project</textarea>
             </div>
         </div>
 
@@ -37,7 +35,8 @@
             <button id="run-button">Run Code</button>
             <button id="save-project-button">Save Project</button>
             <button id="load-projects-button">Load Projects</button>
-            <button id="settings-button">Settings</button> <button id="download-zip-button">Download ZIP</button>
+            <button id="settings-button">Settings</button>
+            <button id="download-zip-button">Download ZIP</button>
             <button id="fullscreen-button">Fullscreen Preview</button>
         </div>
 
@@ -53,52 +52,48 @@
 
     <div id="save-project-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="close-save-modal">&times;</span>
+            <span class="close-button" data-modal-id="save-project-modal">&times;</span>
             <h2>Save Project</h2>
-            <label for="project-name">Project Name:</label>
+            <label for="project-name-input">Project Name:</label>
             <input type="text" id="project-name-input" placeholder="Enter project name...">
             <div class="modal-actions">
-                <button id="confirm-save-button">Save</button>
-                <button id="cancel-save-button" class="button-alt">Cancel</button>
+                <button id="confirm-save-button" class="primary-action">Save</button>
+                <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="load-projects-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="close-load-modal">&times;</span>
+            <span class="close-button" data-modal-id="load-projects-modal">&times;</span>
             <h2>Load Project</h2>
             <div id="projects-list-container">
                 <p>No projects saved yet.</p>
             </div>
              <div class="modal-actions">
-                <button id="cancel-load-button" class="button-alt">Close</button>
+                <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button>
             </div>
         </div>
     </div>
 
     <div id="settings-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button" id="close-settings-modal">&times;</span>
+            <span class="close-button" data-modal-id="settings-modal">&times;</span>
             <h2>Settings - External Resources</h2>
-            
             <div class="setting-section">
                 <label for="external-css-urls">External CSS URLs (one per line):</label>
                 <textarea id="external-css-urls" rows="4" placeholder="https://example.com/style1.css&#10;https://example.com/style2.css"></textarea>
             </div>
-
             <div class="setting-section">
                 <label for="external-js-urls">External JavaScript URLs (one per line):</label>
                 <textarea id="external-js-urls" rows="4" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
             </div>
-            
             <div class="modal-actions">
-                <button id="apply-settings-button">Apply & Close</button>
-                <button id="cancel-settings-button" class="button-alt">Cancel</button>
+                <button id="apply-settings-button" class="primary-action">Apply & Close</button>
+                <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button>
             </div>
         </div>
     </div>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
