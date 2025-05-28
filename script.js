@@ -16,25 +16,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeSaveModalButton = saveProjectModal.querySelector('.close-button[data-modal-id="save-project-modal"]');
     const projectNameInput = document.getElementById('project-name-input');
     const confirmSaveButton = document.getElementById('confirm-save-button');
-    const cancelSaveButton = saveProjectModal.querySelector('.close-modal-action[data-modal-id="save-project-modal"]');
+    // const cancelSaveButton = saveProjectModal.querySelector('.close-modal-action[data-modal-id="save-project-modal"]'); // Covered by generic close
 
     const loadProjectsModal = document.getElementById('load-projects-modal');
     const closeLoadModalButton = loadProjectsModal.querySelector('.close-button[data-modal-id="load-projects-modal"]');
     const projectsListContainer = document.getElementById('projects-list-container');
-    const cancelLoadButton = loadProjectsModal.querySelector('.close-modal-action[data-modal-id="load-projects-modal"]');
+    // const cancelLoadButton = loadProjectsModal.querySelector('.close-modal-action[data-modal-id="load-projects-modal"]'); // Covered by generic close
 
     const settingsModal = document.getElementById('settings-modal');
     const closeSettingsModalButton = settingsModal.querySelector('.close-button[data-modal-id="settings-modal"]');
     const externalCssUrlsTextarea = document.getElementById('external-css-urls');
     const externalJsUrlsTextarea = document.getElementById('external-js-urls');
     const applySettingsButton = document.getElementById('apply-settings-button');
-    const cancelSettingsButton = settingsModal.querySelector('.close-modal-action[data-modal-id="settings-modal"]');
+    // const cancelSettingsButton = settingsModal.querySelector('.close-modal-action[data-modal-id="settings-modal"]'); // Covered by generic close
     
     const consoleOutputDiv = document.getElementById('console-output');
     const clearConsoleButton = document.getElementById('clear-console-button');
     
-    let externalCSS = []; // Stores current session's external CSS URLs
-    let externalJS = [];  // Stores current session's external JS URLs
+    let externalCSS = []; // Stores current session's/project's external CSS URLs
+    let externalJS = [];  // Stores current session's/project's external JS URLs
     let currentProjectId = null; // To track if we are editing an existing project
 
     console.log("Alexr Code script.js: DOMContentLoaded");
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initialize CodeMirror ---
     const codeMirrorOptions = {
         lineNumbers: true,
-        theme: "material-darker",
+        theme: "material-darker", // Default CodeMirror theme
         autoCloseTags: true,
         autoCloseBrackets: true,
         lineWrapping: true,
@@ -51,6 +51,43 @@ document.addEventListener('DOMContentLoaded', () => {
     cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {...codeMirrorOptions, mode: 'css'});
     jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {...codeMirrorOptions, mode: 'javascript'});
 
+    // --- CodeMirror Refresh Function ---
+    function refreshAllCodeMirrors() {
+        if (htmlEditor) htmlEditor.refresh();
+        if (cssEditor) cssEditor.refresh();
+        if (jsEditor) jsEditor.refresh();
+        console.log("CodeMirror instances refreshed.");
+    }
+
+    // --- Initialize Split.js Panes ---
+    try {
+        const editorSplit = Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
+            sizes: [33.3, 33.3, 33.4], minSize: 80, gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
+            onDragEnd: refreshAllCodeMirrors
+        });
+
+        const outputSplit = Split(['#preview-wrapper', '#console-wrapper'], {
+            sizes: [70, 30], minSize: [80, 50], gutterSize: 8, direction: 'vertical', cursor: 'row-resize',
+            elementStyle: (dim, size, gutterSize) => ({ 'flex-basis': `calc(${size}% - ${gutterSize}px)` }),
+            gutterStyle: (dim, gutterSize) => ({ 'flex-basis': `${gutterSize}px` })
+        });
+        
+        const mainSplit = Split(['#code-editors-pane', '#output-pane'], {
+            sizes: [60, 40], minSize: [200, 200], gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
+            onDragEnd: function() {
+                refreshAllCodeMirrors();
+                // outputSplit and editorSplit might also need a nudge if their container changes significantly,
+                // but usually flex-basis recalculation handles it. Forcing it can be done if needed.
+                // For example: outputSplit.setSizes(outputSplit.getSizes());
+            }
+        });
+        console.log("Split.js panes initialized.");
+    } catch (e) {
+        console.error("Error initializing Split.js:", e);
+        alert("Error setting up resizable panes. Some layout features might not work.");
+    }
+
+
     // --- Theme Application for index.html ---
     function applyAppTheme() {
         const selectedThemePath = localStorage.getItem('selectedTheme');
@@ -58,10 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (themeStylesheetLink) {
             if (selectedThemePath && selectedThemePath !== "default") {
                 themeStylesheetLink.setAttribute('href', selectedThemePath);
-                console.log("[script.js] applyAppTheme: Applied:", selectedThemePath);
             } else {
                 themeStylesheetLink.setAttribute('href', '');
-                console.log("[script.js] applyAppTheme: Using default styles.");
             }
         } else {
             console.error("[script.js] applyAppTheme: themeStylesheetLink not found!");
@@ -77,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageContent = document.createElement('span');
         messageContent.textContent = argsArray.map(arg => {
             if (typeof arg === 'object' && arg !== null) {
-                try { return JSON.stringify(arg, null, 2); }
+                try { return JSON.stringify(arg, (key, value) => typeof value === 'function' ? 'Function' : value, 2); }
                 catch (e) { return String(arg); }
             }
             return String(arg);
@@ -92,10 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const htmlCode = htmlEditor.getValue();
         const cssCode = cssEditor.getValue();
         const jsCode = jsEditor.getValue();
-        const iframe = previewFrame; // Ensure previewFrame is used
+        const iframe = previewFrame;
         
-        // It's crucial to wait for the iframe to be loaded, or re-create it
-        // For simplicity, we assume it's there. If issues, might need to remove and append a new iframe.
         const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 
         iframeDoc.open();
@@ -106,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = iframeDoc.body;
         const iWindow = iframe.contentWindow;
 
-        // Override iframe's console & error handling
         if (iWindow) {
             const originalConsole = {
                 log: iWindow.console.log, error: iWindow.console.error,
@@ -118,10 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
             iWindow.console.warn = (...args) => { originalConsole.warn.apply(iWindow.console, args); logToCustomConsole(args, 'warn'); };
             iWindow.console.info = (...args) => { originalConsole.info.apply(iWindow.console, args); logToCustomConsole(args, 'info'); };
             iWindow.console.debug = (...args) => { originalConsole.debug.apply(iWindow.console, args); logToCustomConsole(args, 'debug'); };
-            // iWindow.console.clear = () => { originalConsole.clear(); if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; };
             
             iWindow.onerror = (message, source, lineno, colno, error) => {
                 let Sfilename = source ? source.substring(source.lastIndexOf('/') + 1) : "script";
+                if (Sfilename === "") Sfilename = "inline script"; // Handle data URLs or empty source
                 logToCustomConsole([`Error: ${message} (${Sfilename}:${lineno}:${colno})`], 'error');
                 return true; 
             };
@@ -145,22 +177,24 @@ document.addEventListener('DOMContentLoaded', () => {
         externalJS.forEach(url => {
             if (!url.trim()) return;
             const scriptTag = iframeDoc.createElement('script'); scriptTag.src = url.trim();
-            body.appendChild(scriptTag); // Append to body
+            body.appendChild(scriptTag); 
         });
         const userScriptTag = iframeDoc.createElement('script');
         userScriptTag.textContent = jsCode;
         body.appendChild(userScriptTag);
+        console.log("[script.js] Preview updated.");
     }
 
     function refreshEditorsAndPreview() {
-        htmlEditor.refresh(); cssEditor.refresh(); jsEditor.refresh();
+        refreshAllCodeMirrors();
         updatePreview();
     }
-    setTimeout(refreshEditorsAndPreview, 250); // Increased delay for stability
+    // Initial call with a delay to allow layout, CodeMirror, and Split.js to settle
+    setTimeout(refreshEditorsAndPreview, 300);
 
     // --- Event Listeners ---
     if(runButton) runButton.addEventListener('click', () => {
-        if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; // Clear console on manual "Run"
+        if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
         updatePreview();
     });
 
@@ -191,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(saveProjectButton) saveProjectButton.addEventListener('click', () => {
         const existingProject = currentProjectId ? getProjects().find(p => p.id === currentProjectId) : null;
-        projectNameInput.value = existingProject ? existingProject.name : ''; // Pre-fill name if editing
+        projectNameInput.value = existingProject ? existingProject.name : '';
         saveProjectModal.style.display = 'block';
         projectNameInput.focus();
     });
@@ -200,19 +234,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const pN = projectNameInput.value.trim(); if(!pN){alert('Project name required.'); projectNameInput.focus(); return;}
         const projectData = {
             name:pN, html:htmlEditor.getValue(), css:cssEditor.getValue(), js:jsEditor.getValue(),
-            externalCSS: [...externalCSS], externalJS: [...externalJS], // Save current external resources
+            externalCSS: [...externalCSS], externalJS: [...externalJS],
             savedAt:new Date().toISOString()
         };
         
         let ps = getProjects();
-        if (currentProjectId) { // Update existing project
-            ps = ps.map(p => p.id === currentProjectId ? { ...p, ...projectData } : p);
-        } else { // Save new project
-            ps.push({ ...projectData, id: Date.now() });
+        let projectExists = false;
+        if (currentProjectId) {
+            ps = ps.map(p => {
+                if (p.id === currentProjectId) {
+                    projectExists = true;
+                    return { ...p, ...projectData };
+                }
+                return p;
+            });
         }
+        
+        if (!projectExists && !currentProjectId) { // Saving as new
+             const newId = Date.now();
+             ps.push({ ...projectData, id: newId });
+             currentProjectId = newId; // Set current project ID for new save
+        } else if (!projectExists && currentProjectId) {
+             // This case implies currentProjectId was set, but project not found in list (e.g., after deletion and not clearing currentProjectId)
+             // Treat as a new save or re-evaluate logic for currentProjectId
+             console.warn("Saving with currentProjectId but project not found in list. Treating as new save.");
+             const newId = Date.now();
+             ps.push({ ...projectData, id: newId });
+             currentProjectId = newId;
+        }
+
+
         saveProjects(ps);
         alert(`Project "${pN}" saved!`);
-        if (!currentProjectId) currentProjectId = ps.find(p=>p.name === pN && p.savedAt === projectData.savedAt)?.id; // Try to get ID of newly saved
         closeModal(saveProjectModal);
     });
 
@@ -236,13 +289,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const ps=getProjects(); const pTL=ps.find(p=>p.id===pId);
         if(pTL){
             htmlEditor.setValue(pTL.html || ''); cssEditor.setValue(pTL.css || ''); jsEditor.setValue(pTL.js || '');
-            externalCSS = Array.isArray(pTL.externalCSS) ? [...pTL.externalCSS] : []; // Load external resources
-            externalJS = Array.isArray(pTL.externalJS) ? [...pTL.externalJS] : [];   // Load external resources
-            currentProjectId = pTL.id; // Set current project ID
+            externalCSS = Array.isArray(pTL.externalCSS) ? [...pTL.externalCSS] : [];
+            externalJS = Array.isArray(pTL.externalJS) ? [...pTL.externalJS] : [];
+            currentProjectId = pTL.id;
             
-            if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; // Clear console on project load
+            if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
             
-            setTimeout(()=>{refreshEditorsAndPreview();},100); // Refresh editors and then preview
+            // Ensure CodeMirror textareas are populated before refreshing preview
+            // Setting value is synchronous, but refresh and updatePreview should happen after.
+            setTimeout(()=>{
+                refreshEditorsAndPreview();
+                console.log(`Project "${pTL.name}" loaded with externalCSS:`, externalCSS, "externalJS:", externalJS);
+            },100); 
             alert(`Project "${pTL.name}" loaded!`); closeModal(loadProjectsModal);
         } else { alert('Error: Project not found.'); currentProjectId = null; }
     }
@@ -250,12 +308,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function deleteProject(pId) {
         if(!confirm('Are you sure you want to delete this project? This cannot be undone.')) return;
         let ps=getProjects(); ps=ps.filter(p=>p.id!==pId); saveProjects(ps);
-        if (currentProjectId === pId) { // If deleting current project, clear editors
+        if (currentProjectId === pId) {
             htmlEditor.setValue(''); cssEditor.setValue(''); jsEditor.setValue('');
             externalCSS = []; externalJS = [];
             currentProjectId = null;
             if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
-            setTimeout(refreshEditorsAndPreview, 50);
+            setInitialContent(); // Set default content after deleting current project
         }
         renderProjectsList(); alert('Project deleted.');
     }
@@ -273,8 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("[script.js] Settings Applied - External CSS:", externalCSS);
         console.log("[script.js] Settings Applied - External JS:", externalJS);
         closeModal(settingsModal); 
-        if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; // Clear console
-        updatePreview(); // Re-render the preview with new resources
+        if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
+        updatePreview();
     });
 
     // --- Download ZIP ---
@@ -283,7 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
         zip.file("index.html", htmlEditor.getValue());
         zip.file("style.css", cssEditor.getValue());
         zip.file("script.js", jsEditor.getValue());
-        // For future: could include external resource links in a comment or a manifest file in the ZIP
+        let manifestContent = "External Resources:\n";
+        if(externalCSS.length > 0) manifestContent += "\nCSS:\n" + externalCSS.join("\n");
+        if(externalJS.length > 0) manifestContent += "\n\nJS:\n" + externalJS.join("\n");
+        if(externalCSS.length > 0 || externalJS.length > 0) zip.file("external_resources.txt", manifestContent);
+
         generateAndDownloadZip(zip);
     });
     function generateAndDownloadZip(zipInstance) {
@@ -300,9 +362,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleFullScreen(element) {
         if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
             if (element.requestFullscreen) element.requestFullscreen();
-            else if (element.mozRequestFullScreen) element.mozRequestFullScreen(); // Firefox
-            else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen(); // Chrome, Safari, Opera
-            else if (element.msRequestFullscreen) element.msRequestFullscreen(); // IE/Edge
+            else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
+            else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+            else if (element.msRequestFullscreen) element.msRequestFullscreen();
         } else {
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
@@ -320,18 +382,59 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener(event, updateFullscreenButtonText, false)
     );
 
-    // --- Initialize with a blank slate or last project (optional) ---
-    // To load the most recently saved project on startup:
-    // const projects = getProjects();
-    // if (projects.length > 0) {
-    //    loadProject(projects[0].id); // projects are sorted newest first in renderProjectsList, so projects[0] is newest
-    // } else {
-       // Set default "hello world" content if no projects
-       htmlEditor.setValue("<h1>Hello, Alexr Code!</h1>\n<p>Start coding your ideas.</p>\n<button onclick=\"sayHi()\">Click Me</button>");
-       cssEditor.setValue("body { font-family: sans-serif; text-align: center; padding-top: 50px; }\nh1 { color: steelblue; }\nbutton { padding: 10px 20px; background-color: lightgreen; border: none; cursor: pointer; }");
-       jsEditor.setValue("function sayHi() {\n  alert('Welcome to Alexr Code!');\n  console.log('Button clicked at ' + new Date().toLocaleTimeString());\n}");
-       setTimeout(refreshEditorsAndPreview, 250); // Ensure this default content is previewed
-    // }
+    // --- Initialize with default content or last project ---
+    function setInitialContent() {
+        htmlEditor.setValue("<h1>Welcome to Alexr Code!</h1>\n<p>Your ideas start here. Try some HTML, CSS, and JavaScript.</p>\n<button onclick=\"greetUser()\">Say Hello</button>");
+        cssEditor.setValue(
+`body { 
+    font-family: Arial, Helvetica, sans-serif; 
+    margin: 20px; 
+    text-align: center; 
+    background-color: #f0f2f5; 
+    color: #333;
+}
+h1 { color: #007aff; }
+p { font-size: 1.1em; color: #555; }
+button { 
+    padding: 10px 20px; 
+    font-size: 1em;
+    color: white; 
+    background-color: #28a745; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.2s;
+}
+button:hover { background-color: #218838; }`
+        );
+        jsEditor.setValue(
+`function greetUser() {
+  const name = prompt("What's your name?", "Coder");
+  if (name) {
+    alert("Hello, " + name + "! Happy coding!");
+    console.log("Greeted: " + name);
+  } else {
+    alert("Hello there! Happy coding!");
+    console.warn("User did not enter a name.");
+  }
+}
 
+console.info("Alexr Code initialized and ready!");
+// Try an error:
+// undefinedFunction(); 
+`
+        );
+        externalCSS = []; // Reset external libs for default content
+        externalJS = [];
+        currentProjectId = null;
+        setTimeout(refreshEditorsAndPreview, 250);
+    }
+
+    const projects = getProjects();
+    if (projects.length > 0) {
+       loadProject(projects[0].id); // Load the most recently saved project
+    } else {
+       setInitialContent(); // Set default content if no projects
+    }
 
 }); // End DOMContentLoaded
