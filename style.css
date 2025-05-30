@@ -160,12 +160,19 @@ header h1 {
     margin: 0; padding: 8px 12px; font-size: 0.85rem; font-weight: 600;
     border-bottom: 1px solid var(--border-color-light); text-align: left; flex-shrink: 0;
 }
+
+/* CodeMirror Base Styling & Theme Isolation */
 .CodeMirror {
     font-family: var(--font-code);
     font-size: var(--editor-font-size, 14px); /* Use CSS variable for font size */
     line-height: 1.5;
     height: 100%; 
     flex-grow: 1;
+    
+    /* Default background/color to ensure page themes don't bleed if CM theme is not specific enough for its root.
+       The actual CodeMirror theme (e.g., .cm-s-material-darker) WILL and SHOULD override these. */
+    background-color: #fff; /* Neutral default background for CM itself */
+    color: #000; /* Neutral default text color for CM itself */
 }
 
 /* Output Pane (#output-pane) */
