@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeStylesheetLink = document.getElementById('theme-stylesheet'); // For page theme
     const fullscreenButton = document.getElementById('fullscreen-button');
     const saveProjectButton = document.getElementById('save-project-button');
+    // const saveAsProjectButton = document.getElementById('save-as-project-button'); // REMOVED
     const loadProjectsButton = document.getElementById('load-projects-button');
     const settingsButton = document.getElementById('settings-button');
 
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let externalCSS = []; 
     let externalJS = [];  
     let currentProjectId = null; 
+    // let isSaveAsOperation = false; // REMOVED
 
     // --- LocalStorage Keys ---
     const LS_PROJECTS_KEY = 'alexrCodeProjects';
@@ -39,13 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const LS_CODEMIRROR_THEME_KEY = 'alexrCodeMirrorTheme'; 
     const LS_EDITOR_FONT_SIZE_KEY = 'alexrCodeEditorFontSize'; 
 
-    console.log("Alexr Code script.js: DOMContentLoaded - Editor Settings Integrated");
+    console.log("Alexr Code script.js: DOMContentLoaded - In-Editor Linting Added");
 
     // --- Default Settings ---
     const DEFAULT_CODEMIRROR_THEME = 'material-darker';
-    const DEFAULT_EDITOR_FONT_SIZE = 14; // in px
+    const DEFAULT_EDITOR_FONT_SIZE = 14;
 
-    // --- Apply Initial Editor Settings from LocalStorage ---
+    // --- Apply Initial Editor Settings ---
     function applyInitialEditorSettings() {
         const savedCmTheme = localStorage.getItem(LS_CODEMIRROR_THEME_KEY) || DEFAULT_CODEMIRROR_THEME;
         const savedFontSize = parseInt(localStorage.getItem(LS_EDITOR_FONT_SIZE_KEY), 10) || DEFAULT_EDITOR_FONT_SIZE;
@@ -56,29 +58,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = savedCmTheme;
         if(editorFontSizeInput) editorFontSizeInput.value = savedFontSize;
-
-        console.log("Initial Editor Settings Applied - Theme:", savedCmTheme, "Font Size:", savedFontSize + "px");
     }
     
+    // --- CodeMirror Options with Linting ---
     const initialCodeMirrorOptions = { 
         lineNumbers: true,
         theme: DEFAULT_CODEMIRROR_THEME, 
         autoCloseTags: true,
         autoCloseBrackets: true,
         lineWrapping: true,
+        lint: true, // Enable generic linting
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"] // Add lint marker gutter
     };
     applyInitialEditorSettings(); 
 
 
     // --- Initialize CodeMirror ---
     try {
-        htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {...initialCodeMirrorOptions, mode: 'htmlmixed'});
-        cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {...initialCodeMirrorOptions, mode: 'css'});
-        jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {...initialCodeMirrorOptions, mode: 'javascript'});
-        console.log("CodeMirror instances initialized.");
+        htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
+            ...initialCodeMirrorOptions, 
+            mode: 'htmlmixed',
+            // HTMLHint is usually picked up automatically by html-lint.js if HTMLHint is global.
+            // We can pass options to HTMLHint.rules if needed.
+            lint: { 
+                // options: { /* HTMLHint rules, e.g., "tag-pair": true */ } 
+            } 
+        });
+        cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {
+            ...initialCodeMirrorOptions, 
+            mode: 'css',
+            // CSSLint is usually picked up automatically by css-lint.js if CSSLint is global.
+            // We can pass options to CSSLint.verify if needed.
+            lint: { 
+                // options: { /* CSSLint rules, e.g., "errors": true, "warnings": true */ }
+            } 
+        });
+        jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {
+            ...initialCodeMirrorOptions, 
+            mode: 'javascript',
+            lint: { // JSHint options for javascript-lint.js
+                options: {
+                    esversion: 2021, 
+                    browser: true,   
+                    undef: true,     
+                    unused: 'vars',  
+                    // globals: { /* "$": false, "jQuery": false */ } // Define expected globals
+                }
+            }
+        });
+        console.log("CodeMirror instances initialized with linting enabled.");
     } catch (e) {
         console.error("Error initializing CodeMirror:", e);
-        alert("Could not initialize code editors. Please ensure CodeMirror scripts are loaded correctly.");
     }
 
     // --- CodeMirror Refresh Function ---
@@ -88,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (jsEditor) jsEditor.refresh();
     }
 
-    // --- Initialize Split.js Panes for Fixed Vertical Layout ---
+    // --- Initialize Split.js Panes (Fixed Vertical Layout) ---
     function initializeFixedSplits() {
         try {
             Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
@@ -118,18 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     initializeFixedSplits(); 
     
-    // --- Page Theme Application for index.html ---
+    // --- Page Theme Application ---
     function applyAppTheme() {
         const selectedThemePath = localStorage.getItem(LS_PAGE_THEME_KEY);
-        console.log("[script.js] applyAppTheme: Stored page theme path:", selectedThemePath);
         if (themeStylesheetLink) {
-            if (selectedThemePath && selectedThemePath !== "default") {
-                themeStylesheetLink.setAttribute('href', selectedThemePath);
-            } else {
-                themeStylesheetLink.setAttribute('href', '');
-            }
-        } else {
-            console.error("[script.js] applyAppTheme: themeStylesheetLink not found!");
+            themeStylesheetLink.setAttribute('href', (selectedThemePath && selectedThemePath !== "default") ? selectedThemePath : '');
         }
     }
     applyAppTheme();
@@ -156,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Preview Update ---
     function updatePreview() {
         if (!htmlEditor || !cssEditor || !jsEditor || !previewFrame) {
-            console.error("Editor or previewFrame not initialized. Cannot update preview.");
+            console.error("Editor or previewFrame not initialized.");
             return;
         }
         const htmlCode = htmlEditor.getValue();
@@ -174,23 +197,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const iWindow = iframe.contentWindow;
 
         if (iWindow) {
-            const originalConsole = { 
-                log: iWindow.console.log, error: iWindow.console.error, warn: iWindow.console.warn, 
-                info: iWindow.console.info, debug: iWindow.console.debug, clear: iWindow.console.clear
-            };
+            const originalConsole = {log: iWindow.console.log, error: iWindow.console.error, warn: iWindow.console.warn, info: iWindow.console.info, debug: iWindow.console.debug, clear: iWindow.console.clear};
             iWindow.console = {};
-            iWindow.console.log = (...args) => { logToCustomConsole(args, 'log'); originalConsole.log.apply(null, args); };
-            iWindow.console.error = (...args) => { logToCustomConsole(args, 'error'); originalConsole.error.apply(null, args);};
-            iWindow.console.warn = (...args) => { logToCustomConsole(args, 'warn'); originalConsole.warn.apply(null, args);};
-            iWindow.console.info = (...args) => { logToCustomConsole(args, 'info'); originalConsole.info.apply(null, args);};
-            iWindow.console.debug = (...args) => { logToCustomConsole(args, 'debug'); originalConsole.debug.apply(null, args);};
-            iWindow.console.clear = () => { if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; originalConsole.clear.apply(null);};
+            Object.keys(originalConsole).forEach(key => {
+                iWindow.console[key] = (...args) => {
+                    logToCustomConsole(args, key);
+                    if (typeof originalConsole[key] === 'function') {
+                        originalConsole[key].apply(null, args);
+                    }
+                };
+            });
+            if (clearConsoleButton && typeof originalConsole.clear === 'function') {
+                iWindow.console.clear = () => { if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; originalConsole.clear.apply(null);};
+            }
             
             iWindow.onerror = (message, source, lineno, colno, errorObj) => {
                 let Sfilename = source ? source.substring(source.lastIndexOf('/') + 1) : "script";
                 if (Sfilename === "") Sfilename = "inline script";
                 logToCustomConsole([`Error: ${message} (${Sfilename}:${lineno}:${colno})`], 'error');
-                originalConsole.error.call(null, `Error: ${message}`, source, lineno, colno, errorObj);
+                if(typeof originalConsole.error === 'function') originalConsole.error.call(null, `Error: ${message}`, source, lineno, colno, errorObj);
                 return true; 
             };
         }
@@ -260,6 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(saveProjectButton) saveProjectButton.addEventListener('click', () => {
         const existingProject = currentProjectId ? getProjects().find(p => p.id === currentProjectId) : null;
         projectNameInput.value = existingProject ? existingProject.name : '';
+        // If saveModalTitle exists (it might not if HTML was not updated for "Save As" title change)
+        const saveModalTitleEl = document.getElementById('save-modal-title');
+        if(saveModalTitleEl) saveModalTitleEl.textContent = existingProject ? 'Update Project' : 'Save New Project';
         saveProjectModal.style.display = 'block';
         projectNameInput.focus();
     });
@@ -280,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let ps = getProjects();
         let projectExistsAndUpdated = false;
-        if (currentProjectId) {
+        if (currentProjectId) { // Attempting to update
             ps = ps.map(p => {
                 if (p.id === currentProjectId) {
                     projectExistsAndUpdated = true;
@@ -290,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        if (!projectExistsAndUpdated) { 
+        if (!projectExistsAndUpdated) { // Saving as new (no currentProjectId or it wasn't found)
              const newId = Date.now();
              ps.push({ ...projectData, id: newId });
              currentProjectId = newId; 
@@ -472,6 +500,12 @@ button:hover { background-color: #218838; }`
   }
 }
 console.info("Alexr Code initialized and ready! Try your custom console messages.");
+// Test linting:
+// let a = 10
+// var b = 20;
+// if (a == b) { console.log("Equalish"); }
+// function test(param1, param2) { console.log(param1); } // unused param2
+// someUndefinedVar = true;
 `
         );
         externalCSS = []; 
