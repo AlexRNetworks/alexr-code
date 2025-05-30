@@ -8,20 +8,20 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400&display=swap');
         :root {
-            --font-primary: 'Inter', sans-serif; /* Fallback if not themed */
+            --font-primary: 'Inter', sans-serif; 
             --font-code: 'Fira Code', monospace;
-            --color-background-main: #f4f7f9; /* Fallback */
-            --color-background-editor: #ffffff; /* Fallback for container */
-            --color-background-button: #007aff; /* Fallback */
-            --color-background-button-hover: #005bb5; /* Fallback */
-            --color-text-main: #333333; /* Fallback */
-            --color-text-header: #2c3e50; /* Fallback for H1 */
-            --color-text-button: #ffffff; /* Fallback */
-            --color-text-link: #007aff; /* Fallback */
-            --border-color-light: #dce1e6; /* Fallback */
-            --border-radius-main: 8px; /* Fallback */
-            --border-radius-button: 6px; /* Fallback */
-            --box-shadow-main: 0 4px 12px rgba(0,0,0,0.06); /* Fallback */
+            --color-background-main: #f4f7f9; 
+            --color-background-editor: #ffffff; 
+            --color-background-button: #007aff; 
+            --color-background-button-hover: #005bb5; 
+            --color-text-main: #333333; 
+            --color-text-header: #2c3e50; 
+            --color-text-button: #ffffff; 
+            --color-text-link: #007aff; 
+            --border-color-light: #dce1e6; 
+            --border-radius-main: 8px; 
+            --border-radius-button: 6px; 
+            --box-shadow-main: 0 4px 12px rgba(0,0,0,0.06); 
             --color-theme-button-border: var(--border-color-light);
             --color-theme-button-hover-border: var(--color-text-link);
             --color-message-bg: #e6f7ff; 
@@ -29,17 +29,14 @@
             --color-message-border: #b3e0ff;
         }
         body {
-            font-family: var(--font-primary);
-            background-color: var(--color-background-main);
-            color: var(--color-text-main);
-            margin: 0; padding: 20px; display: flex; flex-direction: column;
+            font-family: var(--font-primary); background-color: var(--color-background-main);
+            color: var(--color-text-main); margin: 0; padding: 20px; display: flex; flex-direction: column;
             align-items: center; justify-content: center; min-height: 100vh;
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         .container {
-            background-color: var(--color-background-editor);
-            color: var(--color-text-main);
+            background-color: var(--color-background-editor); color: var(--color-text-main);
             padding: 30px 35px; border-radius: var(--border-radius-main);
             box-shadow: var(--box-shadow-main); width: 100%; max-width: 700px;
             text-align: center; border: 1px solid var(--border-color-light);
@@ -64,9 +61,7 @@
             transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.08);
             border-color: var(--color-theme-button-hover-border); outline: none;
         }
-        .theme-button.active-theme {
-            border-color: var(--color-text-link); font-weight: 600;
-        }
+        .theme-button.active-theme { border-color: var(--color-text-link); font-weight: 600; }
         .theme-button.default { background-color: #e9ecef; color: #343a40; }
         .theme-button.dark-mode { background-color: #2c2c2c; color: #e0e0e0; border-color: #444; }
         .theme-button.solarized-light { background-color: #fdf6e3; color: #657b83; border-color: #eee8d5;}
@@ -109,58 +104,38 @@
         <div id="selection-message">Theme selected! It will be applied on the editor page.</div>
         <a href="index.html" class="back-link">Back to Editor</a>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('.theme-button');
             const messageDiv = document.getElementById('selection-message');
             let currentThemePathFromStorage = localStorage.getItem('selectedTheme'); 
-
             function applyPageTheme(themePath) {
                 console.log("[themes.html] Attempting to apply page theme:", themePath);
                 let pageThemeLink = document.getElementById('page-theme-stylesheet');
-                if (!pageThemeLink) {
-                    console.error("[themes.html] CRITICAL: page-theme-stylesheet link not found!");
-                    return;
-                }
-                if (themePath && themePath !== 'default') { 
-                    pageThemeLink.setAttribute('href', themePath); 
-                    console.log("[themes.html] Applied page theme stylesheet:", themePath);
-                } else {
-                    pageThemeLink.setAttribute('href', ''); 
-                    console.log("[themes.html] Using its own default styles (no theme selected or default chosen).");
-                }
+                if (!pageThemeLink) { console.error("[themes.html] CRITICAL: page-theme-stylesheet link not found!"); return; }
+                if (themePath && themePath !== 'default') { pageThemeLink.setAttribute('href', themePath); console.log("[themes.html] Applied page theme stylesheet:", themePath); } 
+                else { pageThemeLink.setAttribute('href', ''); console.log("[themes.html] Using its own default styles."); }
             }
             applyPageTheme(currentThemePathFromStorage);
-
             function setActiveButton() {
                 buttons.forEach(btn => {
                     const themeFileAttribute = btn.getAttribute('data-theme'); 
                     if (themeFileAttribute === currentThemePathFromStorage || (themeFileAttribute === 'default' && !currentThemePathFromStorage)) {
                         btn.classList.add('active-theme');
-                    } else {
-                        btn.classList.remove('active-theme');
-                    }
+                    } else { btn.classList.remove('active-theme'); }
                 });
             }
             setActiveButton();
-
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
                     const themeFileAttribute = this.getAttribute('data-theme'); 
-                    
                     if (themeFileAttribute === 'default') {
-                        localStorage.removeItem('selectedTheme');
-                        currentThemePathFromStorage = null; 
+                        localStorage.removeItem('selectedTheme'); currentThemePathFromStorage = null; 
                     } else {
-                        localStorage.setItem('selectedTheme', themeFileAttribute);
-                        currentThemePathFromStorage = themeFileAttribute; 
+                        localStorage.setItem('selectedTheme', themeFileAttribute); currentThemePathFromStorage = themeFileAttribute; 
                     }
                     console.log("[themes.html] Selected theme for localStorage:", currentThemePathFromStorage);
-                    
-                    applyPageTheme(currentThemePathFromStorage); 
-                    setActiveButton(); 
-                    
+                    applyPageTheme(currentThemePathFromStorage); setActiveButton(); 
                     messageDiv.textContent = `Theme "${this.textContent}" selected!`;
                     messageDiv.style.display = 'block';
                     setTimeout(() => { if(messageDiv) messageDiv.style.display = 'none'; }, 3000);
