@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeStylesheetLink = document.getElementById('theme-stylesheet'); // For page theme
     const fullscreenButton = document.getElementById('fullscreen-button');
     const saveProjectButton = document.getElementById('save-project-button');
-    // const saveAsProjectButton = document.getElementById('save-as-project-button'); // REMOVED
+    // saveAsProjectButton is removed from this version
     const loadProjectsButton = document.getElementById('load-projects-button');
     const settingsButton = document.getElementById('settings-button');
 
@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let externalCSS = []; 
     let externalJS = [];  
     let currentProjectId = null; 
-    // let isSaveAsOperation = false; // REMOVED
 
     // --- LocalStorage Keys ---
     const LS_PROJECTS_KEY = 'alexrCodeProjects';
@@ -41,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const LS_CODEMIRROR_THEME_KEY = 'alexrCodeMirrorTheme'; 
     const LS_EDITOR_FONT_SIZE_KEY = 'alexrCodeEditorFontSize'; 
 
-    console.log("Alexr Code script.js: DOMContentLoaded - In-Editor Linting Added");
+    console.log("Alexr Code script.js: DOMContentLoaded - In-Editor Linting Integrated");
 
     // --- Default Settings ---
     const DEFAULT_CODEMIRROR_THEME = 'material-darker';
@@ -67,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
         autoCloseTags: true,
         autoCloseBrackets: true,
         lineWrapping: true,
-        lint: true, // Enable generic linting
-        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"] // Add lint marker gutter
+        lint: true, 
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"] 
     };
     applyInitialEditorSettings(); 
 
@@ -78,31 +77,30 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
             ...initialCodeMirrorOptions, 
             mode: 'htmlmixed',
-            // HTMLHint is usually picked up automatically by html-lint.js if HTMLHint is global.
-            // We can pass options to HTMLHint.rules if needed.
             lint: { 
-                // options: { /* HTMLHint rules, e.g., "tag-pair": true */ } 
+                // HTMLHint options can be set globally via window.HTMLHint.ruleset
+                // or sometimes passed here if the CM html-lint.js wrapper supports it.
+                // For now, rely on global HTMLHint object being picked up by html-lint.js.
             } 
         });
         cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {
             ...initialCodeMirrorOptions, 
             mode: 'css',
-            // CSSLint is usually picked up automatically by css-lint.js if CSSLint is global.
-            // We can pass options to CSSLint.verify if needed.
-            lint: { 
-                // options: { /* CSSLint rules, e.g., "errors": true, "warnings": true */ }
+            lint: {
+                // CSSLint options can be passed if css-lint.js supports it,
+                // or CSSLint.addRule / CSSLint.removeRule can be used on the global CSSLint object.
             } 
         });
         jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {
             ...initialCodeMirrorOptions, 
             mode: 'javascript',
-            lint: { // JSHint options for javascript-lint.js
-                options: {
+            lint: { 
+                options: { // JSHint options
                     esversion: 2021, 
                     browser: true,   
                     undef: true,     
                     unused: 'vars',  
-                    // globals: { /* "$": false, "jQuery": false */ } // Define expected globals
+                    // globals: { /* "$": false, "jQuery": false */ }
                 }
             }
         });
@@ -285,9 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(saveProjectButton) saveProjectButton.addEventListener('click', () => {
         const existingProject = currentProjectId ? getProjects().find(p => p.id === currentProjectId) : null;
         projectNameInput.value = existingProject ? existingProject.name : '';
-        // If saveModalTitle exists (it might not if HTML was not updated for "Save As" title change)
-        const saveModalTitleEl = document.getElementById('save-modal-title');
-        if(saveModalTitleEl) saveModalTitleEl.textContent = existingProject ? 'Update Project' : 'Save New Project';
         saveProjectModal.style.display = 'block';
         projectNameInput.focus();
     });
@@ -499,13 +494,11 @@ button:hover { background-color: #218838; }`
     console.warn("User did not enter a name.");
   }
 }
-console.info("Alexr Code initialized and ready! Try your custom console messages.");
-// Test linting:
-// let a = 10
-// var b = 20;
-// if (a == b) { console.log("Equalish"); }
-// function test(param1, param2) { console.log(param1); } // unused param2
-// someUndefinedVar = true;
+console.info("Alexr Code initialized and ready! Try in-editor linting for JS, CSS, and HTML.");
+// Example for JSHint:
+// let myVariable = "test";
+// myUnusedVar = true; // Should be flagged by 'undef' if not declared
+// if (myVariable == "test") { console.log("Avoid == for comparisons"); } // JSHint might flag '==' vs '==='
 `
         );
         externalCSS = []; 
