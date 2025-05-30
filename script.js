@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let htmlEditor, cssEditor, jsEditor; // CodeMirror instances
 
-    // UI Elements
+    // UI Elements (Ensure these match your index.html from Turn 79)
     const previewFrame = document.getElementById('preview-frame');
     const runButton = document.getElementById('run-button');
     const downloadZipButton = document.getElementById('download-zip-button');
@@ -38,94 +38,95 @@ document.addEventListener('DOMContentLoaded', () => {
     const LS_EDITOR_FONT_SIZE_KEY = 'alexrCodeEditorFontSize'; 
     const LS_UNSAVED_WORK_KEY = 'alexrCodeUnsavedWork';
 
-    console.log("Alexr Code script.js: DOMContentLoaded - Corrected Linting Setup.");
+    console.log("Alexr Code script.js: DOMContentLoaded - Enhanced Linting Config.");
 
     const DEFAULT_CODEMIRROR_THEME = 'material-darker';
     const DEFAULT_EDITOR_FONT_SIZE = 14;
 
     let autoSaveTimeout;
-    function autoSaveUnsavedWork() {
-        if (!htmlEditor || !cssEditor || !jsEditor) { return; }
-        const unsavedWork = {
-            html: htmlEditor.getValue(), css: cssEditor.getValue(), js: jsEditor.getValue(),
-            externalCSS: [...externalCSS], externalJS: [...externalJS],
-            timestamp: Date.now()
-        };
-        localStorage.setItem(LS_UNSAVED_WORK_KEY, JSON.stringify(unsavedWork));
-    }
-    function setupAutoSave(editorInstance) {
-        if (editorInstance) {
-            editorInstance.on('change', () => {
-                clearTimeout(autoSaveTimeout);
-                autoSaveTimeout = setTimeout(autoSaveUnsavedWork, 1500);
-            });
-        }
-    }
-    function triggerAutoSaveForExternalLibs() {
-        clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(autoSaveUnsavedWork, 1500);
-    }
-
-    function applyInitialEditorSettings() {
-        const savedCmTheme = localStorage.getItem(LS_CODEMIRROR_THEME_KEY) || DEFAULT_CODEMIRROR_THEME;
-        const savedFontSize = parseInt(localStorage.getItem(LS_EDITOR_FONT_SIZE_KEY), 10) || DEFAULT_EDITOR_FONT_SIZE;
-        document.documentElement.style.setProperty('--editor-font-size', `${savedFontSize}px`);
-        baseCodeMirrorOptions.theme = savedCmTheme; // Update base options for init
-        if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = savedCmTheme;
-        if(editorFontSizeInput) editorFontSizeInput.value = savedFontSize;
-    }
+    function autoSaveUnsavedWork() { /* ... (Keep from Turn 89) ... */ }
+    function setupAutoSave(editorInstance) { /* ... (Keep from Turn 89) ... */ }
+    function triggerAutoSaveForExternalLibs() { /* ... (Keep from Turn 89) ... */ }
     
-    // Base CodeMirror options, linting specific options will be merged
+    function applyInitialEditorSettings() { /* ... (Keep from Turn 89) ... */ }
+    
     const baseCodeMirrorOptions = { 
-        lineNumbers: true,
-        theme: DEFAULT_CODEMIRROR_THEME, 
-        autoCloseTags: true,
-        autoCloseBrackets: true,
-        lineWrapping: true,
-        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"] // Ensure lint gutter is present
+        lineNumbers: true, theme: DEFAULT_CODEMIRROR_THEME, 
+        autoCloseTags: true, autoCloseBrackets: true, lineWrapping: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"] 
+        // `lint: true` or specific lint options will be merged per editor
     };
-    applyInitialEditorSettings(); // Apply saved/default theme and font size to baseCodeMirrorOptions
+    applyInitialEditorSettings(); 
 
-    // --- Initialize CodeMirror with Specific Linter Setups ---
+    // --- Initialize CodeMirror with more specific linting configurations ---
     try {
-        // For HTMLHint - html-lint.js connector uses window.HTMLHint
-        // You can configure HTMLHint rules globally:
-        // window.HTMLHint.addRule({ id: 'tag-pair', description: 'Tag must be paired.', link: '...' });
-        // Or rely on its defaults. For passing options through CM:
+        // HTMLHint Rules - you can customize these. Find rule IDs on HTMLHint documentation.
+        // This passes options directly to the html-lint addon which should use HTMLHint
+        const htmlHintOptions = {
+            "tagname-lowercase": true,
+            "attr-lowercase": true,
+            "attr-value-double-quotes": true,
+            "doctype-first": true, // Check for a doctype
+            "tag-pair": true, // Check for unclosed tags
+            "spec-char-escape": true,
+            "id-unique": true,
+            "src-not-empty": true,
+            "alt-require": true,
+            "attr-no-duplication": true,
+            // Add more rules as needed
+        };
+
         htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
             ...baseCodeMirrorOptions, 
             mode: 'htmlmixed',
-            lint: true // This should enable the html-lint.js connector
-            // To pass specific HTMLHint rules:
-            // lint: { options: { "tag-lowercase": true, "attr-lowercase": true, "alt-require": true /* ... more rules ... */ } }
+            lint: { options: htmlHintOptions, async: true } // Pass options to html-lint connector
         });
 
-        // For CSSLint - css-lint.js connector uses window.CSSLint
-        // You can configure CSSLint rules globally or pass options if supported by connector.
-        // Example global configuration (though not all rules might be desired):
-        // let rules = {}; CSSLint.getRules().forEach(function(rule) { rules[rule.id] = 1; }); // Enable all rules
-        // To pass options:
+        // CSSLint Rules - you can customize these. Find rule IDs on CSSLint wiki/documentation.
+        // CSSLint categorizes rules into errors, warnings etc.
+        // Passing options to css-lint.js can be tricky; it often relies on global CSSLint.
+        // However, some versions of the connector might accept an options object.
+        // We enable common error-checking rules. 1 = warning, 2 = error.
+        // Not all CSSLint rules translate directly to CodeMirror severities without custom handling.
+        // The css-lint.js connector does its best.
+        const cssLintOptions = {
+            "errors": true,                     // Report parsing errors (usually severity 'error')
+            "important": true,                  // Disallow !important (often a warning)
+            "known-properties": true,           // Disallow unknown properties (error)
+            "duplicate-properties": true,       // Warn about duplicate properties
+            "empty-rules": true,                // Warn about empty rules
+            "zero-units": true,                 // Warn about 0 with units (e.g., 0px)
+            "font- बम": true,           // Disallow "font-bombing" (too many web fonts)
+            "floats": false,                    // Don't warn about floats (can be noisy)
+            "ids": false,                       // Don't warn about IDs in selectors
+             // "universal-selector": true,      // Warn about universal selector *
+             // "unqualified-attributes": true,  // Warn about unqualified attribute selectors
+        };
+        // For CSSLint, the connector expects rules to be passed such that it can construct what CSSLint.verify expects.
+        // Often, just `lint:true` is enough and CSSLint picks up default severities.
+        // If direct options passing doesn't work as expected for custom severities,
+        // one might need to write a custom lint function for CSS.
+        // Let's try with just enabling it and relying on CSSLint's default severities first.
         cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {
             ...baseCodeMirrorOptions, 
             mode: 'css',
-            lint: true // This should enable the css-lint.js connector
-            // To pass specific CSSLint rules:
-            // lint: { options: { "ids": false, "important": true, "outline-none": false /* ... more rules ... */ } }
+            lint: true // Let css-lint.js use global CSSLint and its default rules/severities.
+                       // If this is not enough, a more complex options object or custom linter is needed.
         });
         
         jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {
             ...baseCodeMirrorOptions, 
             mode: 'javascript',
-            lint: { // JSHint specific options for javascript-lint.js
-                options: {
+            lint: { 
+                options: { // JSHint options
                     esversion: 2021, 
                     browser: true,   
                     undef: true,     
                     unused: 'vars',  
-                    // eqeqeq: true, // Enforce strict equality
-                    //curly: true, // Enforce braces for blocks
-                    latedef: "nofunc", // Allow function declarations after use
-                    // globals: { /* Define expected globals here if any */ }
+                    // eqeqeq: true, // Uncomment to enforce ===
+                    // curly: true,   // Uncomment to enforce {} for blocks
+                    // latedef: "nofunc", // Allow defining functions after use
+                    globals: { /* "$": false, "jQuery": false */ }
                 }
             }
         });
@@ -133,15 +134,19 @@ document.addEventListener('DOMContentLoaded', () => {
         setupAutoSave(htmlEditor); 
         setupAutoSave(cssEditor); 
         setupAutoSave(jsEditor);
-        console.log("CodeMirror instances initialized with refined linting setup.");
+        console.log("CodeMirror instances initialized with refined linting configurations.");
     } catch (e) {
         console.error("Error initializing CodeMirror:", e);
     }
 
+    // --- CodeMirror Refresh Function ---
     function refreshAllCodeMirrors() {
-        if (htmlEditor) htmlEditor.refresh(); if (cssEditor) cssEditor.refresh(); if (jsEditor) jsEditor.refresh();
+        if (htmlEditor) htmlEditor.refresh(); 
+        if (cssEditor) cssEditor.refresh(); 
+        if (jsEditor) jsEditor.refresh();
     }
 
+    // --- Initialize Split.js Panes ---
     function initializeFixedSplits() {
         try {
             Split(['#html-editor-wrapper', '#css-editor-wrapper', '#js-editor-wrapper'], {
@@ -163,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     initializeFixedSplits(); 
     
+    // --- Page Theme Application ---
     function applyAppTheme() {
         const selectedThemePath = localStorage.getItem(LS_PAGE_THEME_KEY);
         if (themeStylesheetLink) {
@@ -171,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applyAppTheme();
 
+    // --- Custom Console Logging ---
     function logToCustomConsole(argsArray, type = 'log') {
         if (!consoleOutputDiv) return;
         const messageContainer = document.createElement('div');
@@ -189,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         consoleOutputDiv.scrollTop = consoleOutputDiv.scrollHeight;
     }
 
+    // --- Preview Update ---
     function updatePreview() {
         if (!htmlEditor || !cssEditor || !jsEditor || !previewFrame) { return; }
         const htmlCode = htmlEditor.getValue();
@@ -205,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = iframeDoc.body;
         const iWindow = iframe.contentWindow;
 
-        if (iWindow) {
+        if (iWindow) { // Setup console and error handling for the iframe
             const originalConsole = {log: iWindow.console.log, error: iWindow.console.error, warn: iWindow.console.warn, info: iWindow.console.info, debug: iWindow.console.debug, clear: iWindow.console.clear};
             iWindow.console = {};
             Object.keys(originalConsole).forEach(key => {
@@ -250,8 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshAllCodeMirrors();
         updatePreview();
     }
-    // Initial call will be handled after loading content
+    // Initial call handled after loading content
 
+    // --- Event Listeners ---
     if(runButton) runButton.addEventListener('click', () => {
         if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; 
         updatePreview();
@@ -260,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
     });
 
+    // --- Modal Generic Close Logic ---
     function closeModal(modalElement) { if (modalElement) modalElement.style.display = 'none'; }
     document.querySelectorAll('.close-button, .button-alt.close-modal-action').forEach(button => {
         button.addEventListener('click', function() {
@@ -269,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.onclick = function(event) { if (event.target.classList.contains('modal')) { closeModal(event.target); } }
 
+    // --- Project Save/Load ---
     function getProjects() { const p = localStorage.getItem(LS_PROJECTS_KEY); return p ? JSON.parse(p) : []; }
     function saveProjects(pA) { localStorage.setItem(LS_PROJECTS_KEY, JSON.stringify(pA)); }
 
@@ -361,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderProjectsList(); alert('Project deleted.');
     }
     
+    // --- Settings Modal ---
     if(settingsButton) settingsButton.addEventListener('click', () => {
         externalCssUrlsTextarea.value = externalCSS.join('\n');
         externalJsUrlsTextarea.value = externalJS.join('\n');
@@ -396,15 +408,53 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePreview(); 
     });
 
-    if(downloadZipButton) downloadZipButton.addEventListener('click', () => { /* Same as Turn 59/61 */ });
-    function generateAndDownloadZip(zipInstance) { /* Same as Turn 59/61 */ }
+    // --- Download ZIP ---
+    if(downloadZipButton) downloadZipButton.addEventListener('click', () => {
+        const zip = new JSZip();
+        zip.file("index.html", htmlEditor.getValue());
+        zip.file("style.css", cssEditor.getValue());
+        zip.file("script.js", jsEditor.getValue());
+        let manifestContent = "External Resources:\n";
+        if(externalCSS.length > 0) manifestContent += "\nCSS:\n" + externalCSS.join("\n");
+        if(externalJS.length > 0) manifestContent += "\n\nJS:\n" + externalJS.join("\n");
+        if(externalCSS.length > 0 || externalJS.length > 0) zip.file("external_resources.txt", manifestContent);
+        generateAndDownloadZip(zip);
+    });
+    function generateAndDownloadZip(zipInstance) {
+        zipInstance.generateAsync({ type: "blob" }).then(content => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = "alexr-code-project.zip";
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }).catch(err => { console.error("Error generating ZIP: ", err); alert("Could not generate ZIP."); });
+    }
+    
+    // --- Fullscreen Preview ---
     if(fullscreenButton) fullscreenButton.addEventListener('click', () => toggleFullScreen(previewFrame));
-    function toggleFullScreen(element) { /* Same as Turn 59/61 */ }
-    function updateFullscreenButtonText() { /* Same as Turn 59/61 */ }
+    function toggleFullScreen(element) {
+        if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+            if (element.requestFullscreen) element.requestFullscreen();
+            else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
+            else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+            else if (element.msRequestFullscreen) element.msRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.msExitFullscreen) document.msExitFullscreen();
+        }
+    }
+    function updateFullscreenButtonText() {
+        if(fullscreenButton) {
+            const isFs = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+            fullscreenButton.textContent = isFs ? 'Exit Fullscreen' : 'Fullscreen Preview';
+        }
+    }
     ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach(event => 
         document.addEventListener(event, updateFullscreenButtonText, false)
     );
 
+    // --- Initialize with default content, unsaved work, or last project ---
     function setInitialContent(callRefreshPreview = true, autoSaveThisContent = true) {
         if (!htmlEditor || !cssEditor || !jsEditor) return; 
         htmlEditor.setValue("<h1>Welcome to Alexr Code!</h1>\n<p>Your ideas start here. Try some HTML, CSS, and JavaScript.</p>\n<button onclick=\"greetUser()\">Say Hello</button>");
@@ -473,6 +523,6 @@ console.info("Alexr Code initialized and ready! Linting is active.");
            setInitialContent(true, true); 
         }
     }
-    setTimeout(refreshEditorsAndPreview, 400);
+    setTimeout(refreshEditorsAndPreview, 400); // Final ensure refresh
 
 }); // End DOMContentLoaded
