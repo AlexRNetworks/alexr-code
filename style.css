@@ -223,10 +223,10 @@ header h1 {
 .console-message { padding: 2px 0; border-bottom: 1px solid var(--border-color-light); margin-bottom: 2px; }
 .console-message:last-child { border-bottom: none; margin-bottom: 0; }
 .console-message.log { color: var(--color-text-main); }
-.console-message.error { color: #e74c3c; font-weight: bold; } /* Red for errors */
-.console-message.warn { color: #f39c12; } /* Orange/Yellow for warnings */
-.console-message.info { color: #3498db; } /* Blue for info */
-.console-message.debug { color: #9b59b6; } /* Purple for debug */
+.console-message.error { color: #e74c3c; font-weight: bold; }
+.console-message.warn { color: #f39c12; }
+.console-message.info { color: #3498db; }
+.console-message.debug { color: #9b59b6; }
 
 /* Split.js Gutter Styling */
 .gutter {
@@ -391,7 +391,7 @@ footer {
 .cm-s-monokai .CodeMirror-lint-message.CodeMirror-lint-message-error,
 .cm-s-eclipse .CodeMirror-lint-message.CodeMirror-lint-message-error,
 .cm-s-dracula .CodeMirror-lint-message.CodeMirror-lint-message-error {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/َق/ Ministère des Affaires étrangères et du Développement international</translation>'); /* Red squiggly line */
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/َق/ Ministère des Affaires étrangères et du Développement international</translation>');
     background-repeat: repeat-x;
     background-position: left bottom;
 }
