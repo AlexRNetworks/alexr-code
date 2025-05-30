@@ -12,8 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/monokai.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/eclipse.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.css">
 
 </head>
 <body>
@@ -55,52 +54,54 @@
                 <button id="download-zip-button">Download ZIP</button>
                 <button id="fullscreen-button">Fullscreen Preview</button>
             </div>
+
             <div id="preview-wrapper" class="output-sub-pane"> 
                 <div class="preview-section">
                     <h2>Preview</h2>
                     <iframe id="preview-frame" allowfullscreen></iframe>
                 </div>
             </div>
+
             <div id="console-wrapper" class="output-sub-pane"> 
                 <div id="console-section" class="console-section">
                     <div class="console-header">
                         <h2>Console</h2>
                         <button id="clear-console-button">Clear</button>
                     </div>
-                    <div id="console-output"></div>
+                    <div id="console-output">
+                        </div>
                 </div>
+            </div>
+        </div>
+    </div> <footer>
+        <p>&copy; 2025 Alexr Code</p>
+    </footer>
+
+    <div id="save-project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="save-project-modal">&times;</span>
+            <h2>Save Project</h2> <label for="project-name-input">Project Name:</label>
+            <input type="text" id="project-name-input" placeholder="Enter project name...">
+            <div class="modal-actions">
+                <button id="confirm-save-button" class="primary-action">Save</button>
+                <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2025 Alexr Code</p>
-    </footer>
-
-    <div id="save-project-modal" class="modal"> 
-        <div class="modal-content"> 
-            <span class="close-button" data-modal-id="save-project-modal">&times;</span> 
-            <h2>Save Project</h2> 
-            <label for="project-name-input">Project Name:</label> 
-            <input type="text" id="project-name-input" placeholder="Enter project name..."> 
-            <div class="modal-actions"> 
-                <button id="confirm-save-button" class="primary-action">Save</button> 
-                <button data-modal-id="save-project-modal" class="button-alt close-modal-action">Cancel</button> 
-            </div> 
-        </div> 
+    <div id="load-projects-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="load-projects-modal">&times;</span>
+            <h2>Load Project</h2>
+            <div id="projects-list-container">
+                <p>No projects saved yet.</p>
+            </div>
+             <div class="modal-actions">
+                <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button>
+            </div>
+        </div>
     </div>
 
-    <div id="load-projects-modal" class="modal"> 
-        <div class="modal-content"> 
-            <span class="close-button" data-modal-id="load-projects-modal">&times;</span> 
-            <h2>Load Project</h2> 
-            <div id="projects-list-container"><p>No projects saved yet.</p></div> 
-            <div class="modal-actions"> 
-                <button data-modal-id="load-projects-modal" class="button-alt close-modal-action">Close</button> 
-            </div> 
-        </div> 
-    </div>
-    
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <span class="close-button" data-modal-id="settings-modal">&times;</span>
@@ -155,9 +156,7 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/1.1.4/htmlhint.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/1.1.4/htmlhint.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/javascript-lint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/css-lint.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/html-lint.min.js"></script>
