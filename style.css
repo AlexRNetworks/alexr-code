@@ -223,10 +223,10 @@ header h1 {
 .console-message { padding: 2px 0; border-bottom: 1px solid var(--border-color-light); margin-bottom: 2px; }
 .console-message:last-child { border-bottom: none; margin-bottom: 0; }
 .console-message.log { color: var(--color-text-main); }
-.console-message.error { color: #e74c3c; font-weight: bold; }
-.console-message.warn { color: #f39c12; }
-.console-message.info { color: #3498db; }
-.console-message.debug { color: #9b59b6; }
+.console-message.error { color: #e74c3c; font-weight: bold; } /* Red for errors */
+.console-message.warn { color: #f39c12; } /* Orange/Yellow for warnings */
+.console-message.info { color: #3498db; } /* Blue for info */
+.console-message.debug { color: #9b59b6; } /* Purple for debug */
 
 /* Split.js Gutter Styling */
 .gutter {
@@ -382,3 +382,48 @@ footer {
 }
 .setting-section { margin-bottom: 15px; }
 .setting-section:last-of-type { margin-bottom: 0; }
+
+/* --- CodeMirror Linting Custom Styles --- */
+/* Styling for the text part of an error (e.g., red squiggly underline) */
+.cm-s-default .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-material-darker .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-neat .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-monokai .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-eclipse .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-dracula .CodeMirror-lint-message.CodeMirror-lint-message-error {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/َق/ Ministère des Affaires étrangères et du Développement international</translation>'); /* Red squiggly line */
+    background-repeat: repeat-x;
+    background-position: left bottom;
+}
+
+/* Styling for the text part of a warning (e.g., yellow squiggly underline) */
+.cm-s-default .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-material-darker .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-neat .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-monokai .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-eclipse .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-dracula .CodeMirror-lint-message.CodeMirror-lint-message-warning {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhL1rQAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAF0lEQVQI12NggIMHDAwKqMAKMBDNwAAAAPgCBgE953VtAAAAAElFTkSuQmCC'); /* Yellow squiggly line */
+    background-repeat: repeat-x;
+    background-position: left bottom;
+}
+
+/* Tooltip styling (CodeMirror's lint.css provides defaults, these are enhancements/overrides) */
+.CodeMirror-lint-tooltip {
+  background-color: var(--color-background-editor, #f8f9fa); 
+  border: 1px solid var(--border-color-dark, #ccc);
+  color: var(--color-text-main, #333);
+  padding: 8px 12px;
+  border-radius: var(--border-radius-small, 4px);
+  box-shadow: var(--box-shadow-main, 0 2px 5px rgba(0,0,0,0.15));
+  z-index: 100000; 
+  font-size: 0.85em;
+  max-width: 400px; 
+}
+/* Themed tooltips for different CodeMirror themes you support */
+.cm-s-material-darker.CodeMirror-lint-tooltip { background-color: #373737; color: #d4d4d4; border-color: #505050;}
+.cm-s-neat.CodeMirror-lint-tooltip, 
+.cm-s-eclipse.CodeMirror-lint-tooltip, 
+.cm-s-default.CodeMirror-lint-tooltip { background-color: #f7f7f7; color: #333; border-color: #ccc; }
+.cm-s-monokai.CodeMirror-lint-tooltip, 
+.cm-s-dracula.CodeMirror-lint-tooltip { background-color: #2b2b2b; color: #f8f8f2; border-color: #44475a; }
