@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeStylesheetLink = document.getElementById('theme-stylesheet'); // For page theme
     const fullscreenButton = document.getElementById('fullscreen-button');
     const saveProjectButton = document.getElementById('save-project-button');
-    // saveAsProjectButton is intentionally removed from this stable version
+    // saveAsProjectButton is NOT in this version
     const loadProjectsButton = document.getElementById('load-projects-button');
     const settingsButton = document.getElementById('settings-button');
 
@@ -39,13 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const LS_PAGE_THEME_KEY = 'selectedTheme'; 
     const LS_CODEMIRROR_THEME_KEY = 'alexrCodeMirrorTheme'; 
     const LS_EDITOR_FONT_SIZE_KEY = 'alexrCodeEditorFontSize'; 
-    const LS_UNSAVED_WORK_KEY = 'alexrCodeUnsavedWork'; // For unsaved work persistence
+    const LS_UNSAVED_WORK_KEY = 'alexrCodeUnsavedWork';
 
-    console.log("Alexr Code script.js: DOMContentLoaded - Stable version with Linting and Unsaved Work Fix.");
+    console.log("Alexr Code script.js: DOMContentLoaded - Full Re-check Version.");
 
     // --- Default Settings ---
     const DEFAULT_CODEMIRROR_THEME = 'material-darker';
-    const DEFAULT_EDITOR_FONT_SIZE = 14; // in px
+    const DEFAULT_EDITOR_FONT_SIZE = 14;
 
     // --- Auto-Save for Unsaved Work ---
     let autoSaveTimeout;
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    function triggerAutoSaveForExternalLibs() {
+    function triggerAutoSaveForExternalLibs() { // Called when external libs are changed in settings
         clearTimeout(autoSaveTimeout);
         autoSaveTimeout = setTimeout(autoSaveUnsavedWork, 1500);
     }
@@ -80,32 +80,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.documentElement.style.setProperty('--editor-font-size', `${savedFontSize}px`);
         
-        initialCodeMirrorOptions.theme = savedCmTheme; // For CM init
+        // These options are passed to CodeMirror when it's initialized
+        initialCodeMirrorOptions.theme = savedCmTheme;
 
+        // Update the UI elements in the settings modal to reflect loaded settings
         if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = savedCmTheme;
         if(editorFontSizeInput) editorFontSizeInput.value = savedFontSize;
     }
     
     const initialCodeMirrorOptions = { 
-        lineNumbers: true, theme: DEFAULT_CODEMIRROR_THEME, 
-        autoCloseTags: true, autoCloseBrackets: true, lineWrapping: true,
-        lint: true, gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"] 
+        lineNumbers: true,
+        theme: DEFAULT_CODEMIRROR_THEME, // Will be updated by applyInitialEditorSettings
+        autoCloseTags: true,
+        autoCloseBrackets: true,
+        lineWrapping: true,
+        lint: true, 
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"] 
     };
-    applyInitialEditorSettings(); 
+    applyInitialEditorSettings(); // Call this BEFORE CodeMirror instances are created
+
 
     // --- Initialize CodeMirror ---
     try {
-        htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {...initialCodeMirrorOptions, mode: 'htmlmixed', lint: {options: {}} });
-        cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {...initialCodeMirrorOptions, mode: 'css', lint: {options: {}} });
+        htmlEditor = CodeMirror.fromTextArea(document.getElementById('html-code'), {
+            ...initialCodeMirrorOptions, 
+            mode: 'htmlmixed',
+            lint: { options: { /* HTMLHint default rules are usually fine */ } } 
+        });
+        cssEditor = CodeMirror.fromTextArea(document.getElementById('css-code'), {
+            ...initialCodeMirrorOptions, 
+            mode: 'css',
+            lint: { options: { /* CSSLint default rules are usually fine */ } }
+        });
         jsEditor = CodeMirror.fromTextArea(document.getElementById('js-code'), {
             ...initialCodeMirrorOptions, 
             mode: 'javascript',
-            lint: { options: { esversion: 2021, browser: true, undef: true, unused: 'vars' } }
+            lint: { 
+                options: { // JSHint options
+                    esversion: 2021, 
+                    browser: true,   
+                    undef: true,     
+                    unused: 'vars',  
+                    // globals: {} // Define any expected global variables if needed
+                }
+            }
         });
         
-        setupAutoSave(htmlEditor); setupAutoSave(cssEditor); setupAutoSave(jsEditor);
+        setupAutoSave(htmlEditor); 
+        setupAutoSave(cssEditor); 
+        setupAutoSave(jsEditor);
         console.log("CodeMirror instances initialized with linting.");
-    } catch (e) { console.error("Error initializing CodeMirror:", e); }
+    } catch (e) {
+        console.error("Error initializing CodeMirror:", e);
+        alert("Critical error: Code editors could not be initialized. Check console.");
+    }
 
     // --- CodeMirror Refresh Function ---
     function refreshAllCodeMirrors() {
@@ -121,27 +149,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 sizes: [33.3, 33.3, 33.4], minSize: 60, gutterSize: 8, direction: 'horizontal', cursor: 'col-resize',
                 onDragEnd: refreshAllCodeMirrors
             });
+
             Split(['#preview-wrapper', '#console-wrapper'], {
                 sizes: [70, 30], minSize: [50, 40], gutterSize: 8, direction: 'vertical', cursor: 'row-resize',
                 elementStyle: (dim, size, gutterSize) => ({ 'flex-basis': `calc(${size}% - ${gutterSize}px)` }),
                 gutterStyle: (dim, gutterSize) => ({ 'flex-basis': `${gutterSize}px` })
             });
+            
             Split(['#code-editors-pane', '#output-pane'], {
-                sizes: [55, 45], minSize: [150, 150], gutterSize: 8,
-                direction: 'vertical', cursor: 'row-resize',    
+                sizes: [55, 45], 
+                minSize: [150, 150], 
+                gutterSize: 8,
+                direction: 'vertical', 
+                cursor: 'row-resize',    
                 onDragEnd: refreshAllCodeMirrors
             });
             console.log("Split.js panes initialized for fixed vertical layout.");
             setTimeout(refreshAllCodeMirrors, 150); 
-        } catch (e) { console.error("Error initializing Split.js:", e); }
+        } catch (e) {
+            console.error("Error initializing Split.js:", e);
+        }
     }
     initializeFixedSplits(); 
     
-    // --- Page Theme Application ---
+    // --- Page Theme Application for index.html ---
     function applyAppTheme() {
         const selectedThemePath = localStorage.getItem(LS_PAGE_THEME_KEY);
+        // console.log("[script.js] applyAppTheme: Stored page theme path:", selectedThemePath); // Kept for debugging if needed
         if (themeStylesheetLink) {
-            themeStylesheetLink.setAttribute('href', (selectedThemePath && selectedThemePath !== "default") ? selectedThemePath : '');
+            if (selectedThemePath && selectedThemePath !== "default") {
+                themeStylesheetLink.setAttribute('href', selectedThemePath);
+            } else {
+                themeStylesheetLink.setAttribute('href', '');
+            }
+        } else {
+            console.error("[script.js] applyAppTheme: themeStylesheetLink not found!");
         }
     }
     applyAppTheme();
@@ -167,7 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Preview Update ---
     function updatePreview() {
-        if (!htmlEditor || !cssEditor || !jsEditor || !previewFrame) { return; }
+        if (!htmlEditor || !cssEditor || !jsEditor || !previewFrame) {
+            console.warn("Editors or previewFrame not ready for updatePreview.");
+            return;
+        }
         const htmlCode = htmlEditor.getValue();
         const cssCode = cssEditor.getValue();
         const jsCode = jsEditor.getValue();
@@ -191,8 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (typeof originalConsole[key] === 'function') { originalConsole[key].apply(null, args); }
                 };
             });
-            if (typeof originalConsole.clear === 'function') { // Ensure clear is handled
-                 iWindow.console.clear = () => { if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; originalConsole.clear.apply(null);};
+             if (typeof originalConsole.clear === 'function') {
+                iWindow.console.clear = () => { if (consoleOutputDiv) consoleOutputDiv.innerHTML = ''; originalConsole.clear.apply(null);};
             }
             iWindow.onerror = (message, source, lineno, colno, errorObj) => {
                 let Sfilename = source ? source.substring(source.lastIndexOf('/') + 1) : "script";
@@ -210,12 +255,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const styleTag = iframeDoc.createElement('style');
-        let bodyBg = getComputedStyle(document.body).getPropertyValue('--color-background-preview').trim() || '#ffffff';
-        let bodyColor = getComputedStyle(document.body).getPropertyValue('--color-text-main').trim() || '#333333';
-        let bodyFont = getComputedStyle(document.body).getPropertyValue('--font-primary').trim() || 'Inter, sans-serif';
-        styleTag.textContent = `body{margin:15px;padding:0;box-sizing:border-box;font-family:${bodyFont};background-color:${bodyBg};color:${bodyColor};line-height:1.6;} ${cssCode}`;
+        styleTag.textContent = `
+            body {
+                margin: 8px; 
+                padding: 0;
+                box-sizing: border-box;
+                line-height: 1.6; 
+            }
+            ${cssCode} 
+        `;
         head.appendChild(styleTag);
+        
         body.innerHTML = htmlCode;
+
         externalJS.forEach(url => {
             if (!url.trim()) return;
             const scriptTag = iframeDoc.createElement('script'); scriptTag.src = url.trim();
@@ -230,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshAllCodeMirrors();
         updatePreview();
     }
-    // Initial call will be handled after loading content
+    // Initial call is handled after loading content
 
     // --- Event Listeners ---
     if(runButton) runButton.addEventListener('click', () => {
@@ -247,7 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.close-button, .button-alt.close-modal-action').forEach(button => {
         button.addEventListener('click', function() {
             const modalId = this.getAttribute('data-modal-id');
-            if (modalId) closeModal(document.getElementById(modalId));
+            const modalToClose = document.getElementById(modalId);
+            if (modalToClose) closeModal(modalToClose);
         });
     });
     window.onclick = function(event) { if (event.target.classList.contains('modal')) { closeModal(event.target); } }
@@ -259,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(saveProjectButton) saveProjectButton.addEventListener('click', () => {
         const existingProject = currentProjectId ? getProjects().find(p => p.id === currentProjectId) : null;
         projectNameInput.value = existingProject ? existingProject.name : '';
-        const saveModalTitleEl = document.getElementById('save-modal-title'); // Requires ID on h2 in save modal
+        const saveModalTitleEl = document.getElementById('save-modal-title'); 
         if(saveModalTitleEl) saveModalTitleEl.textContent = existingProject ? 'Update Project' : 'Save New Project';
         saveProjectModal.style.display = 'block';
         projectNameInput.focus();
@@ -284,13 +337,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if (!projectExistsAndUpdated) { 
-             const newId = Date.now() + Math.random(); // Add random for better uniqueness
+             const newId = Date.now() + Math.random();
              ps.push({ ...projectData, id: newId });
              currentProjectId = newId; 
         }
         saveProjects(ps);
         localStorage.removeItem(LS_UNSAVED_WORK_KEY); 
-        console.log(`Project "${pN}" saved! Unsaved work slot cleared.`);
         alert(`Project "${pN}" saved!`);
         closeModal(saveProjectModal);
     });
@@ -318,21 +370,16 @@ document.addEventListener('DOMContentLoaded', () => {
             externalCSS = Array.isArray(pTL.externalCSS) ? [...pTL.externalCSS] : [];
             externalJS = Array.isArray(pTL.externalJS) ? [...pTL.externalJS] : [];
             currentProjectId = pTL.id;
-
             const cmTheme = pTL.cmTheme || DEFAULT_CODEMIRROR_THEME;
             const editorFontSize = pTL.editorFontSize || DEFAULT_EDITOR_FONT_SIZE;
-
             localStorage.setItem(LS_CODEMIRROR_THEME_KEY, cmTheme);
             localStorage.setItem(LS_EDITOR_FONT_SIZE_KEY, editorFontSize);
-
             if (htmlEditor) htmlEditor.setOption('theme', cmTheme);
             if (cssEditor) cssEditor.setOption('theme', cmTheme);
             if (jsEditor) jsEditor.setOption('theme', cmTheme);
             document.documentElement.style.setProperty('--editor-font-size', `${editorFontSize}px`);
-            
             if(codeMirrorThemeSelect) codeMirrorThemeSelect.value = cmTheme;
             if(editorFontSizeInput) editorFontSizeInput.value = editorFontSize;
-            
             if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
             autoSaveUnsavedWork();
             setTimeout(()=>{ refreshEditorsAndPreview(); },100); 
@@ -364,15 +411,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const oldExternalJS = JSON.stringify(externalJS);
         externalCSS = externalCssUrlsTextarea.value.split('\n').map(url => url.trim()).filter(url => url);
         externalJS = externalJsUrlsTextarea.value.split('\n').map(url => url.trim()).filter(url => url);
-
         const newCmTheme = codeMirrorThemeSelect.value;
         const newFontSize = parseInt(editorFontSizeInput.value, 10);
-
         localStorage.setItem(LS_CODEMIRROR_THEME_KEY, newCmTheme);
         if (htmlEditor) htmlEditor.setOption('theme', newCmTheme);
         if (cssEditor) cssEditor.setOption('theme', newCmTheme);
         if (jsEditor) jsEditor.setOption('theme', newCmTheme);
-
         if (!isNaN(newFontSize) && newFontSize >= 8 && newFontSize <= 30) {
             localStorage.setItem(LS_EDITOR_FONT_SIZE_KEY, newFontSize);
             document.documentElement.style.setProperty('--editor-font-size', `${newFontSize}px`);
@@ -381,8 +425,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Invalid font size. Please enter a number between 8 and 30.");
             editorFontSizeInput.value = localStorage.getItem(LS_EDITOR_FONT_SIZE_KEY) || DEFAULT_EDITOR_FONT_SIZE;
         }
-        
-        console.log("[script.js] Settings Applied. CM Theme:", newCmTheme, "Font Size:", newFontSize + "px");
         closeModal(settingsModal); 
         if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
         if(JSON.stringify(externalCSS) !== oldExternalCSS || JSON.stringify(externalJS) !== oldExternalJS) {
@@ -474,7 +516,7 @@ console.info("Alexr Code initialized and ready! Linting is active.");
 `
         );
         externalCSS = []; externalJS = []; currentProjectId = null;
-        applyInitialEditorSettings(); // Ensure editor appearance defaults are set
+        applyInitialEditorSettings(); 
         if (consoleOutputDiv) consoleOutputDiv.innerHTML = '';
         if (autoSaveThisContent) autoSaveUnsavedWork();
         if (callRefreshPreview) { setTimeout(refreshEditorsAndPreview, 250); }
@@ -486,9 +528,9 @@ console.info("Alexr Code initialized and ready! Linting is active.");
         try {
             const unsavedWork = JSON.parse(unsavedWorkJSON);
             if (unsavedWork && typeof unsavedWork.html === 'string') {
-                htmlEditor.setValue(unsavedWork.html);
-                cssEditor.setValue(unsavedWork.css || '');
-                jsEditor.setValue(unsavedWork.js || '');
+                if(htmlEditor) htmlEditor.setValue(unsavedWork.html);
+                if(cssEditor) cssEditor.setValue(unsavedWork.css || '');
+                if(jsEditor) jsEditor.setValue(unsavedWork.js || '');
                 externalCSS = Array.isArray(unsavedWork.externalCSS) ? [...unsavedWork.externalCSS] : [];
                 externalJS = Array.isArray(unsavedWork.externalJS) ? [...unsavedWork.externalJS] : [];
                 currentProjectId = null; 
@@ -506,6 +548,6 @@ console.info("Alexr Code initialized and ready! Linting is active.");
            setInitialContent(true, true); 
         }
     }
-    setTimeout(refreshEditorsAndPreview, 400); // Final refresh for all content and layout
+    setTimeout(refreshEditorsAndPreview, 400);
 
 }); // End DOMContentLoaded
