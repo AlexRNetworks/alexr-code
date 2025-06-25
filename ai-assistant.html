@@ -6,19 +6,21 @@
     <title>AI Coding Assistant - Alexr Training</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     
+    <!-- CodeMirror Library for the code editor -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material-darker.min.css">
     
     <style>
-        .tool-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-        .editor-wrapper, .output-wrapper { border: 1px solid var(--light-grey-color); border-radius: var(--border-radius); overflow: hidden; }
+        .tool-container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; }
+        .editor-wrapper, .output-wrapper { border: 1px solid #ddd; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--box-shadow); }
         .wrapper-header { background-color: var(--dark-color); color: white; padding: 0.75rem 1rem; font-weight: 600; }
-        .CodeMirror { height: 500px; font-size: 16px; }
-        #output-area { background-color: #f7f9fc; height: 500px; padding: 1.5rem; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; }
+        .CodeMirror { height: 60vh; min-height: 400px; font-size: 16px; }
+        #output-area { background-color: #f7f9fc; height: 60vh; min-height: 400px; padding: 1.5rem; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; line-height: 1.6; }
         .actions-bar { margin: 1.5rem 0; padding: 1.5rem; background-color: var(--secondary-color); border-radius: var(--border-radius); text-align: center; }
-        .action-button { background-color: var(--primary-color); color: white; border: none; padding: 12px 20px; font-size: 1rem; font-weight: bold; border-radius: var(--border-radius); cursor: pointer; margin: 0 5px; transition: background-color 0.2s ease; }
-        .action-button:hover { background-color: var(--primary-hover-color); }
+        .action-button { background-color: var(--primary-color); color: white; border: none; padding: 12px 20px; font-size: 1rem; font-weight: bold; border-radius: var(--border-radius); cursor: pointer; margin: 0 5px; transition: all 0.2s ease; }
+        .action-button:hover { background-color: var(--primary-hover-color); transform: translateY(-2px); }
+        #output-area.loading { display: flex; justify-content: center; align-items: center; font-style: italic; color: #555; }
     </style>
 </head>
 <body>
@@ -29,6 +31,8 @@
             </a>
             <ul>
                 <li><a href="/#courses">Courses</a></li>
+                <!-- Add a link to the new tool in the header -->
+                <li><a href="/ai-assistant.html">AI Assistant</a></li>
             </ul>
         </nav>
     </header>
@@ -57,9 +61,11 @@
         </div>
     </main>
 
+    <!-- CodeMirror Library JS Files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
     
+    <!-- This will use the same script.js file -->
     <script src="/assets/css/js/script.js"></script>
 
 </body>
