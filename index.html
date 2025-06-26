@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alexr Code</title>
-    <link rel="stylesheet" href="style.css"> <link id="theme-stylesheet" rel="stylesheet" href=""> <link rel="icon" type="image/png" href="alexr-favicon.png">
+    <link rel="stylesheet" href="style.css"> <!-- Main Stylesheet -->
+    <!-- The dynamic theme stylesheet link has been removed -->
+    <link rel="icon" type="image/png" href="alexr-favicon.png">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+    <!-- CodeMirror Base CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+    <!-- CodeMirror Themes CSS (Selection) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material-darker.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/neat.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/monokai.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/eclipse.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.css">
 </head>
 <body>
     <header>
@@ -23,17 +24,10 @@
             <h1>Alexr Code</h1>
         </div>
         <div class="header-center">
-            <div class="dropdown">
-                <button class="ai-assistant-button"><i class="fas fa-magic"></i> AI Assistant</button>
-                <div class="dropdown-content">
-                    <a href="#" class="action-button" data-action="explain">Explain Code</a>
-                    <a href="#" class="action-button" data-action="findBugs">Find Bugs</a>
-                    <a href="#" class="action-button" data-action="refactor">Refactor Code</a>
-                </div>
-            </div>
+            <!-- Space for any future header controls -->
         </div>
         <div class="header-right">
-            <a href="themes.html" class="theme-selector-button">Themes</a>
+            <!-- "Themes" button has been removed -->
         </div>
     </header>
 
@@ -76,16 +70,17 @@
                         <h2>Console</h2>
                         <button id="clear-console-button">Clear</button>
                     </div>
-                    <div id="console-output">
-                    </div>
+                    <div id="console-output"></div>
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
+
     <footer>
         <p>&copy; 2025 Alexr Code</p>
     </footer>
 
+    <!-- Modals -->
     <div id="save-project-modal" class="modal"> 
         <div class="modal-content"> 
             <span class="close-button" data-modal-id="save-project-modal">&times;</span> 
@@ -114,7 +109,6 @@
         <div class="modal-content">
             <span class="close-button" data-modal-id="settings-modal">&times;</span>
             <h2>Settings</h2>
-            
             <div class="setting-group">
                 <h3>Editor Appearance</h3>
                 <div class="setting-section">
@@ -133,7 +127,6 @@
                     <input type="number" id="editor-font-size-input" min="8" max="30" step="1">
                 </div>
             </div>
-
             <div class="setting-group">
                 <h3>External Resources</h3>
                 <div class="setting-section">
@@ -145,7 +138,6 @@
                     <textarea id="external-js-urls" rows="3" placeholder="https://example.com/script1.js&#10;https://example.com/script2.js"></textarea>
                 </div>
             </div>
-            
             <div class="modal-actions">
                 <button id="apply-settings-button" class="primary-action">Apply & Close</button>
                 <button data-modal-id="settings-modal" class="button-alt close-modal-action">Cancel</button>
@@ -153,17 +145,7 @@
         </div>
     </div>
 
-    <div id="ai-response-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" data-modal-id="ai-response-modal">&times;</span>
-            <h2>AI Assistant Response</h2>
-            <pre id="ai-output-area">The AI's response will appear here...</pre>
-            <div class="modal-actions">
-                <button data-modal-id="ai-response-modal" class="button-alt close-modal-action">Close</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/xml/xml.min.js"></script>
@@ -172,16 +154,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closetag.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closebrackets.min.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/1.1.4/htmlhint.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/lint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/javascript-lint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/css-lint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/lint/html-lint.min.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
 
+    <!-- Main Application Script -->
     <script src="script.js"></script>
 </body>
 </html>
