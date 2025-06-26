@@ -5,38 +5,40 @@
 :root {
     --font-primary: 'Inter', sans-serif;
     --font-code: 'Fira Code', monospace;
-    --editor-font-size: 14px;
+    --editor-font-size: 14px; /* Default editor font size, will be updated by JS */
 
     --color-background-main: #f4f7f9;
     --color-background-header: #ffffff;
-    --color-background-editor: #ffffff;
+    --color-background-editor: #ffffff; /* Background for editor panels AND modal content */
     --color-background-preview: #ffffff;
     --color-background-footer: #2c3e50;
     --color-background-button: #007aff;
     --color-background-button-hover: #005bb5;
-    --color-background-section-header: #eef1f4;
-    --color-background-input: var(--color-background-main);
-    --color-background-gutter: var(--color-background-section-header);
+    --color-background-section-header: #eef1f4; /* For h2 in editor panels */
+    --color-background-input: var(--color-background-main); /* For text inputs/textareas in modals */
+    --color-background-gutter: var(--color-background-section-header); /* For Split.js gutters */
     --color-background-gutter-hover: var(--border-color-dark);
 
 
     --color-text-main: #333333;
     --color-text-header: #2c3e50;
-    --color-text-editor-label: #555555;
+    --color-text-editor-label: #555555; /* For h2 in editor panels & modal labels */
     --color-text-button: #ffffff;
     --color-text-footer: #e0e0e0;
     --color-text-link: #007aff;
     --color-text-placeholder: #999999;
 
     --border-color-light: #dce1e6;
-    --border-color-dark: #c0c5cb;
+    --border-color-dark: #c0c5cb; /* For inputs, etc. */
     --border-radius-main: 8px;
     --border-radius-small: 5px;
     --box-shadow-main: 0 4px 12px rgba(0,0,0,0.06);
     --box-shadow-light: 0 2px 6px rgba(0,0,0,0.04);
 
-    --color-text-link-rgb: 0, 123, 255;
+    /* For focus rings - ensure your theme files also define this if they change link color */
+    --color-text-link-rgb: 0, 123, 255; /* RGB components of --color-text-link */
 }
+/* --- End CSS Variables --- */
 
 /* General Reset and Body */
 *, *::before, *::after {
@@ -50,9 +52,9 @@ body {
     color: var(--color-text-main);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh; /* Full viewport height */
+    height: 100vh; /* Ensure body takes full height for flex children */
+    overflow: hidden; /* Prevent body scrollbars when panes handle their own */
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -115,41 +117,38 @@ header h1 {
     outline: none;
 }
 
-/* Main Layout Container - MODIFIED for robustness */
+/* Main Layout Container for Split.js - Fixed Vertical Layout */
 .editor-layout-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Editors Top | Output Bottom */
     flex-grow: 1; 
     overflow: hidden;
     padding: 10px; 
     gap: 8px; 
 }
 
-/* Panes for the main vertical split - MODIFIED for robustness */
+/* Panes for the main split (Top: Code Editors, Bottom: Output) */
 #code-editors-pane, #output-pane {
     display: flex; 
     flex-direction: column; 
-    overflow: hidden;
-    position: relative; /* Needed for child elements */
-    min-height: 0; /* Flexbox bug fix */
+    overflow: hidden; 
 }
 
-/* Code Editors Area - MODIFIED for robustness */
+/* Code Editors Area (#code-editors-pane) */
 #code-section-editors { 
     display: flex;
-    flex-direction: row;
+    flex-direction: row; /* HTML, CSS, JS side-by-side */
     flex-grow: 1; 
-    min-height: 0; /* Flexbox bug fix */
+    min-height: 150px; 
     overflow: hidden;
-    height: 100%; /* Ensure it fills its parent */
 }
 
-/* Individual Editor Panes - MODIFIED for robustness */
+/* Individual Editor Panes (HTML, CSS, JS Wrappers) */
 .editor-pane { 
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    height: 100%;
+    overflow: hidden; 
+    /* flex-basis (width) is controlled by Split.js */
 }
 .editor { 
     display: flex; flex-direction: column; background-color: var(--color-background-editor);
@@ -163,9 +162,14 @@ header h1 {
 }
 .CodeMirror {
     font-family: var(--font-code);
-    font-size: var(--editor-font-size, 14px);
+    font-size: var(--editor-font-size, 14px); /* Use CSS variable for font size */
     line-height: 1.5;
     height: 100%; 
+    flex-grow: 1;
+    /* Base background/color to help isolate from page theme if CM theme is not fully specific.
+       The actual CodeMirror theme (e.g., .cm-s-material-darker) WILL and SHOULD override these. */
+    background-color: #fff; 
+    color: #000; 
 }
 
 /* Output Pane (#output-pane) */
@@ -188,7 +192,7 @@ header h1 {
 .editor-main-controls button:hover { background-color: var(--color-background-button-hover); transform: translateY(-1px); }
 .editor-main-controls button:active { transform: translateY(0px); }
 
-.output-sub-pane {
+.output-sub-pane { /* e.g., #preview-wrapper, #console-wrapper */
     display: flex; 
     flex-direction: column; 
     overflow: hidden;
@@ -250,7 +254,7 @@ footer {
     font-size: 0.8rem; flex-shrink: 0;
 }
 
-/* --- Modal Styles --- */
+/* --- Modal Styles (Generic for Save, Load, Settings) --- */
 .modal {
     display: none; position: fixed; z-index: 1000; left: 0; top: 0;
     width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);
@@ -384,28 +388,26 @@ footer {
 .setting-section:last-of-type { margin-bottom: 0; }
 
 /* --- CodeMirror Linting Custom Styles --- */
-.cm-s-default .CodeMirror-lint-message-error,
-.cm-s-material-darker .CodeMirror-lint-message-error,
-.cm-s-neat .CodeMirror-lint-message-error,
-.cm-s-monokai .CodeMirror-lint-message-error,
-.cm-s-eclipse .CodeMirror-lint-message-error,
-.cm-s-dracula .CodeMirror-lint-message-error {
+.cm-s-default .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-material-darker .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-neat .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-monokai .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-eclipse .CodeMirror-lint-message.CodeMirror-lint-message-error,
+.cm-s-dracula .CodeMirror-lint-message.CodeMirror-lint-message-error {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/َق/ Ministère des Affaires étrangères et du Développement international</translation>');
     background-repeat: repeat-x;
     background-position: left bottom;
 }
-
-.cm-s-default .CodeMirror-lint-message-warning,
-.cm-s-material-darker .CodeMirror-lint-message-warning,
-.cm-s-neat .CodeMirror-lint-message-warning,
-.cm-s-monokai .CodeMirror-lint-message-warning,
-.cm-s-eclipse .CodeMirror-lint-message-warning,
-.cm-s-dracula .CodeMirror-lint-message-warning {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhL1rQAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAF0lEQVQI12NggIMHDAwKqMAKMBDNwAAAAPgCBgE953VtAAAAAElFTkSuQmCC'); /* Yellow squiggly line */
+.cm-s-default .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-material-darker .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-neat .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-monokai .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-eclipse .CodeMirror-lint-message.CodeMirror-lint-message-warning,
+.cm-s-dracula .CodeMirror-lint-message.CodeMirror-lint-message-warning {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhL1rQAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAF0lEQVQI12NggIMHDAwKqMAKMBDNwAAAAPgCBgE953VtAAAAAElFTkSuQmCC'); 
     background-repeat: repeat-x;
     background-position: left bottom;
 }
-
 .CodeMirror-lint-tooltip {
   background-color: var(--color-background-editor, #f8f9fa); 
   border: 1px solid var(--border-color-dark, #ccc);
@@ -423,76 +425,3 @@ footer {
 .cm-s-default.CodeMirror-lint-tooltip { background-color: #f7f7f7; color: #333; border-color: #ccc; }
 .cm-s-monokai.CodeMirror-lint-tooltip, 
 .cm-s-dracula.CodeMirror-lint-tooltip { background-color: #2b2b2b; color: #f8f8f2; border-color: #44475a; }
-
-/* --- AI ASSISTANT STYLES --- */
-.ai-assistant-button {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    color: white;
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    border: none;
-    border-radius: var(--border-radius-small);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease-in-out;
-}
-.ai-assistant-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-.ai-assistant-button .fa-magic {
-    font-size: 0.8em;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 101;
-    border-radius: var(--border-radius-small);
-    overflow: hidden;
-    padding: 5px 0;
-}
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    font-size: 0.9rem;
-}
-.dropdown-content a:hover {
-    background-color: #ddd;
-}
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-#ai-output-area {
-    background-color: var(--color-background-input);
-    min-height: 40vh;
-    padding: 1.5rem;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: var(--font-code);
-    line-height: 1.6;
-    border: 1px solid var(--border-color-light);
-    border-radius: var(--border-radius-small);
-    color: var(--color-text-main);
-}
-#ai-output-area.loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-style: italic;
-    color: var(--color-text-placeholder);
-}
