@@ -1,45 +1,58 @@
-/* Import Google Fonts */
+/*
+    Alexr Code - Main Stylesheet
+    Version: Modern Dark Theme
+    Author: Gemini
+*/
+
+/* --- Import Google Fonts --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
-/* --- CSS Variables for New Modern Dark Theme --- */
+/* --- CSS Variables for the Modern Dark Theme --- */
 :root {
     --font-primary: 'Inter', sans-serif;
     --font-code: 'Fira Code', monospace;
     --editor-font-size: 14px;
 
-    /* Background Colors */
-    --color-background-main: #111827; /* Very Dark Blue/Gray */
-    --color-background-header: #1F2937; /* Dark Gray */
-    --color-background-editor: #1F2937; 
-    --color-background-preview: #111827; /* Match main background */
-    --color-background-footer: #1F2937;
-    --color-background-button: #3B82F6; /* Bright Blue */
-    --color-background-button-hover: #2563EB; /* Darker Blue */
-    --color-background-section-header: #374151; /* Medium Gray */
-    --color-background-input: #374151;
-    --color-background-gutter: #111827;
-    --color-background-gutter-hover: #4B5563; /* Lighter Gray for hover */
+    /* Color Palette */
+    --color-background-main: #0F172A;       /* Slate 900 - Deep, rich navy */
+    --color-background-header: #1E293B;      /* Slate 800 - Slightly lighter panel color */
+    --color-background-editor: #1E293B;      
+    --color-background-preview: #0F172A;     
+    --color-background-footer: #1E293B;
+    --color-background-section-header: #334155; /* Slate 700 - For titles */
+    --color-background-input: #475569;       /* Slate 600 - For inputs */
+    --color-background-gutter: #0F172A;       
+    --color-background-gutter-hover: #475569; 
+    
+    --color-accent-blue: #38BDF8;             /* Sky 400 - Vibrant blue for highlights */
+    --color-accent-blue-hover: #0EA5E9;       /* Sky 500 - Darker hover */
+    --color-accent-blue-glow: rgba(56, 189, 248, 0.4);
 
-    /* Text Colors */
-    --color-text-main: #D1D5DB; /* Light Gray */
-    --color-text-header: #F9FAFB; /* Almost White */
-    --color-text-editor-label: #9CA3AF; /* Medium Gray */
+    --color-text-main: #CBD5E1;             /* Slate 300 - Main body text */
+    --color-text-header: #F1F5F9;           /* Slate 100 - Brightest text */
+    --color-text-editor-label: #94A3B8;     /* Slate 400 - Subdued labels */
     --color-text-button: #FFFFFF;
-    --color-text-footer: #9CA3AF;
-    --color-text-link: #60A5FA; /* Lighter Blue for links */
-    --color-text-placeholder: #6B7280;
+    --color-text-footer: #94A3B8;
+    --color-text-link: var(--color-accent-blue);
+    --color-text-placeholder: #64748B;       /* Slate 500 */
+    
+    /* Semantic Colors */
+    --color-error: #F87171; /* Red 400 */
+    --color-warning: #FBBF24; /* Amber 400 */
+    --color-info: #60A5FA;  /* Blue 400 */
+    --color-debug: #A78BFA; /* Violet 400 */
+    --color-success: #4ADE80; /* Green 400 */
 
     /* Border & Shadow */
-    --border-color-light: #374151;
-    --border-color-dark: #4B5563;
-    --border-radius-main: 8px;
-    --border-radius-small: 5px;
-    --box-shadow-main: 0 4px 12px rgba(0,0,0,0.15);
-    --box-shadow-light: 0 2px 4px rgba(0,0,0,0.1);
-    --glow-color-button: rgba(59, 130, 246, 0.4);
+    --border-color-light: #334155;
+    --border-color-dark: #475569;
+    --border-radius-main: 10px; /* Slightly more rounded */
+    --border-radius-small: 6px;
+    --box-shadow-main: 0 4px 14px rgba(0,0,0,0.25);
+    --box-shadow-light: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.2);
 
     /* For focus rings */
-    --color-text-link-rgb: 59, 130, 246; /* RGB for #3B82F6 */
+    --color-accent-blue-rgb: 56, 189, 248; 
 }
 /* --- End CSS Variables --- */
 
@@ -55,10 +68,9 @@ body {
     color: var(--color-text-main);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
     height: 100vh;
     overflow: hidden;
-    line-height: 1.65;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -73,6 +85,7 @@ header {
     align-items: center;
     border-bottom: 1px solid var(--border-color-light);
     flex-shrink: 0;
+    box-shadow: var(--box-shadow-light);
 }
 header .header-left, header .header-right {
     flex: 1;
@@ -89,10 +102,6 @@ header h1 {
     letter-spacing: -0.5px; 
     color: var(--color-text-header);
 }
-header h1 .brand-period {
-    color: var(--color-background-button);
-}
-
 
 /* Main Layout Container */
 .editor-layout-container {
@@ -100,8 +109,8 @@ header h1 .brand-period {
     flex-direction: column; 
     flex-grow: 1; 
     overflow: hidden;
-    padding: 10px; 
-    gap: 10px; 
+    padding: 12px; 
+    gap: 12px; 
 }
 #code-editors-pane, #output-pane {
     display: flex; 
@@ -126,10 +135,15 @@ header h1 .brand-period {
     display: flex; flex-direction: column; background-color: var(--color-background-editor);
     border: 1px solid var(--border-color-light); border-radius: var(--border-radius-main);
     box-shadow: var(--box-shadow-main); overflow: hidden; height: 100%; 
+    transition: box-shadow 0.3s ease;
+}
+.editor:focus-within {
+    box-shadow: 0 0 0 2px var(--color-accent-blue);
 }
 .editor h2 {
     background-color: var(--color-background-section-header); color: var(--color-text-editor-label);
-    margin: 0; padding: 10px 15px; font-size: 0.85rem; font-weight: 500;
+    margin: 0; padding: 10px 15px; font-size: 0.8rem; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.5px;
     border-bottom: 1px solid var(--border-color-light); text-align: left; flex-shrink: 0;
 }
 .CodeMirror {
@@ -138,39 +152,38 @@ header h1 .brand-period {
     line-height: 1.6;
     height: 100%; 
     flex-grow: 1;
-    background-color: #1F2937; 
-    color: #D1D5DB; 
+    background-color: transparent; /* Inherit from .editor */
+    color: var(--color-text-main); 
 }
 
 /* Output Pane */
 #output-pane { flex-grow: 1; min-height: 200px; display: flex; flex-direction: column; }
 .editor-main-controls {
-    margin-bottom: 10px; text-align: center; padding: 0; display: flex;
-    justify-content: center; flex-wrap: wrap; gap: 8px; flex-shrink: 0; 
+    margin-bottom: 12px; text-align: center; padding: 0; display: flex;
+    justify-content: center; flex-wrap: wrap; gap: 10px; flex-shrink: 0; 
 }
 
 @keyframes button-glow {
-    0% { box-shadow: 0 0 5px var(--glow-color-button), 0 0 10px var(--glow-color-button); }
-    50% { box-shadow: 0 0 15px var(--glow-color-button), 0 0 25px var(--glow-color-button); }
-    100% { box-shadow: 0 0 5px var(--glow-color-button), 0 0 10px var(--glow-color-button); }
+    from { box-shadow: 0 0 4px -2px var(--color-accent-blue), 0 0 7px -2px var(--color-accent-blue-glow), inset 0 0 2px -1px var(--color-accent-blue-glow); }
+    to { box-shadow: 0 0 8px -2px var(--color-accent-blue), 0 0 14px -2px var(--color-accent-blue-glow), inset 0 0 2px -1px var(--color-accent-blue-glow); }
 }
 
 .editor-main-controls button {
-    background-color: var(--color-background-button); color: var(--color-text-button);
-    border: none; padding: 8px 16px; border-radius: var(--border-radius-small);
+    background: linear-gradient(145deg, var(--color-accent-blue), var(--color-accent-blue-hover));
+    color: var(--color-text-button);
+    border: none; padding: 8px 18px; border-radius: var(--border-radius-small);
     cursor: pointer; font-size: 0.85rem; font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.1);
 }
 .editor-main-controls button:hover { 
-    background-color: var(--color-background-button-hover); 
     transform: translateY(-2px); 
-    box-shadow: 0 0 15px var(--glow-color-button);
-    animation: button-glow 2s infinite ease-in-out;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3), 0 0 20px var(--color-accent-blue-glow);
 }
 .editor-main-controls button:active { 
     transform: translateY(0px); 
-    animation: none;
+    background: var(--color-accent-blue-hover);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .output-sub-pane { display: flex; flex-direction: column; overflow: hidden; flex-grow: 1; }
@@ -183,29 +196,32 @@ header h1 .brand-period {
 .preview-section { background-color: var(--color-background-preview); }
 .preview-section h2, .console-header {
     background-color: var(--color-background-section-header); color: var(--color-text-editor-label);
-    margin: 0; padding: 10px 15px; font-size: 0.85rem; font-weight: 500;
+    margin: 0; padding: 10px 15px; font-size: 0.8rem; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.5px;
     border-bottom: 1px solid var(--border-color-light); text-align: left; flex-shrink: 0;
 }
 .console-header { display: flex; justify-content: space-between; align-items: center; }
 #preview-frame { flex-grow: 1; width: 100%; border: none; background-color: var(--color-background-preview); }
+
 #clear-console-button {
     background-color: transparent; color: var(--color-text-link); border: 1px solid var(--border-color-dark);
     padding: 3px 8px; font-size: 0.75rem; border-radius: var(--border-radius-small); cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 #clear-console-button:hover { background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button); }
 #console-output {
     flex-grow: 1; padding: 10px 15px; overflow-y: auto; font-family: var(--font-code);
     font-size: 0.85em; line-height: 1.6; white-space: pre-wrap; word-break: break-all;
-    background-color: var(--color-background-editor); color: var(--color-text-main); 
+    background-color: #111827; /* Darker bg for console output */
+    color: var(--color-text-main); 
 }
-.console-message { padding: 3px 0; border-bottom: 1px solid var(--border-color-light); }
+.console-message { padding: 4px 2px; border-bottom: 1px solid #1f293b; }
 .console-message:last-child { border-bottom: none; }
 .console-message.log { color: var(--color-text-main); }
-.console-message.error { color: #F87171; font-weight: 500; } /* Tailwind Red-400 */
-.console-message.warn { color: #FBBF24; } /* Tailwind Amber-400 */
-.console-message.info { color: #60A5FA; } /* Tailwind Blue-400 */
-.console-message.debug { color: #A78BFA; } /* Tailwind Violet-400 */
+.console-message.error { color: var(--color-error); font-weight: 500; }
+.console-message.warn { color: var(--color-warning); }
+.console-message.info { color: var(--color-info); }
+.console-message.debug { color: var(--color-debug); }
 
 /* Split.js Gutter Styling */
 .gutter {
@@ -215,11 +231,11 @@ header h1 .brand-period {
 .gutter:hover { background-color: var(--color-background-gutter-hover); }
 .gutter.gutter-horizontal { 
     cursor: col-resize;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30"><path d="M2 0 V30 M5 0 V30 M8 0 V30" stroke="%239CA3AF" stroke-width="1" /></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="30"><path d="M2 0 V30 M5 0 V30 M8 0 V30" stroke="%234B5563" stroke-width="1.5" /></svg>');
 }
 .gutter.gutter-vertical { 
     cursor: row-resize;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="10"><path d="M0 2 H30 M0 5 H30 M0 8 H30" stroke="%239CA3AF" stroke-width="1" /></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="10"><path d="M0 2 H30 M0 5 H30 M0 8 H30" stroke="%234B5563" stroke-width="1.5" /></svg>');
 }
 
 /* Footer */
@@ -280,21 +296,23 @@ footer {
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; }
 .modal-actions button {
     padding: 10px 20px; border-radius: var(--border-radius-small); font-weight: 500; cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    transition: all 0.2s ease;
     border: 1px solid transparent; font-size: 0.9rem;
 }
-.modal-actions button:hover { opacity: 0.9; }
+.modal-actions button:hover { transform: translateY(-1px); }
 .modal-actions button.primary-action {
     background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button);
+    box-shadow: 0 0 10px var(--glow-color-button);
 }
 .modal-actions button.primary-action:hover {
-    background-color: var(--color-background-button-hover); border-color: var(--color-background-button-hover); opacity: 1;
+    background-color: var(--color-background-button-hover); border-color: var(--color-background-button-hover); 
+    box-shadow: 0 0 15px var(--glow-color-button);
 }
 .modal-actions button.button-alt {
     background-color: transparent; color: var(--color-text-editor-label); border-color: var(--border-color-dark);
 }
 .modal-actions button.button-alt:hover {
-    background-color: var(--color-background-section-header); color: var(--color-text-main); border-color: var(--border-color-dark); opacity: 1;
+    background-color: var(--color-background-section-header); color: var(--color-text-main); border-color: var(--border-color-dark);
 }
 
 #projects-list-container {
@@ -315,9 +333,9 @@ footer {
 .project-item-actions button.load-button {
     background-color: var(--color-background-button); color: var(--color-text-button); border-color: var(--color-background-button);
 }
-.project-item-actions button.load-button:hover { background-color: var(--color-background-button-hover); border-color: var(--color-background-button-hover); opacity: 1; }
-.project-item-actions button.delete-button { background-color: transparent; color: #F87171; border-color: #F87171; }
-.project-item-actions button.delete-button:hover { background-color: #F87171; color: #111827; opacity: 1; }
+.project-item-actions button.load-button:hover { background-color: var(--color-background-button-hover); border-color: var(--color-background-button-hover); }
+.project-item-actions button.delete-button { background-color: transparent; color: var(--color-error); border-color: var(--color-error); }
+.project-item-actions button.delete-button:hover { background-color: var(--color-error); color: #111827; }
 
 .setting-group { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color-light); }
 .setting-group:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
